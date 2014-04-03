@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/product_detail_horizontal_margin"
+    android:paddingLeft="@dimen/product_detail_horizontal_margin"
+    android:paddingRight="@dimen/product_detail_horizontal_margin"
+    android:paddingTop="@dimen/product_detail_horizontal_margin" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="@string/my_account"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4px"
+        android:background="?android:attr/listDivider" />
+
+    <RelativeLayout
+        android:id="@+id/login_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp" >
+
+        <ImageView
+            android:id="@+id/login_icon"
+            android:layout_width="@dimen/my_status_icon_size"
+            android:layout_height="@dimen/my_status_icon_size"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/fragment_my_gap_between_icon_and_word"
+            android:scaleType="centerCrop"
+            android:src="@drawable/user_login" />
+
+        <TextView
+            android:id="@+id/login_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/login_icon"
+            android:text="@string/login"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/photo_preview"
+            android:layout_width="@dimen/photo_preview_size"
+            android:layout_height="@dimen/photo_preview_size"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/photo" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4px"
+        android:background="?android:attr/listDivider" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/my_status"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4px"
+        android:background="?android:attr/listDivider" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp" >
+
+        <ImageView
+            android:id="@+id/my_booking_icon"
+            android:layout_width="@dimen/my_status_icon_size"
+            android:layout_height="@dimen/my_status_icon_size"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/fragment_my_gap_between_icon_and_word"
+            android:scaleType="centerCrop"
+            android:src="@drawable/my_booking" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/my_booking_icon"
+            android:text="@string/my_booking"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4px"
+        android:background="?android:attr/listDivider" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp" >
+
+        <ImageView
+            android:id="@+id/wishlist_icon"
+            android:layout_width="@dimen/my_status_icon_size"
+            android:layout_height="@dimen/my_status_icon_size"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/fragment_my_gap_between_icon_and_word"
+            android:scaleType="centerCrop"
+            android:src="@drawable/my_wishlist" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/wishlist_icon"
+            android:text="@string/my_wishlist"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4px"
+        android:background="?android:attr/listDivider" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp" >
+
+        <ImageView
+            android:id="@+id/view_list_icon"
+            android:layout_width="@dimen/my_status_icon_size"
+            android:layout_height="@dimen/my_status_icon_size"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/fragment_my_gap_between_icon_and_word"
+            android:scaleType="centerCrop"
+            android:src="@drawable/my_view" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/view_list_icon"
+            android:text="@string/my_view_list"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4px"
+        android:background="?android:attr/listDivider" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp" >
+
+        <ImageView
+            android:id="@+id/search_list_icon"
+            android:layout_width="@dimen/my_status_icon_size"
+            android:layout_height="@dimen/my_status_icon_size"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/fragment_my_gap_between_icon_and_word"
+            android:scaleType="centerCrop"
+            android:src="@drawable/my_search" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/search_list_icon"
+            android:text="@string/my_search_list"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+</LinearLayout>

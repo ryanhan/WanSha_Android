@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/image_product_preview"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:scaleType="centerCrop" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/product_list_vertical_margin"
+        android:paddingLeft="@dimen/product_list_horizontal_margin"
+        android:paddingRight="@dimen/product_list_horizontal_margin"
+        android:paddingTop="@dimen/product_list_vertical_margin" >
+
+        <TextView
+            android:id="@+id/product_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:maxLines="2" />
+
+        <LinearLayout
+            android:id="@+id/layout_ranking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/product_name_text"
+            android:layout_below="@id/product_name_text"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/product_list_rank1"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginRight="5dp" />
+
+            <ImageView
+                android:id="@+id/product_list_rank2"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginRight="5dp" />
+
+            <ImageView
+                android:id="@+id/product_list_rank3"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginRight="5dp" />
+
+            <ImageView
+                android:id="@+id/product_list_rank4"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginRight="5dp" />
+
+            <ImageView
+                android:id="@+id/product_list_rank5"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginRight="5dp" />
+
+            <TextView
+                android:id="@+id/ranking_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
+                android:textColor="@color/light_grey"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/from"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/layout_ranking"
+            android:layout_alignParentRight="true"
+            android:text="@string/from"
+            android:textColor="@color/light_grey"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/from_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/layout_ranking"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/from"
+            android:layout_below="@id/product_name_text"
+            android:textColor="@color/green"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+</LinearLayout>
