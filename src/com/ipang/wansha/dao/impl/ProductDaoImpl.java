@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.ipang.wansha.dao.ProductDao;
+import com.ipang.wansha.dao.ReviewDao;
 import com.ipang.wansha.model.Currency;
 import com.ipang.wansha.model.Language;
 import com.ipang.wansha.model.Product;
@@ -21,6 +22,13 @@ import com.ipang.wansha.utils.TextGetAsyncTask;
 
 public class ProductDaoImpl implements ProductDao {
 
+	private ReviewDao reviewDao;
+	
+	public ProductDaoImpl(){
+		reviewDao = new ReviewDaoImpl();
+	}
+	
+	
 	@Override
 	public List<Product> getProductList(String cityId)
 			throws URISyntaxException, InterruptedException,
@@ -94,7 +102,8 @@ public class ProductDaoImpl implements ProductDao {
 		product.setTimeUnit(TimeUnit.fromString(json.getString("timeUnit")));
 		product.setReviewCount(Integer.parseInt(json.getString("reviewCount")));
 		product.setReviewTotalRanking(Integer.parseInt(json.getString("reviewTotalRanking")));
-		//product.setSupportLanguage(getLanguages(json));
+		product.setSupportLanguage(getLanguages(json));
+		product.setStarCount(reviewDao.getRankingDetail(product.getProductId()));
 		return product;
 	}
 
@@ -103,8 +112,12 @@ public class ProductDaoImpl implements ProductDao {
 		
 		try {
 			JSONArray languageList = json.getJSONArray("languages");
+			for(int i = 0; i < languageList.length(); i++){
+				languages.add(Language.fromString(languageList.getString(i)));
+			}
+			
 		} catch (JSONException e) {
-			JSONObject language = json.getJSONObject("languages");
+			languages.add(Language.fromString(json.getString("languages")));
 		}
 		
 		

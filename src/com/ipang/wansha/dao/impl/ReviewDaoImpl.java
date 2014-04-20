@@ -31,4 +31,10 @@ public class ReviewDaoImpl implements ReviewDao {
 		return reviews;
 	}
 
+	@Override
+	public int[] getRankingDetail(String productId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

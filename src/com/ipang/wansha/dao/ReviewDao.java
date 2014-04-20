@@ -7,5 +7,7 @@ import com.ipang.wansha.model.Review;
 public interface ReviewDao {
 
 	public ArrayList<Review> getReviewList(String productId);
+
+	public int[] getRankingDetail(String productId);
 	
 }
