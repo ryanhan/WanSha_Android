@@ -1,7 +1,12 @@
 package com.ipang.wansha.fragment;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.json.JSONException;
 
 import android.content.Context;
 import android.content.Intent;
@@ -74,12 +79,27 @@ public class CityFragment extends SherlockFragment implements
 
 	private void setCityList(View view) {
 
-		ArrayList<City> cities = cityDao.getCityList();
-		LinearLayout layout = (LinearLayout) view
-				.findViewById(R.id.fragment_city_layout);
-		for (int i = 0; i < cities.size(); i++) {
-			layout.addView(cityView(cities.get(i)));
+		try {
+			List<City> cities = cityDao.getCityList();
+			LinearLayout layout = (LinearLayout) view
+					.findViewById(R.id.fragment_city_layout);
+			for (int i = 0; i < cities.size(); i++) {
+				layout.addView(cityView(cities.get(i)));
+			}
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 	}
 
 	private View cityView(final City city) {
@@ -98,9 +118,14 @@ public class CityFragment extends SherlockFragment implements
 						.getDimension(R.dimen.image_height));
 		imageView.setLayoutParams(imageParams);
 		imageView.setScaleType(ScaleType.CENTER_CROP);
-		int resID = getResources().getIdentifier(city.getPreviewImage(),
-				"drawable", Const.PACKAGENAME);
-		imageView.setImageResource(resID);
+		if (city.getPreviewImage() != null) {
+			int resID = getResources().getIdentifier(city.getPreviewImage(),
+					"drawable", Const.PACKAGENAME);
+			imageView.setImageResource(resID);
+		} else {
+			imageView.setImageResource(R.drawable.missing);
+		}
+
 		frameLayout.addView(imageView);
 
 		RelativeLayout relativeLayout = new RelativeLayout(
@@ -163,18 +188,19 @@ public class CityFragment extends SherlockFragment implements
 
 		frameLayout.addView(relativeLayout);
 		frameLayout.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent();
-				intent.setClass(CityFragment.this.getSherlockActivity(), ProductListActivity.class);
+				intent.setClass(CityFragment.this.getSherlockActivity(),
+						ProductListActivity.class);
 				intent.putExtra(Const.CITYNAME, city.getCityName());
 				intent.putExtra(Const.CITYID, city.getCityId());
 				startActivity(intent);
-				
+
 			}
 		});
-		
+
 		return frameLayout;
 	}
 
@@ -183,7 +209,22 @@ public class CityFragment extends SherlockFragment implements
 		ViewGroup group = (ViewGroup) view
 				.findViewById(R.id.fragment_city_viewGroup);
 
-		ArrayList<City> recommendCities = cityDao.getRecommendCity();
+		List<City> recommendCities = null;
+		try {
+			recommendCities = cityDao.getRecommendCity();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		recommendCityNumber = recommendCities.size();
 		ArrayList<View> recommendImages = new ArrayList<View>();
 		recommendCityIds = new ArrayList<String>();
@@ -192,10 +233,14 @@ public class CityFragment extends SherlockFragment implements
 
 		for (int i = 0; i < recommendCityNumber; i++) {
 			ImageView img = new ImageView(this.getSherlockActivity());
-			int resID = getResources().getIdentifier(
-					recommendCities.get(i).getPreviewImage(), "drawable",
-					Const.PACKAGENAME);
-			img.setImageResource(resID);
+			if (recommendCities.get(i).getPreviewImage() != null) {
+				int resID = getResources().getIdentifier(
+						recommendCities.get(i).getPreviewImage(), "drawable",
+						Const.PACKAGENAME);
+				img.setImageResource(resID);
+			} else {
+				img.setImageResource(R.drawable.missing);
+			}
 			img.setScaleType(ScaleType.CENTER_CROP);
 			recommendImages.add(img);
 			recommendCityIds.add(recommendCities.get(i).getCityId());

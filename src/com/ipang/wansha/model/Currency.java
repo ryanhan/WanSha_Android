@@ -24,4 +24,24 @@ public enum Currency {
 	public String getSymbol(){
 		return this.name;
 	}
+	
+	public static Currency fromString(String text){
+		if (text != null){
+			if (text.toLowerCase().equals("chineseyuan")){
+				return Currency.CHINESEYUAN;
+			}
+			else if (text.toLowerCase().equals("pound")){
+				return Currency.POUND;
+			}
+			else if (text.toLowerCase().equals("dollar")){
+				return Currency.DOLLAR;
+			}
+			else if (text.toLowerCase().equals("euro")){
+				return Currency.EURO;
+			}
+			
+		}
+		return null;
+	}
+	
 }

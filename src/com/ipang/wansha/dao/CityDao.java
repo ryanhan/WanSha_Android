@@ -1,13 +1,17 @@
 package com.ipang.wansha.dao;
 
-import java.util.ArrayList;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import org.json.JSONException;
 
 import com.ipang.wansha.model.City;
 
 public interface CityDao {
 
-	public ArrayList<City> getRecommendCity();
+	public List<City> getRecommendCity() throws URISyntaxException, InterruptedException, ExecutionException, JSONException;
 
-	public ArrayList<City> getCityList();
+	public List<City> getCityList() throws URISyntaxException, InterruptedException, ExecutionException, JSONException;
 	
 }

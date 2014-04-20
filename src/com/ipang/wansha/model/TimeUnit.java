@@ -30,4 +30,19 @@ public enum TimeUnit {
 		return this.name;
 	}
 	
+	public static TimeUnit fromString(String text){
+		if (text != null){
+			if (text.toLowerCase().equals("minute")){
+				return TimeUnit.MINUTE;
+			}
+			else if (text.toLowerCase().equals("day")){
+				return TimeUnit.DAY;
+			}
+			else if (text.toLowerCase().equals("hour")){
+				return TimeUnit.HOUR;
+			}
+			
+		}
+		return null;
+	}
 }

@@ -1,7 +1,11 @@
 package com.ipang.wansha.activity;
 
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+
+import org.json.JSONException;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +29,9 @@ import com.actionbarsherlock.view.MenuItem;
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductDetailImagePagerAdapter;
 import com.ipang.wansha.adapter.ReviewListShortAdapter;
+import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.dao.ReviewDao;
+import com.ipang.wansha.dao.impl.ProductDaoImpl;
 import com.ipang.wansha.dao.impl.ReviewDaoImpl;
 import com.ipang.wansha.model.Language;
 import com.ipang.wansha.model.Product;
@@ -41,7 +47,9 @@ public class ProductDetailActivity extends SherlockActivity implements
 	private ImageView[] dotImageViews;
 	private int imageNumber;
 	private ReviewListShortAdapter adapter;
+	private ProductDao productDao;
 	private ReviewDao reviewDao;
+	private float avgScore;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +61,30 @@ public class ProductDetailActivity extends SherlockActivity implements
 
 	private void getBundle() {
 		Bundle bundle = getIntent().getExtras();
-		product = (Product) bundle.getSerializable(Const.PRODUCTID);
+		String productId = bundle.getString(Const.PRODUCTID);
+		productDao = new ProductDaoImpl();
+		try {
+			product = productDao.getProductDetail(productId);
+			if (product.getReviewCount() != 0){
+				avgScore = (float) product.getReviewTotalRanking()
+						/ product.getReviewCount();
+			}
+			else
+				avgScore = 0;
+			
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void setViews() {
@@ -64,11 +95,12 @@ public class ProductDetailActivity extends SherlockActivity implements
 		setReviews();
 		Button bookButton = (Button) findViewById(R.id.book_now);
 		bookButton.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent();
-				intent.setClass(ProductDetailActivity.this, BookingActivity.class);
+				intent.setClass(ProductDetailActivity.this,
+						BookingActivity.class);
 				Bundle bundle = new Bundle();
 				bundle.putSerializable(Const.PRODUCTID, product);
 				intent.putExtras(bundle);
@@ -88,16 +120,26 @@ public class ProductDetailActivity extends SherlockActivity implements
 		viewPager = (ViewPager) findViewById(R.id.product_detail_viewpager);
 		ViewGroup group = (ViewGroup) findViewById(R.id.product_detail_viewGroup);
 		ArrayList<String> productImages = product.getProductImages();
-		imageNumber = productImages.size();
 		ArrayList<View> productImageView = new ArrayList<View>();
 
-		for (int i = 0; i < imageNumber; i++) {
+		if (productImages == null || productImages.size() == 0) {
+			imageNumber = 1;
 			ImageView img = new ImageView(this);
-			int resID = getResources().getIdentifier(productImages.get(i),
-					"drawable", Const.PACKAGENAME);
-			img.setImageResource(resID);
+			img.setImageResource(R.drawable.missing);
 			img.setScaleType(ScaleType.CENTER_CROP);
 			productImageView.add(img);
+		} else {
+			imageNumber = productImages.size();
+
+			for (int i = 0; i < imageNumber; i++) {
+				ImageView img = new ImageView(this);
+				int resID = getResources().getIdentifier(productImages.get(i),
+						"drawable", Const.PACKAGENAME);
+				img.setImageResource(resID);
+
+				img.setScaleType(ScaleType.CENTER_CROP);
+				productImageView.add(img);
+			}
 		}
 
 		dotImageViews = new ImageView[imageNumber];
@@ -142,27 +184,28 @@ public class ProductDetailActivity extends SherlockActivity implements
 		rankImages[4] = (ImageView) findViewById(R.id.product_detail_rank5);
 
 		title.setText(product.getProductName());
-		location.setText(product.getCityName() + ", " + product.getCountryName());
+		location.setText(product.getCityName() + ", "
+				+ product.getCountryName());
 
-		ArrayList<Language> lans = product.getSupportLanguage();
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < lans.size(); i++) {
-			int resID = getResources().getIdentifier(
-					lans.get(i).toString(), "string", Const.PACKAGENAME);
-			sb.append(getResources().getString(resID));
-			if (i < lans.size() - 1) {
-				sb.append(", ");
-			}
-		}
-		language.setText(sb.toString());
+//		ArrayList<Language> lans = product.getSupportLanguage();
+//		StringBuffer sb = new StringBuffer();
+//		for (int i = 0; i < lans.size(); i++) {
+//			int resID = getResources().getIdentifier(lans.get(i).toString(),
+//					"string", Const.PACKAGENAME);
+//			sb.append(getResources().getString(resID));
+//			if (i < lans.size() - 1) {
+//				sb.append(", ");
+//			}
+//		}
+//		language.setText(sb.toString());
 
 		int resID = getResources().getIdentifier(
 				product.getTimeUnit().toString(), "string", Const.PACKAGENAME);
 		String timeUnit = getResources().getString(resID);
 		duration.setText(product.getDuration() + timeUnit);
-		Utility.drawRankingStar(rankImages, (float) product.getRatingScore()
-				/ product.getRatingCount());
-		rankcount.setText("(" + product.getRatingCount() + ")");
+		Utility.drawRankingStar(
+				rankImages, avgScore);
+		rankcount.setText("(" + product.getReviewCount() + ")");
 		price.setText(product.getCurrency().getSymbol() + " "
 				+ new DecimalFormat(".00").format(product.getPrice()));
 	}
@@ -204,15 +247,13 @@ public class ProductDetailActivity extends SherlockActivity implements
 		starCounts[3] = (TextView) findViewById(R.id.two_star_count);
 		starCounts[4] = (TextView) findViewById(R.id.one_star_count);
 
-		float ranking = (float) product.getRatingScore()
-				/ product.getRatingCount();
-		reviewRankCount.setText("(" + product.getRatingCount() + ")");
-		Utility.drawRankingStar(reviewRankImages, ranking);
+		reviewRankCount.setText("(" + product.getReviewCount() + ")");
+		Utility.drawRankingStar(reviewRankImages, avgScore);
 
-		rankingScore.setText(new DecimalFormat(".00").format(ranking) + " / 5");
+		rankingScore.setText(new DecimalFormat(".00").format(avgScore) + " / 5");
 
 		for (int i = 0; i < 5; i++) {
-			bars[i].setMax(product.getRatingCount());
+			bars[i].setMax(product.getReviewCount());
 			bars[i].setProgress(product.getStarCount(i));
 			if (product.getStarCount(i) > 0)
 				bars[i].setProgressDrawable(getResources().getDrawable(
@@ -239,7 +280,7 @@ public class ProductDetailActivity extends SherlockActivity implements
 
 			@Override
 			public void onClick(View v) {
-				
+
 			}
 		});
 	}

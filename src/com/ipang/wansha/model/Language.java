@@ -30,4 +30,19 @@ public enum Language {
         return this.name;  
     } 
 	
+	public static Language fromString(String text){
+		if (text != null){
+			if (text.toLowerCase().equals("chinese")){
+				return Language.CHINESE;
+			}
+			else if (text.toLowerCase().equals("english")){
+				return Language.ENGLISH;
+			}
+			else if (text.toLowerCase().equals("japanese")){
+				return Language.JAPANESE;
+			}
+		}
+		return null;
+	}
+	
 }

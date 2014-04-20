@@ -61,15 +61,20 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 		}
 		
 		holder.productNameTextView.setText(getItem(position).getProductName());
-		holder.rankingCountTextView.setText("(" + getItem(position).getRatingCount() + ")");
+		holder.rankingCountTextView.setText("(" + getItem(position).getReviewCount() + ")");
 		holder.fromPriceTextView.setText(getItem(position).getCurrency().getSymbol() + " " + getItem(position).getPrice());
 
-		int resID = context.getResources().getIdentifier(
-				getItem(position).getProductImages().get(0), "drawable",
-				Const.PACKAGENAME);
-		holder.productPreviewImage.setImageResource(resID);
+		if (getItem(position).getProductImages() == null || getItem(position).getProductImages().size() == 0){
+			holder.productPreviewImage.setImageResource(R.drawable.missing);
+		}
+		else {
+			int resID = context.getResources().getIdentifier(
+					getItem(position).getProductImages().get(0), "drawable",
+					Const.PACKAGENAME);
+			holder.productPreviewImage.setImageResource(resID);
+		}
 
-		float ranking = (float)getItem(position).getRatingScore() / getItem(position).getRatingCount();
+		float ranking = (float)getItem(position).getReviewTotalRanking() / getItem(position).getReviewCount();
 		
 		Utility.drawRankingStar(holder.rankingImage, ranking);
 		

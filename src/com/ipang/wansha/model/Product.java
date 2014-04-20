@@ -9,10 +9,10 @@ public class Product implements Serializable {
 	
 	private String productId;
 	private String productName;
-	private int duration;
+	private float duration;
 	private TimeUnit timeUnit;
-	private int ratingScore;
-	private int ratingCount;
+	private int reviewTotalRanking;
+	private int reviewCount;
 	private int[] starCount;
 	private float price;
 	private Currency currency;
@@ -41,11 +41,11 @@ public class Product implements Serializable {
 		this.productName = productName;
 	}
 
-	public int getDuration() {
+	public float getDuration() {
 		return duration;
 	}
 
-	public void setDuration(int duration) {
+	public void setDuration(float duration) {
 		this.duration = duration;
 	}
 
@@ -55,26 +55,6 @@ public class Product implements Serializable {
 
 	public void setTimeUnit(TimeUnit timeUnit) {
 		this.timeUnit = timeUnit;
-	}
-
-	public int getRatingScore() {
-		if (this.starCount == null)
-			return 0;
-		int totalScore = 0;
-		for (int i = 0; i < this.starCount.length; i++) {
-			totalScore += this.starCount[i] * (5 - i);
-		}
-		return totalScore;
-	}
-
-	public int getRatingCount() {
-		if (this.starCount == null)
-			return 0;
-		int ratingCount = 0;
-		for (int i = 0; i < this.starCount.length; i++) {
-			ratingCount += this.starCount[i];
-		}
-		return ratingCount;
 	}
 
 	public int getStarCount(int i) {// i=0 -> 5 star ...
@@ -166,4 +146,21 @@ public class Product implements Serializable {
 	public void setCountryName(String countryName) {
 		this.countryName = countryName;
 	}
+
+	public int getReviewTotalRanking() {
+		return reviewTotalRanking;
+	}
+
+	public void setReviewTotalRanking(int reviewTotalRanking) {
+		this.reviewTotalRanking = reviewTotalRanking;
+	}
+
+	public int getReviewCount() {
+		return reviewCount;
+	}
+
+	public void setReviewCount(int reviewCount) {
+		this.reviewCount = reviewCount;
+	}
+
 }

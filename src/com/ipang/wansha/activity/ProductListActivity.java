@@ -1,6 +1,10 @@
 package com.ipang.wansha.activity;
 
-import java.util.ArrayList;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import org.json.JSONException;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +29,7 @@ public class ProductListActivity extends SherlockListActivity {
 	private ActionBar actionBar;
 	private ProductDao productDao;
 	private ProductListAdapter adapter;
-	private ArrayList<Product> products;
+	private List<Product> products;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,7 +54,21 @@ public class ProductListActivity extends SherlockListActivity {
 
 	private void setListView() {
 		productDao = new ProductDaoImpl();
-		products = productDao.getProductList(cityId);
+		try {
+			products = productDao.getProductList(cityId);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		adapter = new ProductListAdapter(this, products);
 		setListAdapter(adapter);
 	}
@@ -80,9 +98,7 @@ public class ProductListActivity extends SherlockListActivity {
 
 		Intent intent = new Intent();
 		intent.setClass(this, ProductDetailActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putSerializable(Const.PRODUCTID, products.get(position));
-		intent.putExtras(bundle);
+		intent.putExtra(Const.PRODUCTID, products.get(position).getProductId());
 		startActivity(intent);
 
 	}
