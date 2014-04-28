@@ -1,29 +1,24 @@
 package com.ipang.wansha.fragment;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.json.JSONException;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,28 +26,25 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.ipang.wansha.R;
 import com.ipang.wansha.activity.ProductListActivity;
+import com.ipang.wansha.activity.SearchActvity;
 import com.ipang.wansha.adapter.RecommendImagePagerAdapter;
 import com.ipang.wansha.dao.CityDao;
 import com.ipang.wansha.dao.impl.CityDaoImpl;
 import com.ipang.wansha.model.City;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
-public class CityFragment extends SherlockFragment implements
-		OnPageChangeListener {
+public class CityFragment extends SherlockFragment {
 
-	private ViewPager recommendPager;
-	private ImageView[] imageViews;
+	private ImageView[] dots;
 	private CityDao cityDao;
-	private TextView recommendProductText;
-	private TextView recommendCityNameText;
-	private ArrayList<String> recommendCityIds;
-	private ArrayList<String> recommendCityNames;
-	private ArrayList<String> recommendProductNumber;
-	private int recommendCityNumber;
-	private boolean isContinue = true;
-	private AtomicInteger what = new AtomicInteger(0);
+	private ImageLoader imageLoader;
+	private DisplayImageOptions options;
 	private Context context;
+	private View fragmentView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,44 +52,42 @@ public class CityFragment extends SherlockFragment implements
 		super.onCreate(savedInstanceState);
 		context = this.getSherlockActivity();
 		cityDao = new CityDaoImpl();
-		// setHasOptionsMenu(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_cities, null);
-		recommendProductText = (TextView) view
-				.findViewById(R.id.recommend_product_number);
-		recommendCityNameText = (TextView) view
-				.findViewById(R.id.recommend_city_name);
-		initViewPager(view);
-		setCityList(view);
+		fragmentView = inflater.inflate(R.layout.fragment_cities, null);
+		imageLoader = ImageLoader.getInstance();
+		options = Const.options;
+		setSearchText();
+		ViewPagerAsyncTask viewPagerTask = new ViewPagerAsyncTask();
+		viewPagerTask.execute(fragmentView);
+		CityListAsyncTask cityListTask = new CityListAsyncTask();
+		cityListTask.execute(fragmentView);
 
-		return view;
+		return fragmentView;
 	}
 
-	private void setCityList(View view) {
-
-		try {
-			List<City> cities = cityDao.getCityList();
-			LinearLayout layout = (LinearLayout) view
-					.findViewById(R.id.fragment_city_layout);
-			for (int i = 0; i < cities.size(); i++) {
-				layout.addView(cityView(cities.get(i)));
+	private void setSearchText() {
+		EditText search = (EditText) fragmentView.findViewById(R.id.search_bar_text);
+		search.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setClass(context, SearchActvity.class);
+				startActivity(intent);
 			}
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		});
+	}
+
+	private void setCityList(List<City> cities) {
+
+		LinearLayout layout = (LinearLayout) fragmentView
+				.findViewById(R.id.fragment_city_layout);
+		for (int i = 0; i < cities.size(); i++) {
+			layout.addView(cityView(cities.get(i)));
 		}
 
 	}
@@ -112,18 +102,28 @@ public class CityFragment extends SherlockFragment implements
 				R.dimen.fragment_city_list_gap);
 		frameLayout.setLayoutParams(frameParams);
 
-		ImageView imageView = new ImageView(this.getSherlockActivity());
+		final ImageView imageView = new ImageView(this.getSherlockActivity());
 		LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.MATCH_PARENT, (int) getResources()
 						.getDimension(R.dimen.image_height));
 		imageView.setLayoutParams(imageParams);
 		imageView.setScaleType(ScaleType.CENTER_CROP);
-		if (city.getPreviewImage() != null) {
-			int resID = getResources().getIdentifier(city.getPreviewImage(),
-					"drawable", Const.PACKAGENAME);
-			imageView.setImageResource(resID);
-		} else {
+
+		if (city.getPreviewImage() == null) {
 			imageView.setImageResource(R.drawable.missing);
+		} else {
+			imageLoader.displayImage(
+					Const.SERVERNAME + "/rest/image/" + city.getPreviewImage(),
+					imageView, options, new SimpleImageLoadingListener() {
+						@Override
+						public void onLoadingComplete(String imageUri, View view,
+								Bitmap loadedImage) {
+							Animation anim = AnimationUtils.loadAnimation(
+									context, R.anim.fade_in);
+							imageView.setAnimation(anim);
+							anim.start();
+						}
+					});
 		}
 
 		frameLayout.addView(imageView);
@@ -158,7 +158,6 @@ public class CityFragment extends SherlockFragment implements
 		productNumberText.setText(city.getProductCount()
 				+ getResources().getString(R.string.products_number));
 		productNumberText.setId(1);
-		;
 		relativeLayout.addView(productNumberText);
 
 		// TextView 城市名
@@ -204,164 +203,87 @@ public class CityFragment extends SherlockFragment implements
 		return frameLayout;
 	}
 
-	private void initViewPager(View view) {
-		recommendPager = (ViewPager) view.findViewById(R.id.pager_recommend);
-		ViewGroup group = (ViewGroup) view
+	private void setRecommendViewPager(final List<City> cityList) {
+		final ViewPager viewPager = (ViewPager) fragmentView
+				.findViewById(R.id.pager_recommend);
+		setDotBar(cityList.size());
+
+		viewPager.setAdapter(new RecommendImagePagerAdapter(this
+				.getSherlockActivity(), cityList, imageLoader));
+		viewPager
+				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+					@Override
+					public void onPageSelected(int position) {
+						for (int i = 0; i < cityList.size(); i++) {
+							dots[i].setBackgroundResource(i == position ? R.drawable.dot_selected
+									: R.drawable.dot);
+						}
+					}
+				});
+		viewPager.setCurrentItem(0);
+	}
+
+	private void setDotBar(int number) {
+		ViewGroup group = (ViewGroup) fragmentView
 				.findViewById(R.id.fragment_city_viewGroup);
+		group.setVisibility(View.VISIBLE);
+		dots = new ImageView[number];
 
-		List<City> recommendCities = null;
-		try {
-			recommendCities = cityDao.getRecommendCity();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		recommendCityNumber = recommendCities.size();
-		ArrayList<View> recommendImages = new ArrayList<View>();
-		recommendCityIds = new ArrayList<String>();
-		recommendCityNames = new ArrayList<String>();
-		recommendProductNumber = new ArrayList<String>();
-
-		for (int i = 0; i < recommendCityNumber; i++) {
-			ImageView img = new ImageView(this.getSherlockActivity());
-			if (recommendCities.get(i).getPreviewImage() != null) {
-				int resID = getResources().getIdentifier(
-						recommendCities.get(i).getPreviewImage(), "drawable",
-						Const.PACKAGENAME);
-				img.setImageResource(resID);
-			} else {
-				img.setImageResource(R.drawable.missing);
-			}
-			img.setScaleType(ScaleType.CENTER_CROP);
-			recommendImages.add(img);
-			recommendCityIds.add(recommendCities.get(i).getCityId());
-			recommendCityNames.add(recommendCities.get(i).getCityName());
-			recommendProductNumber.add(recommendCities.get(i).getProductCount()
-					+ getResources().getString(R.string.products_number));
-		}
-
-		// Set Label(Name and Product Number) for First Recommend City
-		recommendCityNameText.setText(recommendCityNames.get(0));
-		recommendProductText.setText(recommendProductNumber.get(0));
-
-		imageViews = new ImageView[recommendCityNumber];
-
-		for (int i = 0; i < recommendCityNumber; i++) {
+		for (int i = 0; i < number; i++) {
 			ImageView imageView = new ImageView(this.getSherlockActivity());
 			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(10,
 					10);
 			param.rightMargin = 15;
 			imageView.setLayoutParams(param);
 
-			imageViews[i] = imageView;
+			dots[i] = imageView;
+			dots[i].setBackgroundResource(i == 0 ? R.drawable.dot_selected
+					: R.drawable.dot);
 
-			if (i == 0) {
-				imageViews[i].setBackgroundResource(R.drawable.dot_selected);
-			} else {
-				imageViews[i].setBackgroundResource(R.drawable.dot);
-			}
-
-			group.addView(imageViews[i]);
-		}
-
-		recommendPager.setAdapter(new RecommendImagePagerAdapter(this
-				.getSherlockActivity(), recommendImages, recommendCityIds,
-				recommendCityNames));
-		recommendPager.setOnPageChangeListener(this);
-		recommendPager.setCurrentItem(recommendCityNumber * 100);
-
-		recommendPager.setOnTouchListener(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				switch (event.getAction()) {
-				case MotionEvent.ACTION_DOWN:
-				case MotionEvent.ACTION_MOVE:
-					isContinue = false;
-					break;
-				case MotionEvent.ACTION_UP:
-					isContinue = true;
-					break;
-				default:
-					isContinue = true;
-					break;
-				}
-				return false;
-			}
-		});
-
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				while (true) {
-					if (isContinue) {
-						viewHandler.sendEmptyMessage(what.get());
-						whatOption();
-					}
-				}
-			}
-
-		}).start();
-	}
-
-	private void whatOption() {
-		what.incrementAndGet();
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-
+			group.addView(dots[i]);
 		}
 	}
 
-	private final Handler viewHandler = new Handler() {
+	private class ViewPagerAsyncTask extends
+			AsyncTask<View, Integer, List<City>> {
 
 		@Override
-		public void handleMessage(Message msg) {
-			recommendPager.setCurrentItem(msg.what);
-			super.handleMessage(msg);
-		}
-
-	};
-
-	@Override
-	public void onPageScrollStateChanged(int arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onPageScrolled(int arg0, float arg1, int arg2) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onPageSelected(int arg0) {
-		what.getAndSet(arg0);
-		int currentPage = arg0 % recommendCityNumber;
-
-		// Set Label(Name and Product Number) for Recommend City
-		recommendCityNameText.setText(recommendCityNames.get(currentPage));
-		recommendProductText.setText(recommendProductNumber.get(currentPage));
-
-		// Set round dot color for selected picture
-		for (int i = 0; i < recommendCityNumber; i++) {
-			imageViews[i].setBackgroundResource(R.drawable.dot_selected);
-			if (currentPage != i) {
-				imageViews[i].setBackgroundResource(R.drawable.dot);
+		protected List<City> doInBackground(View... params) {
+			List<City> cities = null;
+			try {
+				cities = cityDao.getRecommendCity();
+			} catch (Exception e) {
+				e.printStackTrace();
+				cities = new ArrayList<City>();
 			}
+			return cities;
 		}
 
+		@Override
+		protected void onPostExecute(List<City> result) {
+			setRecommendViewPager(result);
+		}
+	}
+
+	private class CityListAsyncTask extends
+			AsyncTask<View, Integer, List<City>> {
+
+		@Override
+		protected List<City> doInBackground(View... params) {
+			List<City> cities = null;
+			try {
+				cities = cityDao.getCityList();
+			} catch (Exception e) {
+				e.printStackTrace();
+				cities = new ArrayList<City>();
+			}
+			return cities;
+		}
+
+		@Override
+		protected void onPostExecute(List<City> result) {
+			setCityList(result);
+		}
 	}
 
 }

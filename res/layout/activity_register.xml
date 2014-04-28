@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_background"
+    android:paddingBottom="@dimen/fragment_login_vertical_margin"
+    android:paddingLeft="@dimen/fragment_login_horizontal_margin"
+    android:paddingRight="@dimen/fragment_login_horizontal_margin"
+    android:paddingTop="@dimen/fragment_login_vertical_margin" >
+
+    <ImageView
+        android:id="@+id/register_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:minHeight="@dimen/logo_size"
+        android:minWidth="@dimen/logo_size"
+        android:src="@drawable/ic_launcher" />
+
+    <EditText
+        android:id="@+id/register_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/register_logo"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="30dp"
+        android:hint="@string/register_hint"
+        android:inputType="textNoSuggestions" />
+
+    <Button
+        android:id="@+id/button_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/register_username"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/register" />
+
+</RelativeLayout>

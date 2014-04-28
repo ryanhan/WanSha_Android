@@ -1,28 +1,35 @@
 package com.ipang.wansha.activity;
 
-import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import org.json.JSONException;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductListAdapter;
 import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.dao.impl.ProductDaoImpl;
+import com.ipang.wansha.enums.SortType;
+import com.ipang.wansha.fragment.SortListFragment;
+import com.ipang.wansha.fragment.SortListFragment.OnSortTypeChangedListener;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class ProductListActivity extends SherlockListActivity {
+public class ProductListActivity extends SherlockFragmentActivity implements
+		OnSortTypeChangedListener {
 
 	private String cityId;
 	private String cityName;
@@ -30,6 +37,10 @@ public class ProductListActivity extends SherlockListActivity {
 	private ProductDao productDao;
 	private ProductListAdapter adapter;
 	private List<Product> products;
+	private ListView productListView;
+	private SortListFragment fragment;
+	private SortType sortType;
+	private ImageLoader imageLoader;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +55,8 @@ public class ProductListActivity extends SherlockListActivity {
 		Bundle bundle = getIntent().getExtras();
 		cityId = bundle.getString(Const.CITYID);
 		cityName = bundle.getString(Const.CITYNAME);
+		sortType = SortType.DEFAULT;
+		imageLoader = ImageLoader.getInstance();
 	}
 
 	private void setActionBar() {
@@ -54,23 +67,27 @@ public class ProductListActivity extends SherlockListActivity {
 
 	private void setListView() {
 		productDao = new ProductDaoImpl();
-		try {
-			products = productDao.getProductList(cityId);
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		adapter = new ProductListAdapter(this, products);
-		setListAdapter(adapter);
+		products = new ArrayList<Product>();
+		adapter = new ProductListAdapter(this, products, imageLoader);
+		productListView = (ListView) findViewById(R.id.product_list_view);
+		productListView.setAdapter(adapter);
+		productListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Intent intent = new Intent();
+				intent.setClass(ProductListActivity.this,
+						ProductDetailActivity.class);
+				intent.putExtra(Const.PRODUCTID, products.get(position)
+						.getProductId());
+				intent.putExtra(Const.PRODUCTNAME, products.get(position)
+						.getProductName());
+				startActivity(intent);
+			}
+		});
+		ProductListAsyncTask asyncTask = new ProductListAsyncTask();
+		asyncTask.execute(cityId);
 	}
 
 	@Override
@@ -87,20 +104,69 @@ public class ProductListActivity extends SherlockListActivity {
 			ProductListActivity.this.finish();
 			break;
 		case R.id.action_sort:
-			break;
+			FragmentTransaction transaction = getSupportFragmentManager()
+					.beginTransaction();
+			if (fragment == null) {
+				fragment = new SortListFragment();
+				Bundle args = new Bundle();
+				args.putInt(Const.SORTTYPE, sortType.getIndex());
+				fragment.setArguments(args);
+				transaction.add(R.id.sort_fragment_container, fragment)
+						.commit();
+			} else {
+				transaction.remove(fragment).commit();
+				fragment = null;
+			}
 		}
 
 		return super.onOptionsItemSelected(item);
 	}
 
+	private class ProductListAsyncTask extends
+			AsyncTask<String, Integer, List<Product>> {
+
+		@Override
+		protected List<Product> doInBackground(String... params) {
+			try {
+				products.clear();
+				products.addAll(productDao.getProductList(params[0]));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return products;
+		}
+
+		@Override
+		protected void onPostExecute(List<Product> result) {
+			adapter.notifyDataSetChanged();
+		}
+	}
+
 	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-		Intent intent = new Intent();
-		intent.setClass(this, ProductDetailActivity.class);
-		intent.putExtra(Const.PRODUCTID, products.get(position).getProductId());
-		startActivity(intent);
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+			if (fragment == null){
+				this.finish();
+			}
+			finishFragment();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
+	private void finishFragment() {
+		if (fragment != null) {
+			getSupportFragmentManager().beginTransaction().remove(fragment)
+					.commit();
+			fragment = null;
+		}
+	}
+
+	@Override
+	public void onSortTypeChanged(SortType sortType) {
+		this.sortType = sortType;
+		finishFragment();
 	}
 
 }

@@ -3,6 +3,9 @@ package com.ipang.wansha.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.ipang.wansha.enums.Currency;
+import com.ipang.wansha.enums.TimeUnit;
+
 public class Product implements Serializable {
 
 	private static final long serialVersionUID = 8205438106558942992L;
@@ -16,14 +19,10 @@ public class Product implements Serializable {
 	private int[] starCount;
 	private float price;
 	private Currency currency;
-	private ArrayList<Language> supportLanguage;
 	private String overview;
 	private String highlight;
-//	private ArrayList<Review> reviews;
 	private String meetingAddress;
 	private ArrayList<String> productImages;
-	private String cityName;
-	private String countryName;
 
 	public String getProductId() {
 		return productId;
@@ -57,13 +56,11 @@ public class Product implements Serializable {
 		this.timeUnit = timeUnit;
 	}
 
-	public int getStarCount(int i) {// i=0 -> 5 star ...
+	public int getStarCount(int i) {
 		return starCount[i];
 	}
 
 	public void setStarCount(int[] starCount) {
-		if (starCount.length != 5)
-			return;
 		this.starCount = starCount;
 	}
 
@@ -83,14 +80,6 @@ public class Product implements Serializable {
 		this.currency = currency;
 	}
 
-	public ArrayList<Language> getSupportLanguage() {
-		return supportLanguage;
-	}
-
-	public void setSupportLanguage(ArrayList<Language> supportLanguage) {
-		this.supportLanguage = supportLanguage;
-	}
-
 	public String getOverview() {
 		return overview;
 	}
@@ -107,14 +96,6 @@ public class Product implements Serializable {
 		this.highlight = highlight;
 	}
 
-//	public ArrayList<Review> getReviews() {
-//		return reviews;
-//	}
-//
-//	public void setReviews(ArrayList<Review> reviews) {
-//		this.reviews = reviews;
-//	}
-
 	public String getMeetingAddress() {
 		return meetingAddress;
 	}
@@ -129,22 +110,6 @@ public class Product implements Serializable {
 
 	public void setProductImages(ArrayList<String> productImages) {
 		this.productImages = productImages;
-	}
-
-	public String getCityName() {
-		return cityName;
-	}
-
-	public void setCityName(String cityName) {
-		this.cityName = cityName;
-	}
-
-	public String getCountryName() {
-		return countryName;
-	}
-
-	public void setCountryName(String countryName) {
-		this.countryName = countryName;
 	}
 
 	public int getReviewTotalRanking() {

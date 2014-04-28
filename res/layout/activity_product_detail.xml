@@ -85,34 +85,11 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/product_detail_language_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/product_detail_title"
-                    android:layout_below="@id/product_detail_location_layout"
-                    android:orientation="horizontal"
-                    android:paddingBottom="2dp" >
-
-                    <ImageView
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:layout_marginRight="7dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/language" />
-
-                    <TextView
-                        android:id="@+id/language"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/light_grey" />
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/product_detail_duration_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@id/product_detail_title"
-                    android:layout_below="@id/product_detail_language_layout"
+                    android:layout_below="@id/product_detail_location_layout"
                     android:orientation="horizontal"
                     android:paddingBottom="10dp" >
 
@@ -219,7 +196,7 @@
                 android:paddingTop="10dp"
                 android:text="@string/overview"
                 android:textColor="@color/product_detail_subtitle"
-                android:textSize="@dimen/product_detail_subtitle"
+                android:textSize="@dimen/medium_text_size"
                 android:textStyle="bold" />
 
             <View
@@ -253,7 +230,7 @@
                 android:paddingTop="10dp"
                 android:text="@string/highlight"
                 android:textColor="@color/product_detail_subtitle"
-                android:textSize="@dimen/product_detail_subtitle"
+                android:textSize="@dimen/medium_text_size"
                 android:textStyle="bold" />
 
             <View
@@ -286,7 +263,7 @@
                 android:paddingTop="10dp"
                 android:text="@string/review"
                 android:textColor="@color/product_detail_subtitle"
-                android:textSize="@dimen/product_detail_subtitle"
+                android:textSize="@dimen/medium_text_size"
                 android:textStyle="bold" />
 
             <View

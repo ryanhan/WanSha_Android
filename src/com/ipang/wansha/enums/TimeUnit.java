@@ -1,4 +1,4 @@
-package com.ipang.wansha.model;
+package com.ipang.wansha.enums;
 
 public enum TimeUnit {
 

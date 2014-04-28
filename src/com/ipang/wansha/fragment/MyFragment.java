@@ -54,8 +54,8 @@ public class MyFragment extends SherlockFragment {
 					hasLogin = false;
 					Editor editor = pref.edit();
 					editor.putBoolean(Const.HASLOGIN, false);
+					editor.remove(Const.USERID);
 					editor.remove(Const.USERNAME);
-					editor.remove(Const.TOKEN);
 					editor.commit();
 					loginUserName.setText(getResources().getString(R.string.login));
 					loginIcon.setVisibility(View.VISIBLE);
@@ -75,7 +75,7 @@ public class MyFragment extends SherlockFragment {
 	public void onResume() {
 		super.onResume();
 		if (hasLogin) {
-			loginUserName.setText("USERNAME");
+			loginUserName.setText(pref.getString(Const.USERNAME, null) + "   (点击注销)");
 			loginIcon.setVisibility(View.GONE);
 			photoPreview.setVisibility(View.VISIBLE);
 		} else {
@@ -85,14 +85,11 @@ public class MyFragment extends SherlockFragment {
 		}
 	}
 	
-	
-	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);  
 		if (requestCode == Const.LOGIN_REQUEST && resultCode == Activity.RESULT_OK) {
 			hasLogin = data.getBooleanExtra(Const.HASLOGIN, false);
-			System.out.println("MyFragment");
 		}
 	}
 }

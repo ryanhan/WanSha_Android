@@ -56,7 +56,7 @@ public class ReviewListShortAdapter extends ArrayAdapter<Review> {
 		
 		holder.reviewTitle.setText(getItem(position).getReviewTitle());
 		holder.reviewContent.setText(getItem(position).getReviewContent());
-		holder.reviewDate.setText(Utility.FormatDate(getItem(position).getReviewDate()));
+		holder.reviewDate.setText(Utility.FormatFullDate(getItem(position).getReviewDate()));
 		int ranking = getItem(position).getRanking();
 		for(int i = 0; i < ranking; i++){
 			holder.reviewStar[i].setBackgroundResource(R.drawable.star_full);

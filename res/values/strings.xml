@@ -24,13 +24,16 @@
     <string name="more_review">更多评论</string>
     <string name="confirm_booking">确认预订</string>
     <string name="date">日期</string>
+    <string name="select_date">选择日期</string>
+    <string name="first_select_date">请先选择日期</string>
+    <string name="time_not_found">当日没有出行</string>
     <string name="member">人数</string>
     <string name="price">价格</string>
     <string name="pick_up_location">接送地点</string>
-    <string name="activity_time">活动时间</string>
+    <string name="activity_time">时间</string>
     <string name="login">登录</string>
     <string name="register">注册</string>
-    <string name="register_hint">用户名/密码</string>
+    <string name="register_hint">用户名/邮箱</string>
     <string name="password_hint">登录密码</string>
     <string name="my_account">我的账户</string>
     <string name="my_status">我的动态</string>
@@ -42,5 +45,14 @@
     <string name="chinese">中文</string>
     <string name="english">英文</string>
     <string name="japanese">日文</string>
+    <string name="sort_default">默认排序</string>
+    <string name="sort_price_up">按价格从低到高</string>
+    <string name="sort_comment">按评价</string>
+    <string name="sort_popularity">按人气</string>
+    <string name="sort_time_long">时间从长到短</string>
+    <string name="sort_time_short">时间从短到长</string>
+    <string name="sort_discount">折扣产品优先</string>
+    <string name="search_title">搜索城市产品</string>
+    <string name="search_hint">请输入文字&#8230;</string>
 
 </resources>

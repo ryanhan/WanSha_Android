@@ -14,14 +14,16 @@ import com.ipang.wansha.dao.CityDao;
 import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.model.City;
 import com.ipang.wansha.utils.Const;
-import com.ipang.wansha.utils.JsonGetAsyncTask;
+import com.ipang.wansha.utils.RestUtility;
 
 public class CityDaoImpl implements CityDao {
 
-	ProductDao productDao;
+	private ProductDao productDao;
+	private RestUtility utility;
 
 	public CityDaoImpl() {
 		productDao = new ProductDaoImpl();
+		utility = new RestUtility();
 	}
 
 	@Override
@@ -37,9 +39,7 @@ public class CityDaoImpl implements CityDao {
 		List<City> cities = new ArrayList<City>();
 		URI uri = new URI(Const.SERVERNAME + "/rest/city");
 
-		JsonGetAsyncTask asyncTask = new JsonGetAsyncTask();
-		String result = asyncTask.execute(uri).get();
-		;
+		String result = utility.JsonGet(uri);
 
 		JSONObject jsonObject = new JSONObject(result);
 		try {
@@ -55,18 +55,29 @@ public class CityDaoImpl implements CityDao {
 		return cities;
 	}
 
-	private City createCity(JSONObject json) throws JSONException {
+	private City createCity(JSONObject json) {
 
 		City city = new City();
-		city.setCityId(json.getString("cityId"));
-		city.setCityName(json.getString("cityName"));
-		city.setInCountry(json.getString("inCountry"));
 		try {
-			city.setProductCount(productDao.getProductCount(json.getString("cityId")));
+			city.setCityId(json.getString("cityId"));
+			city.setCityName(json.getString("cityName"));
+			city.setInCountry(json.getString("inCountry"));
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
+		try {
+			city.setPreviewImage(json.getString("cityImage"));
+		} catch (JSONException e) {
+		}
+		try {
+			city.setProductCount(productDao.getProductCount(json
+					.getString("cityId")));
 		} catch (Exception e) {
 			e.printStackTrace();
 			city.setProductCount(0);
 		}
+
 		return city;
 	}
 

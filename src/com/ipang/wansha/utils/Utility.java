@@ -1,6 +1,8 @@
 package com.ipang.wansha.utils;
 
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.Context;
@@ -55,13 +57,28 @@ public class Utility {
 			images[i].setImageResource(R.drawable.star_empty);
 		}
 	}
-	
-	public static String FormatDate(Date date){
+
+	public static String FormatFullDate(Date date) {
 		return DateFormat.getDateInstance(DateFormat.FULL).format(date);
 	}
 	
+	public static String FormatDateTime(Date date) {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return df.format(date);
+	}
+
 	public static int dip2px(Context context, float dpValue) {
 		final float scale = context.getResources().getDisplayMetrics().density;
 		return (int) (dpValue * scale + 0.5f);
+	}
+
+	public static Date FormatString(String dateStr) throws ParseException {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return df.parse(dateStr);
+	}
+	
+	public static float sp2Pixel(Context context, int sp) {
+	    float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+	    return sp * scaledDensity;
 	}
 }

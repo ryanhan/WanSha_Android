@@ -9,7 +9,10 @@
     <color name="white">#FFFFFF</color>
     <color name="light_grey">#CFCFCF</color>
     <color name="transparent">#00000000</color>
-	<color name="star_yellow">#F7C034</color>
-	<color name="progress_bar_bg">#FEEEC2</color>
+    <color name="star_yellow">#F7C034</color>
+    <color name="progress_bar_bg">#FEEEC2</color>
     <color name="sky_blue">#1DAFEC</color>
+    <color name="light_green">#47E1BD</color>
+    <color name="transparent_background">#50000000</color>
+
 </resources>
