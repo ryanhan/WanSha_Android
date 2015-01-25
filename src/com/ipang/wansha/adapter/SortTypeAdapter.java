@@ -34,10 +34,10 @@ public class SortTypeAdapter extends ArrayAdapter<String> {
 		TextView sort = (TextView) convertView.findViewById(R.id.sort_type_text);
 		sort.setText(getItem(position));
 		if (position == sortType.getIndex()){
-			sort.setTextColor(context.getResources().getColor(R.color.main_activity_topbar));
+			sort.setTextColor(context.getResources().getColor(R.color.wansha_blue));
 		}
 		else {
-			sort.setTextColor(context.getResources().getColor(R.color.dark_gray));
+			sort.setTextColor(context.getResources().getColor(R.color.dark_grey));
 		}
 		return convertView;
 	}

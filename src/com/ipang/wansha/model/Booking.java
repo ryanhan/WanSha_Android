@@ -10,6 +10,10 @@ public class Booking {
 	private int memberNo;
 	private float totalPrice;
 	private String productImage;
+	private String productName;
+	private String city;
+	private String country;
+	private String productOverview;
 
 	public String getBookingId() {
 		return bookingId;
@@ -49,6 +53,46 @@ public class Booking {
 
 	public void setTotalPrice(float totalPrice) {
 		this.totalPrice = totalPrice;
+	}
+
+	public String getProductImage() {
+		return productImage;
+	}
+
+	public void setProductImage(String productImage) {
+		this.productImage = productImage;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getProductOverview() {
+		return productOverview;
+	}
+
+	public void setProductOverview(String productOverview) {
+		this.productOverview = productOverview;
 	}
 
 }

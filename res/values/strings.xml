@@ -3,9 +3,9 @@
 
     <string name="app_name">玩啥</string>
     <string name="action_settings">Settings</string>
-    <string name="title_section1">产品</string>
-    <string name="title_section2">特价</string>
-    <string name="title_section3">我的</string>
+    <string name="title_section1">推荐</string>
+    <string name="title_section2">目的地</string>
+    <string name="title_section3">一起</string>
     <string name="nearby">附近</string>
     <string name="from">起</string>
     <string name="action_sort">排序</string>
@@ -33,7 +33,16 @@
     <string name="activity_time">时间</string>
     <string name="login">登录</string>
     <string name="register">注册</string>
-    <string name="register_hint">用户名/邮箱</string>
+    <string name="click_to_login">点击登录</string>
+    <string name="register_username_hint">请输入有效的邮箱地址</string>
+    <string name="register_password_hint">请输入6位以上密码</string>
+    <string name="register_confirm_password_hint">请保证两次密码输入一致</string>
+    <string name="input_current_password_hint">请输入当前密码</string>
+    <string name="change_password_hint">请输入6位以上新密码</string>
+    <string name="confirm_change_password_hint">请保证两次密码输入一致</string>
+    <string name="confirm_change">确认修改</string>
+    <string name="login_username_hint">用户名/邮箱地址/手机号</string>
+    <string name="login_password_hint">密码</string>
     <string name="password_hint">登录密码</string>
     <string name="my_account">我的账户</string>
     <string name="my_status">我的动态</string>
@@ -54,5 +63,31 @@
     <string name="sort_discount">折扣产品优先</string>
     <string name="search_title">搜索城市产品</string>
     <string name="search_hint">请输入文字&#8230;</string>
-
+    <string name="person">人</string>
+    <string name="leave">出发</string>
+    <string name="drawer_open">打开侧边栏</string>
+    <string name="drawer_close">关闭侧边栏</string>
+    <string name="camera">扫一扫</string>
+    <string name="all_order">所有订单</string>
+    <string name="want_to_go">想去</string>
+    <string name="discount">优惠券</string>
+    <string name="my_message">我的消息</string>
+    <string name="setting">设置</string>
+    <string name="free">景点</string>
+    <string name="expense_descr">费用说明</string>
+    <string name="detail_sight">景点资讯</string>
+    <string name="detail_product">活动详情</string>
+    <string name="instruction_sight">温馨提示</string>
+    <string name="instruction_product">如何使用</string>
+    <string name="orderDescr">预定提醒</string>
+    <string name="show_all_country">查看全部国家</string>
+    <string name="all_city_list">所有城市列表</string>
+    <string name="user_nickname">显示昵称</string>
+    <string name="user_info">账户信息</string>
+    <string name="user_email">注册邮箱</string>
+    <string name="user_mobile">注册手机</string>
+    <string name="not_bind">未绑定</string>
+    <string name="user_change_password">修改密码</string>
+    <string name="logout">退出登录</string>
+    <string name="loading_waiting">LOADING&#8230;</string>
 </resources>

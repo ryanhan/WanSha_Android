@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/booking_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="12dp"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    android:paddingTop="12dp" >
+
+    <TextView
+        android:id="@+id/booking_product_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/booking_city_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/booking_product_name"
+        android:layout_marginBottom="3dp"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/booking_product_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/booking_city_name"
+        android:layout_marginRight="3dp"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/booking_overview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/booking_product_image"
+        android:layout_toRightOf="@id/booking_product_image"
+        android:lines="2"
+        android:text="overview"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/booking_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/booking_overview"
+		android:layout_alignLeft="@id/booking_overview"
+        android:layout_marginBottom="2dp"
+        android:text="info"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/booking_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/booking_info"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/green"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

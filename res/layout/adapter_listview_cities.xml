@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:id="@+id/city_list_image"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:id="@+id/city_list_product_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="@dimen/city_list_bottom_margin"
+            android:layout_marginLeft="@dimen/city_list_left_margin"
+            android:background="@color/wansha_blue_transparent"
+            android:paddingBottom="@dimen/city_list_textview_vertical_padding"
+            android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
+            android:paddingRight="@dimen/city_list_textview_horizontal_padding"
+            android:paddingTop="@dimen/city_list_textview_vertical_padding"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/city_list_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/city_list_product_number"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="@dimen/city_list_bottom_margin"
+            android:layout_marginLeft="@dimen/city_list_left_margin"
+            android:background="@color/white_transparent"
+            android:paddingBottom="@dimen/city_list_textview_vertical_padding"
+            android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
+            android:paddingRight="@dimen/city_list_textview_horizontal_padding"
+            android:paddingTop="@dimen/city_list_textview_vertical_padding" 
+            android:textSize="16sp"/>
+    </RelativeLayout>
+
+</FrameLayout>

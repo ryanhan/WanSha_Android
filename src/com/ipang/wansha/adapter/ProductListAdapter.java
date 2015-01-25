@@ -11,6 +11,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ipang.wansha.R;
@@ -25,8 +26,7 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 
 	private Context context;
 	private LayoutInflater mInflater;
-	private ImageLoader imageLoader;
-	private DisplayImageOptions options;
+	private int height;
 
 	public final class ViewHolder {
 		public ImageView productPreviewImage;
@@ -36,13 +36,11 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 		public ImageView[] rankingImage;
 	}
 
-	public ProductListAdapter(Context context, List<Product> objects,
-			ImageLoader imageLoader) {
+	public ProductListAdapter(Context context, List<Product> objects, int height) {
 		super(context, 0, objects);
 		this.context = context;
+		this.height = height;
 		mInflater = LayoutInflater.from(context);
-		this.imageLoader = imageLoader;
-		options = Const.options;
 	}
 
 	@Override
@@ -56,6 +54,11 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 
 			holder.productPreviewImage = (ImageView) convertView
 					.findViewById(R.id.image_product_preview);
+
+			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+					LinearLayout.LayoutParams.MATCH_PARENT, height);
+			holder.productPreviewImage.setLayoutParams(param);
+			
 			holder.productNameTextView = (TextView) convertView
 					.findViewById(R.id.product_name_text);
 			holder.rankingCountTextView = (TextView) convertView
@@ -80,21 +83,33 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 		}
 
 		final ViewHolder viewHolder = holder;
+
 		viewHolder.productNameTextView.setText(getItem(position)
 				.getProductName());
-		viewHolder.rankingCountTextView.setText("("
-				+ getItem(position).getReviewCount() + ")");
-		viewHolder.fromPriceTextView.setText(getItem(position).getCurrency()
-				.getSymbol() + " " + getItem(position).getPrice());
+		viewHolder.rankingCountTextView.setText("没有评分");
+
+		View from = convertView.findViewById(R.id.from);
+		if (getItem(position).getPrice() == 0) {
+			from.setVisibility(View.INVISIBLE);
+			viewHolder.fromPriceTextView.setText(context.getResources()
+					.getString(R.string.free));
+
+		} else {
+			from.setVisibility(View.VISIBLE);
+			viewHolder.fromPriceTextView.setText(getItem(position)
+					.getCurrency().getSymbol()
+					+ " "
+					+ getItem(position).getPrice());
+		}
 
 		if (getItem(position).getProductImages() == null
 				|| getItem(position).getProductImages().size() == 0) {
-			viewHolder.productPreviewImage.setImageResource(R.drawable.missing);
+			viewHolder.productPreviewImage.setImageResource(R.drawable.loading);
 		} else {
 
-			imageLoader.displayImage(Const.SERVERNAME + "/rest/image/"
-					+ getItem(position).getProductImages().get(0),
-					viewHolder.productPreviewImage, options,
+			ImageLoader.getInstance().displayImage(
+					getItem(position).getProductImages().get(0),
+					viewHolder.productPreviewImage, Const.options,
 					new SimpleImageLoadingListener() {
 						@Override
 						public void onLoadingComplete(String imageUri,
@@ -108,12 +123,13 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 
 		}
 
-		float ranking = (float) getItem(position).getReviewTotalRanking()
-				/ getItem(position).getReviewCount();
+		float ranking = 0;
+
+		// (float) getItem(position).getReviewTotalRanking()
+		// / getItem(position).getReviewCount();
 
 		Utility.drawRankingStar(viewHolder.rankingImage, ranking);
 
 		return convertView;
 	}
-
 }

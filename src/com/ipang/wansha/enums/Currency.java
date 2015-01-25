@@ -28,7 +28,7 @@ public enum Currency {
 
 	public static Currency fromString(String text) {
 		if (text != null) {
-			if (text.toLowerCase().equals("chineseyuan")) {
+			if (text.toLowerCase().equals("cny")) {
 				return Currency.CHINESEYUAN;
 			} else if (text.toLowerCase().equals("pound")) {
 				return Currency.POUND;

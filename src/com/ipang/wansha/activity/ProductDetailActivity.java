@@ -1,63 +1,54 @@
 package com.ipang.wansha.activity;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 
+import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductDetailImagePagerAdapter;
-import com.ipang.wansha.adapter.ReviewListShortAdapter;
 import com.ipang.wansha.dao.ProductDao;
-import com.ipang.wansha.dao.ReviewDao;
 import com.ipang.wansha.dao.impl.ProductDaoImpl;
-import com.ipang.wansha.dao.impl.ReviewDaoImpl;
 import com.ipang.wansha.model.City;
 import com.ipang.wansha.model.Product;
-import com.ipang.wansha.model.Review;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class ProductDetailActivity extends SherlockActivity {
+public class ProductDetailActivity extends Activity {
 
 	private ActionBar actionBar;
 	private Product product;
 	private City city;
 	private ImageView[] dots;
-	private ReviewListShortAdapter adapter;
 	private ProductDao productDao;
-	private ReviewDao reviewDao;
+	// private ReviewDao reviewDao;
 	private float avgScore;
-	private SharedPreferences pref;
-	private boolean hasLogin;
-	private List<Review> reviews;
-	private ListView reviewList;
-	private String productId;
+	// private SharedPreferences pref;
+	// private boolean hasLogin;
+	private int productId;
 	private String productName;
+	private String cityName;
+	private String countryName;
 	private ScrollView scrollView;
-	private ImageLoader imageLoader;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -70,78 +61,93 @@ public class ProductDetailActivity extends SherlockActivity {
 
 	private void getBundle() {
 		Bundle bundle = getIntent().getExtras();
-		productId = bundle.getString(Const.PRODUCTID);
+		productId = bundle.getInt(Const.PRODUCTID);
 		productName = bundle.getString(Const.PRODUCTNAME);
-		productDao = new ProductDaoImpl();
-		pref = getSharedPreferences(Const.USERINFO, Context.MODE_PRIVATE);
-		hasLogin = pref.getBoolean(Const.HASLOGIN, false);
-		imageLoader = ImageLoader.getInstance();
+		cityName = bundle.getString(Const.CITYNAME);
+		countryName = bundle.getString(Const.COUNTRYNAME);
+		// pref = getSharedPreferences(Const.USERINFO, Context.MODE_PRIVATE);
+		// hasLogin = pref.getBoolean(Const.HASLOGIN, false);
 	}
 
 	private void getProduct() {
+		productDao = new ProductDaoImpl();
 		ProductAsyncTask productAsyncTask = new ProductAsyncTask();
 		productAsyncTask.execute(productId);
 	}
 
-	private void getCity() {
-		CityAsyncTask cityAsyncTask = new CityAsyncTask();
-		cityAsyncTask.execute(productId);
-	}
-
 	private void setProductView() {
 		scrollView = (ScrollView) findViewById(R.id.product_detail_scroll);
+		if (product == null) {
+			ProductAsyncTask productAsyncTask = new ProductAsyncTask();
+			productAsyncTask.execute(productId);
+		}
 		initViewPager(product.getProductImages());
 		setMainInfo();
-		setOverviewAndHighlight();
+		setDetailContent();
 		setReviews();
 		Button bookButton = (Button) findViewById(R.id.book_now);
 		bookButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				if (hasLogin) {
-					Intent intent = new Intent();
-					intent.setClass(ProductDetailActivity.this,
-							BookingActivity.class);
-					intent.putExtra(Const.PRODUCTID, product.getProductId());
-					intent.putExtra(Const.CURRENCY, product.getCurrency()
-							.getIndex());
-					startActivity(intent);
-				} else {
-					Intent intent = new Intent();
-					intent.setClass(ProductDetailActivity.this,
-							LoginActivity.class);
-					startActivityForResult(intent, Const.LOGIN_REQUEST);
-				}
+				// if (hasLogin) {
+				// Intent intent = new Intent();
+				// intent.setClass(ProductDetailActivity.this,
+				// BookingActivity.class);
+				// intent.putExtra(Const.PRODUCTID, product.getProductId());
+				// intent.putExtra(Const.CURRENCY, product.getCurrency()
+				// .getIndex());
+				// startActivity(intent);
+				// } else {
+				// Intent intent = new Intent();
+				// intent.setClass(ProductDetailActivity.this,
+				// LoginActivity.class);
+				// startActivityForResult(intent, Const.LOGIN_REQUEST);
+				// overridePendingTransition(R.anim.bottom_up, R.anim.fade_out);
+				// }
 
 			}
 		});
 	}
 
 	private void setActionBar() {
-		actionBar = this.getSupportActionBar();
-		actionBar.setTitle(productName);
+		actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setDisplayShowHomeEnabled(false);
+		actionBar.setDisplayShowTitleEnabled(true);
+		actionBar.setTitle(productName);
+		actionBar.setDisplayUseLogoEnabled(false);
 	}
 
 	private void initViewPager(final List<String> productImages) {
+		
+		FrameLayout layout = (FrameLayout) findViewById(R.id.product_detail_image_layout);
+		
+		DisplayMetrics metric = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metric);
+		int height = (int) ((metric.widthPixels - 2 * getResources().getDimension(R.dimen.activity_horizontal_margin)) * 3 / 5);
+		
+		LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+		layout.setLayoutParams(param);
 
 		ViewPager viewPager = (ViewPager) findViewById(R.id.product_detail_viewpager);
 		setDotBar(productImages.size());
 
+		
 		viewPager.setAdapter(new ProductDetailImagePagerAdapter(this,
-				productImages, imageLoader));
+				productImages));
 		viewPager
 				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						for (int i = 0; i < productImages.size(); i++) {
-							dots[i].setBackgroundResource(i == position ? R.drawable.dot_selected
+							dots[i].setBackgroundResource(i == (position % productImages
+									.size()) ? R.drawable.dot_selected
 									: R.drawable.dot);
 						}
 					}
 				});
-		viewPager.setCurrentItem(0);
+		viewPager.setCurrentItem(productImages.size() * 100);
 
 	}
 
@@ -167,8 +173,8 @@ public class ProductDetailActivity extends SherlockActivity {
 	private void setMainInfo() {
 		TextView title = (TextView) findViewById(R.id.product_detail_title);
 		TextView location = (TextView) findViewById(R.id.location);
-		TextView duration = (TextView) findViewById(R.id.duration);
 		TextView rankcount = (TextView) findViewById(R.id.product_detail_ranking_count);
+		TextView from = (TextView) findViewById(R.id.product_detail_from);
 		TextView price = (TextView) findViewById(R.id.product_detail_from_price);
 
 		ImageView[] rankImages = new ImageView[5];
@@ -179,28 +185,63 @@ public class ProductDetailActivity extends SherlockActivity {
 		rankImages[4] = (ImageView) findViewById(R.id.product_detail_rank5);
 
 		title.setText(product.getProductName());
-		location.setText(city.getCityName() + ", " + city.getInCountry());
+		location.setText(cityName + ", " + countryName);
 
-		int resID = getResources().getIdentifier(
-				product.getTimeUnit().toString(), "string", Const.PACKAGENAME);
-		String timeUnit = getResources().getString(resID);
-		duration.setText(product.getDuration() + timeUnit);
+		// int resID = getResources().getIdentifier(
+		// product.getTimeUnit().toString(), "string", Const.PACKAGENAME);
+		// String timeUnit = getResources().getString(resID);
+		// duration.setText(product.getDuration() + timeUnit);
 		Utility.drawRankingStar(rankImages, avgScore);
-		rankcount.setText("(" + product.getReviewCount() + ")");
-		price.setText(product.getCurrency().getSymbol() + " "
-				+ new DecimalFormat(".00").format(product.getPrice()));
+		rankcount.setText("(0)");
+
+		if (product.getPrice() == 0) {
+			from.setVisibility(View.INVISIBLE);
+			price.setText(getResources().getString(R.string.free));
+		} else {
+			price.setText(product.getCurrency().getSymbol() + " "
+					+ new DecimalFormat(".00").format(product.getPrice()));
+		}
 	}
 
-	private void setOverviewAndHighlight() {
-		TextView overview = (TextView) findViewById(R.id.product_detail_overview);
-		TextView highlight = (TextView) findViewById(R.id.product_detail_highlight);
-		overview.setText(product.getOverview());
-		highlight.setText(product.getHighlight());
+	private void setDetailContent() {
+
+		TextView detailTitle = (TextView) findViewById(R.id.product_detail_detail_title);
+		TextView detailContent = (TextView) findViewById(R.id.product_detail_detail);
+		TextView expenseContent = (TextView) findViewById(R.id.product_detail_expenseDescr);
+		TextView instructionTitle = (TextView) findViewById(R.id.product_detail_instruction_title);
+		TextView instructionContent = (TextView) findViewById(R.id.product_detail_instruction);
+		LinearLayout orderLayout = (LinearLayout) findViewById(R.id.product_detail_orderDescr_layout);
+		TextView orderContent = (TextView) findViewById(R.id.product_detail_orderDescr);
+
+		if (product.getDetail() != null)
+			detailContent.setText(product.getDetail());
+
+		if (product.getExpenseDescr() != null)
+			expenseContent.setText(product.getExpenseDescr());
+
+		if (product.getInstruction() != null)
+			instructionContent.setText(product.getInstruction());
+
+		if (product.getProductType() == 1) {
+			detailTitle.setText(getResources().getString(
+					R.string.detail_product));
+			instructionTitle.setText(getResources().getString(
+					R.string.instruction_product));
+			if (product.getOrderDescr() != null)
+				orderContent.setText(product.getOrderDescr());
+		} else if (product.getProductType() == 2) {
+			detailTitle
+					.setText(getResources().getString(R.string.detail_sight));
+			instructionTitle.setText(getResources().getString(
+					R.string.instruction_sight));
+			orderLayout.setVisibility(View.GONE);
+		}
+
 	}
 
 	private void setReviews() {
 		setRankingDistribution();
-		setReviewList();
+		// setReviewList();
 	}
 
 	private void setRankingDistribution() {
@@ -228,52 +269,31 @@ public class ProductDetailActivity extends SherlockActivity {
 		starCounts[3] = (TextView) findViewById(R.id.two_star_count);
 		starCounts[4] = (TextView) findViewById(R.id.one_star_count);
 
-		reviewRankCount.setText("(" + product.getReviewCount() + ")");
+		reviewRankCount.setText("(0)");
 		Utility.drawRankingStar(reviewRankImages, avgScore);
 
 		rankingScore
 				.setText(new DecimalFormat(".00").format(avgScore) + " / 5");
 
 		for (int i = 0; i < 5; i++) {
-			bars[i].setMax(product.getReviewCount());
-			bars[i].setProgress(product.getStarCount(i));
-			if (product.getStarCount(i) > 0)
-				bars[i].setProgressDrawable(getResources().getDrawable(
-						R.drawable.progress_bg));
-			else
-				bars[i].setProgressDrawable(getResources().getDrawable(
-						R.drawable.progress_empty_bg));
+			bars[i].setMax(0);
+			bars[i].setProgress(0);
+			// if (product.getStarCount(i) > 0)
+			// bars[i].setProgressDrawable(getResources().getDrawable(
+			// R.drawable.progress_bg));
+			// else
+			bars[i].setProgressDrawable(getResources().getDrawable(
+					R.drawable.progress_empty_bg));
 
-			starCounts[i].setText(product.getStarCount(i) + "");
+			starCounts[i].setText("0");
 		}
 
-	}
-
-	private void setReviewList() {
-		reviewList = (ListView) findViewById(R.id.product_detail_review_list);
-		reviewDao = new ReviewDaoImpl();
-		reviews = new ArrayList<Review>();
-		adapter = new ReviewListShortAdapter(this, reviews);
-		reviewList.setAdapter(adapter);
-		Utility.setListViewHeightBasedOnChildren(reviewList);
-		ReviewListAsyncTask reviewAsyncTask = new ReviewListAsyncTask();
-		reviewAsyncTask.execute(product.getProductId());
-
-		TextView moreReview = (TextView) findViewById(R.id.more_review);
-		moreReview.setClickable(true);
-		moreReview.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-
-			}
-		});
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		getSupportMenuInflater().inflate(R.menu.activity_product_detail, menu);
+		getMenuInflater().inflate(R.menu.activity_product_detail, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -287,41 +307,20 @@ public class ProductDetailActivity extends SherlockActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == Const.LOGIN_REQUEST
-				&& resultCode == Activity.RESULT_OK) {
-			hasLogin = data.getBooleanExtra(Const.HASLOGIN, false);
-		}
-	}
+	// @Override
+	// public void onActivityResult(int requestCode, int resultCode, Intent
+	// data) {
+	// super.onActivityResult(requestCode, resultCode, data);
+	// if (requestCode == Const.LOGIN_REQUEST
+	// && resultCode == Activity.RESULT_OK) {
+	// hasLogin = data.getBooleanExtra(Const.HASLOGIN, false);
+	// }
+	// }
 
-	private class ReviewListAsyncTask extends
-			AsyncTask<String, Integer, List<Review>> {
-
-		@Override
-		protected List<Review> doInBackground(String... params) {
-			try {
-				reviews.clear();
-				reviews.addAll(reviewDao.getReviewList(params[0]));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return reviews;
-		}
+	private class ProductAsyncTask extends AsyncTask<Integer, Integer, Product> {
 
 		@Override
-		protected void onPostExecute(List<Review> result) {
-			adapter.notifyDataSetChanged();
-			Utility.setListViewHeightBasedOnChildren(reviewList);
-			scrollView.scrollTo(0, 0);
-		}
-	}
-
-	private class ProductAsyncTask extends AsyncTask<String, Integer, Product> {
-
-		@Override
-		protected Product doInBackground(String... params) {
+		protected Product doInBackground(Integer... params) {
 			try {
 				product = productDao.getProductDetail(params[0]);
 			} catch (Exception e) {
@@ -332,31 +331,8 @@ public class ProductDetailActivity extends SherlockActivity {
 
 		@Override
 		protected void onPostExecute(Product result) {
-			if (product.getReviewCount() != 0) {
-				avgScore = (float) product.getReviewTotalRanking()
-						/ product.getReviewCount();
-			} else
-				avgScore = 0;
-			getCity();
-		}
-	}
-
-	private class CityAsyncTask extends AsyncTask<String, Integer, City> {
-
-		@Override
-		protected City doInBackground(String... params) {
-			try {
-				city = productDao.getCityOfProduct(params[0]);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return city;
-		}
-
-		@Override
-		protected void onPostExecute(City result) {
+			avgScore = 0;
 			setProductView();
 		}
 	}
-
 }

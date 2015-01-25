@@ -2,17 +2,26 @@
 <resources>
 
     <color name="product_detail_subtitle">#5E5E5E</color>
-    <color name="main_activity_topbar">#4BBDCC</color>
-    <color name="activity_background">#ECEDE8</color>
+    <color name="wansha_blue">#4BBDCC</color>
+    <color name="activity_background">#f5f5f5</color>
     <color name="green">#00B289</color>
     <color name="image_viewPager_bar">#7F000000</color>
+    <color name="red">#FF0000</color>
     <color name="white">#FFFFFF</color>
+    <color name="white_transparent">#AFFFFFFF</color>
+    <color name="wansha_blue_transparent">#AF4BBDCC</color>
+    <color name="black">#000000</color>
     <color name="light_grey">#CFCFCF</color>
+    <color name="dark_grey">#505050</color>
     <color name="transparent">#00000000</color>
     <color name="star_yellow">#F7C034</color>
     <color name="progress_bar_bg">#FEEEC2</color>
     <color name="sky_blue">#1DAFEC</color>
     <color name="light_green">#47E1BD</color>
     <color name="transparent_background">#50000000</color>
+    <color name="listview_background">#D5F6FA</color>
+    <color name="tab_widget_stated">#CFCFCF</color>
+    <color name="tab_widget_unstated">#FFFFFF</color>
+    <color name="drawer_list_text">#7E7E7E</color>
 
 </resources>

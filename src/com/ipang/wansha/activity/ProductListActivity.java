@@ -3,20 +3,21 @@ package com.ipang.wansha.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductListAdapter;
 import com.ipang.wansha.dao.ProductDao;
@@ -26,13 +27,13 @@ import com.ipang.wansha.fragment.SortListFragment;
 import com.ipang.wansha.fragment.SortListFragment.OnSortTypeChangedListener;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class ProductListActivity extends SherlockFragmentActivity implements
+public class ProductListActivity extends FragmentActivity implements
 		OnSortTypeChangedListener {
 
-	private String cityId;
+	private int cityId;
 	private String cityName;
+	private String countryName;
 	private ActionBar actionBar;
 	private ProductDao productDao;
 	private ProductListAdapter adapter;
@@ -40,7 +41,6 @@ public class ProductListActivity extends SherlockFragmentActivity implements
 	private ListView productListView;
 	private SortListFragment fragment;
 	private SortType sortType;
-	private ImageLoader imageLoader;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,22 +53,31 @@ public class ProductListActivity extends SherlockFragmentActivity implements
 
 	private void getBundle() {
 		Bundle bundle = getIntent().getExtras();
-		cityId = bundle.getString(Const.CITYID);
+		cityId = bundle.getInt(Const.CITYID);
 		cityName = bundle.getString(Const.CITYNAME);
+		countryName = bundle.getString(Const.COUNTRYNAME);
 		sortType = SortType.DEFAULT;
-		imageLoader = ImageLoader.getInstance();
 	}
 
 	private void setActionBar() {
-		actionBar = this.getSupportActionBar();
-		actionBar.setTitle(cityName);
+		actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setDisplayShowHomeEnabled(false);
+		actionBar.setDisplayShowTitleEnabled(true);
+		actionBar.setTitle(cityName);
+		actionBar.setDisplayUseLogoEnabled(false);
 	}
 
 	private void setListView() {
 		productDao = new ProductDaoImpl();
 		products = new ArrayList<Product>();
-		adapter = new ProductListAdapter(this, products, imageLoader);
+		
+		DisplayMetrics metric = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metric);
+		
+		int height = (int) ((metric.widthPixels - 2 * getResources().getDimension(R.dimen.activity_horizontal_margin)) * 3 / 5);
+		
+		adapter = new ProductListAdapter(this, products, height);
 		productListView = (ListView) findViewById(R.id.product_list_view);
 		productListView.setAdapter(adapter);
 		productListView.setOnItemClickListener(new OnItemClickListener() {
@@ -83,6 +92,8 @@ public class ProductListActivity extends SherlockFragmentActivity implements
 						.getProductId());
 				intent.putExtra(Const.PRODUCTNAME, products.get(position)
 						.getProductName());
+				intent.putExtra(Const.CITYNAME, cityName);
+				intent.putExtra(Const.COUNTRYNAME, countryName);
 				startActivity(intent);
 			}
 		});
@@ -92,8 +103,7 @@ public class ProductListActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
-		getSupportMenuInflater().inflate(R.menu.activity_product_list, menu);
+		getMenuInflater().inflate(R.menu.activity_product_list, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -101,7 +111,7 @@ public class ProductListActivity extends SherlockFragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			ProductListActivity.this.finish();
+			this.finish();
 			break;
 		case R.id.action_sort:
 			FragmentTransaction transaction = getSupportFragmentManager()
@@ -123,10 +133,10 @@ public class ProductListActivity extends SherlockFragmentActivity implements
 	}
 
 	private class ProductListAsyncTask extends
-			AsyncTask<String, Integer, List<Product>> {
+			AsyncTask<Integer, Integer, List<Product>> {
 
 		@Override
-		protected List<Product> doInBackground(String... params) {
+		protected List<Product> doInBackground(Integer... params) {
 			try {
 				products.clear();
 				products.addAll(productDao.getProductList(params[0]));
@@ -146,7 +156,7 @@ public class ProductListActivity extends SherlockFragmentActivity implements
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-			if (fragment == null){
+			if (fragment == null) {
 				this.finish();
 			}
 			finishFragment();
@@ -163,10 +173,11 @@ public class ProductListActivity extends SherlockFragmentActivity implements
 		}
 	}
 
+
 	@Override
 	public void onSortTypeChanged(SortType sortType) {
 		this.sortType = sortType;
 		finishFragment();
 	}
-
+	
 }

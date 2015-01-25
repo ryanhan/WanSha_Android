@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:divider="#00000000"
             android:dividerHeight="@dimen/listview_gap_between_image_item" />
+      
     </LinearLayout>
 
 </FrameLayout>

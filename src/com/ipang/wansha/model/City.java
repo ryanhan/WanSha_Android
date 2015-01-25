@@ -3,16 +3,16 @@ package com.ipang.wansha.model;
 
 public class City {
 
-	private String cityId;
+	private int cityId;
 	private String cityName;
 	private String inCountry;
 	private int productCount;
-	private String previewImage;
+	private String cityImage;
 	
-	public String getCityId() {
+	public int getCityId() {
 		return cityId;
 	}
-	public void setCityId(String cityId) {
+	public void setCityId(int cityId) {
 		this.cityId = cityId;
 	}
 	public String getCityName() {
@@ -33,11 +33,11 @@ public class City {
 	public void setProductCount(int productCount) {
 		this.productCount = productCount;
 	}
-	public String getPreviewImage() {
-		return previewImage;
+	public String getCityImage() {
+		return cityImage;
 	}
-	public void setPreviewImage(String previewImage) {
-		this.previewImage = previewImage;
+	public void setCityImage(String cityImage) {
+		this.cityImage = cityImage;
 	}
 	
 	

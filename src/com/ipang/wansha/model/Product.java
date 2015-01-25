@@ -1,34 +1,33 @@
 package com.ipang.wansha.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 
 import com.ipang.wansha.enums.Currency;
-import com.ipang.wansha.enums.TimeUnit;
 
 public class Product implements Serializable {
 
 	private static final long serialVersionUID = 8205438106558942992L;
-	
-	private String productId;
+
+	private int productId;
 	private String productName;
-	private float duration;
-	private TimeUnit timeUnit;
+	private int productType;
 	private int reviewTotalRanking;
 	private int reviewCount;
 	private int[] starCount;
 	private float price;
 	private Currency currency;
-	private String overview;
-	private String highlight;
-	private String meetingAddress;
-	private ArrayList<String> productImages;
+	private String detail;
+	private String expenseDescr;
+	private String instruction;
+	private String orderDescr;
+	private List<String> productImages;
 
-	public String getProductId() {
+	public int getProductId() {
 		return productId;
 	}
 
-	public void setProductId(String productId) {
+	public void setProductId(int productId) {
 		this.productId = productId;
 	}
 
@@ -40,20 +39,12 @@ public class Product implements Serializable {
 		this.productName = productName;
 	}
 
-	public float getDuration() {
-		return duration;
+	public int getProductType() {
+		return productType;
 	}
 
-	public void setDuration(float duration) {
-		this.duration = duration;
-	}
-
-	public TimeUnit getTimeUnit() {
-		return timeUnit;
-	}
-
-	public void setTimeUnit(TimeUnit timeUnit) {
-		this.timeUnit = timeUnit;
+	public void setProductType(int productType) {
+		this.productType = productType;
 	}
 
 	public int getStarCount(int i) {
@@ -80,35 +71,11 @@ public class Product implements Serializable {
 		this.currency = currency;
 	}
 
-	public String getOverview() {
-		return overview;
-	}
-
-	public void setOverview(String overview) {
-		this.overview = overview;
-	}
-
-	public String getHighlight() {
-		return highlight;
-	}
-
-	public void setHighlight(String highlight) {
-		this.highlight = highlight;
-	}
-
-	public String getMeetingAddress() {
-		return meetingAddress;
-	}
-
-	public void setMeetingAddress(String meetingAddress) {
-		this.meetingAddress = meetingAddress;
-	}
-
-	public ArrayList<String> getProductImages() {
+	public List<String> getProductImages() {
 		return productImages;
 	}
 
-	public void setProductImages(ArrayList<String> productImages) {
+	public void setProductImages(List<String> productImages) {
 		this.productImages = productImages;
 	}
 
@@ -126,6 +93,38 @@ public class Product implements Serializable {
 
 	public void setReviewCount(int reviewCount) {
 		this.reviewCount = reviewCount;
+	}
+
+	public String getDetail() {
+		return detail;
+	}
+
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+
+	public String getExpenseDescr() {
+		return expenseDescr;
+	}
+
+	public void setExpenseDescr(String expenseDescr) {
+		this.expenseDescr = expenseDescr;
+	}
+
+	public String getInstruction() {
+		return instruction;
+	}
+
+	public void setInstruction(String instruction) {
+		this.instruction = instruction;
+	}
+
+	public String getOrderDescr() {
+		return orderDescr;
+	}
+
+	public void setOrderDescr(String orderDescr) {
+		this.orderDescr = orderDescr;
 	}
 
 }

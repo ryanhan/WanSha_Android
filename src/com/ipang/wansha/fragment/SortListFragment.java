@@ -2,6 +2,7 @@ package com.ipang.wansha.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -10,15 +11,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.SortTypeAdapter;
 import com.ipang.wansha.enums.SortType;
 import com.ipang.wansha.utils.Const;
 
-public class SortListFragment extends SherlockFragment {
+public class SortListFragment extends Fragment {
 
 	public interface OnSortTypeChangedListener {
 		public void onSortTypeChanged(SortType sortType);
@@ -62,7 +61,7 @@ public class SortListFragment extends SherlockFragment {
 				getString(R.string.sort_discount) };
 
 		SortTypeAdapter sortAdapter = new SortTypeAdapter(
-				this.getSherlockActivity(), sortTypeList, sortType);
+				this.getActivity(), sortTypeList, sortType);
 		sortList.setAdapter(sortAdapter);
 		sortList.setOnItemClickListener(new OnItemClickListener() {
 

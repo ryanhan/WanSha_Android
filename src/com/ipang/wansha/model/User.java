@@ -3,17 +3,18 @@ package com.ipang.wansha.model;
 
 public class User {
 	
-	private String userId;
+	private int userId;
 	private String userName;
 	private String password;
-	private String userToken;
 	private String email;
+	private String mobile;
+	
 
-	public String getUserId() {
+	public int getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(int userId) {
 		this.userId = userId;
 	}
 
@@ -33,20 +34,20 @@ public class User {
 		this.password = password;
 	}
 
-	public String getUserToken() {
-		return userToken;
-	}
-
-	public void setUserToken(String userToken) {
-		this.userToken = userToken;
-	}
-
 	public String getEmail() {
 		return email;
 	}
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 
 }

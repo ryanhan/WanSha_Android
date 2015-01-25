@@ -1,19 +1,19 @@
 package com.ipang.wansha.dao;
 
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.net.MalformedURLException;
 
-import com.ipang.wansha.model.Booking;
 import com.ipang.wansha.model.User;
 
 public interface UserDao {
 
-	public boolean register(String userName) throws URISyntaxException, InterruptedException, ExecutionException;
+	public boolean register(String userName, String password)
+			throws MalformedURLException;
 
-	public User getUserInfo(String userName) throws URISyntaxException, InterruptedException, ExecutionException;
+	public User login(String userName, String password)
+			throws MalformedURLException;
 
-	public List<Booking> getBookingOfUser(String userId);
+	public User isAlive() throws MalformedURLException;
 
+	public boolean changePassword(String oldPassword, String newPassword) throws MalformedURLException;
 	
 }

@@ -9,20 +9,21 @@
         android:id="@+id/product_detail_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1" >
 
         <!-- 最外层linear layout -->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical" >
 
             <!-- 滚动图片 -->
 
             <FrameLayout
+                android:id="@+id/product_detail_image_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/image_height" >
+                android:layout_height="wrap_content" >
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/product_detail_viewpager"
@@ -67,8 +68,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@id/product_detail_title"
                     android:layout_below="@id/product_detail_title"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingBottom="2dp" >
+                    android:paddingBottom="10dp" >
 
                     <ImageView
                         android:layout_width="15dp"
@@ -84,29 +86,6 @@
                         android:textColor="@color/light_grey" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/product_detail_duration_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/product_detail_title"
-                    android:layout_below="@id/product_detail_location_layout"
-                    android:orientation="horizontal"
-                    android:paddingBottom="10dp" >
-
-                    <ImageView
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:layout_marginRight="7dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/duration" />
-
-                    <TextView
-                        android:id="@+id/duration"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/light_grey" />
-                </LinearLayout>
-
                 <!-- 星级 -->
 
                 <LinearLayout
@@ -114,7 +93,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@id/product_detail_title"
-                    android:layout_below="@id/product_detail_duration_layout"
+                    android:layout_below="@id/product_detail_location_layout"
                     android:orientation="horizontal" >
 
                     <ImageView
@@ -185,74 +164,183 @@
                 android:layout_height="2px"
                 android:background="?android:attr/listDivider" />
 
-            <!-- 产品介绍标题 -->
-
-            <TextView
-                android:id="@+id/product_detail_overview_title"
+            <LinearLayout
+                android:id="@+id/product_detail_detail_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
-                android:paddingLeft="@dimen/product_detail_horizontal_margin"
-                android:paddingTop="10dp"
-                android:text="@string/overview"
-                android:textColor="@color/product_detail_subtitle"
-                android:textSize="@dimen/medium_text_size"
-                android:textStyle="bold" />
+                android:orientation="vertical" >
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="2px"
-                android:background="?android:attr/listDivider" />
+                <!-- 产品资讯标题 -->
 
-            <!-- 产品介绍内容 -->
+                <TextView
+                    android:id="@+id/product_detail_detail_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="@dimen/product_detail_horizontal_margin"
+                    android:paddingTop="10dp"
+                    android:textColor="@color/product_detail_subtitle"
+                    android:textSize="@dimen/medium_text_size"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/product_detail_overview"
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:background="?android:attr/listDivider" />
+
+                <!-- 产品资讯内容 -->
+
+                <TextView
+                    android:id="@+id/product_detail_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:lineSpacingExtra="@dimen/product_detail_line_space"
+                    android:paddingBottom="@dimen/product_detail_vertical_margin"
+                    android:paddingLeft="@dimen/product_detail_horizontal_margin"
+                    android:paddingRight="@dimen/product_detail_horizontal_margin"
+                    android:paddingTop="@dimen/product_detail_vertical_margin"
+                    android:textSize="@dimen/small_text_size" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:background="?android:attr/listDivider" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/product_detail_expenseDescr_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:paddingBottom="@dimen/product_detail_vertical_margin"
-                android:paddingLeft="@dimen/product_detail_horizontal_margin"
-                android:paddingRight="@dimen/product_detail_horizontal_margin"
-                android:paddingTop="@dimen/product_detail_vertical_margin" />
+                android:orientation="vertical" >
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="2px"
-                android:background="?android:attr/listDivider" />
-            <!-- 亮点标题 -->
+                <!-- 费用说明标题 -->
 
-            <TextView
+                <TextView
+                    android:id="@+id/product_detail_expenseDescr_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="@dimen/product_detail_horizontal_margin"
+                    android:paddingTop="10dp"
+                    android:text="@string/expense_descr"
+                    android:textColor="@color/product_detail_subtitle"
+                    android:textSize="@dimen/medium_text_size"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:background="?android:attr/listDivider" />
+
+                <!-- 费用说明内容 -->
+
+                <TextView
+                    android:id="@+id/product_detail_expenseDescr"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:lineSpacingExtra="@dimen/product_detail_line_space"
+                    android:paddingBottom="@dimen/product_detail_vertical_margin"
+                    android:paddingLeft="@dimen/product_detail_horizontal_margin"
+                    android:paddingRight="@dimen/product_detail_horizontal_margin"
+                    android:paddingTop="@dimen/product_detail_vertical_margin"
+                    android:textSize="@dimen/small_text_size" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:background="?android:attr/listDivider" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/product_detail_instruction_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
-                android:paddingLeft="@dimen/product_detail_horizontal_margin"
-                android:paddingTop="10dp"
-                android:text="@string/highlight"
-                android:textColor="@color/product_detail_subtitle"
-                android:textSize="@dimen/medium_text_size"
-                android:textStyle="bold" />
+                android:orientation="vertical" >
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="2px"
-                android:background="?android:attr/listDivider" />
-            <!-- 亮点内容 -->
+                <!-- 提示标题 -->
 
-            <TextView
-                android:id="@+id/product_detail_highlight"
+                <TextView
+                    android:id="@+id/product_detail_instruction_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="@dimen/product_detail_horizontal_margin"
+                    android:paddingTop="10dp"
+                    android:textColor="@color/product_detail_subtitle"
+                    android:textSize="@dimen/medium_text_size"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:background="?android:attr/listDivider" />
+
+                <!-- 提示内容 -->
+
+                <TextView
+                    android:id="@+id/product_detail_instruction"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:lineSpacingExtra="@dimen/product_detail_line_space"
+                    android:paddingBottom="@dimen/product_detail_vertical_margin"
+                    android:paddingLeft="@dimen/product_detail_horizontal_margin"
+                    android:paddingRight="@dimen/product_detail_horizontal_margin"
+                    android:paddingTop="@dimen/product_detail_vertical_margin"
+                    android:textSize="@dimen/small_text_size" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:background="?android:attr/listDivider" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/product_detail_orderDescr_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:paddingBottom="@dimen/product_detail_vertical_margin"
-                android:paddingLeft="@dimen/product_detail_horizontal_margin"
-                android:paddingRight="@dimen/product_detail_horizontal_margin"
-                android:paddingTop="@dimen/product_detail_vertical_margin" />
+                android:orientation="vertical" >
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="2px"
-                android:background="?android:attr/listDivider" />
+                <!-- 预订提醒标题 -->
+
+                <TextView
+                    android:id="@+id/product_detail_orderDescr_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="@dimen/product_detail_horizontal_margin"
+                    android:paddingTop="10dp"
+                    android:text="@string/orderDescr"
+                    android:textColor="@color/product_detail_subtitle"
+                    android:textSize="@dimen/medium_text_size"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:background="?android:attr/listDivider" />
+
+                <!-- 预订提醒内容 -->
+
+                <TextView
+                    android:id="@+id/product_detail_orderDescr"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:lineSpacingExtra="@dimen/product_detail_line_space"
+                    android:paddingBottom="@dimen/product_detail_vertical_margin"
+                    android:paddingLeft="@dimen/product_detail_horizontal_margin"
+                    android:paddingRight="@dimen/product_detail_horizontal_margin"
+                    android:paddingTop="@dimen/product_detail_vertical_margin"
+                    android:textSize="@dimen/small_text_size" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:background="?android:attr/listDivider" />
+            </LinearLayout>
             <!-- 评价标题 -->
 
             <TextView

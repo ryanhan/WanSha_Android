@@ -1,7 +1,9 @@
 package com.ipang.wansha.dao.impl;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -18,20 +20,14 @@ import com.ipang.wansha.utils.Utility;
 
 public class ReviewDaoImpl implements ReviewDao {
 
-	private RestUtility utility;
-
-	public ReviewDaoImpl() {
-		utility = new RestUtility();
-	}
-
-	public ArrayList<Review> getReviewList(String productId)
-			throws URISyntaxException, InterruptedException,
+	public ArrayList<Review> getReviewList(int productId)
+			throws MalformedURLException, InterruptedException,
 			ExecutionException, JSONException, ParseException {
 
 		ArrayList<Review> reviews = new ArrayList<Review>();
-		URI uri = new URI(Const.SERVERNAME + "/rest/review?product="
+		URL url = new URL(Const.SERVERNAME + "/rest/review?product="
 				+ productId);
-		String result = utility.JsonGet(uri);
+		String result = RestUtility.GetJson(url);
 		if (result == null)
 			return null;
 
@@ -55,12 +51,12 @@ public class ReviewDaoImpl implements ReviewDao {
 	}
 
 	@Override
-	public int[] getRankingDetail(String productId) throws URISyntaxException,
+	public int[] getRankingDetail(String productId) throws MalformedURLException,
 			InterruptedException, ExecutionException, JSONException {
 		int[] ranking = new int[5];
-		URI uri = new URI(Const.SERVERNAME + "/rest/product/" + productId
+		URL url = new URL(Const.SERVERNAME + "/rest/product/" + productId
 				+ "/ranking");
-		String result = utility.JsonGet(uri);
+		String result = RestUtility.GetJson(url);
 
 		if (result == null)
 			return null;

@@ -3,104 +3,140 @@ package com.ipang.wansha.utils;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 public class RestUtility {
 
-	private HttpClient client;
-
-	public RestUtility() {
-		client = new DefaultHttpClient();
+	private static String readInputStream(InputStream inputStream)
+			throws IOException {
+		StringBuffer out = new StringBuffer();
+		int n = 1;
+		while (n > 0) {
+			byte[] b = new byte[4096];
+			n = inputStream.read(b);
+			if (n > 0)
+				out.append(new String(b, 0, n));
+		}
+		inputStream.close();
+		return out.toString();
 	}
 
-	public String JsonGet(URI uri) {
-		HttpGet httpGet = new HttpGet(uri);
-		httpGet.addHeader("accept", "application/json");
+	public static String GetJson(URL url) {
+		HttpURLConnection urlConn = null;
 		try {
-			HttpResponse response = client.execute(httpGet);
-			if (response.getStatusLine().getStatusCode() != 200)
-				return null;
-			InputStream inputStream = response.getEntity().getContent();
+			urlConn = (HttpURLConnection) url.openConnection();
+			urlConn.addRequestProperty("accept", "application/json");
+			urlConn.setConnectTimeout(Const.CONNECT_TIMEOUT);
+			urlConn.setReadTimeout(Const.READ_TIMEOUT);
 
-			StringBuffer out = new StringBuffer();
-			int n = 1;
-			while (n > 0) {
-				byte[] b = new byte[4096];
-				n = inputStream.read(b);
-				if (n > 0)
-					out.append(new String(b, 0, n));
+			int responseCode = urlConn.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+				InputStream inputStream = urlConn.getInputStream();
+				return readInputStream(inputStream);
 			}
-			return out.toString();
-		} catch (ClientProtocolException e) {
+			return null;
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public String TextGet(URI uri) {
-		HttpGet httpGet = new HttpGet(uri);
-		try {
-			HttpResponse response = client.execute(httpGet);
-			InputStream inputStream = response.getEntity().getContent();
-
-			StringBuffer out = new StringBuffer();
-			int n = 1;
-			while (n > 0) {
-				byte[] b = new byte[4096];
-				n = inputStream.read(b);
-				if (n > 0)
-					out.append(new String(b, 0, n));
+		} finally {
+			if (urlConn != null) {
+				urlConn.disconnect();
 			}
-			return out.toString();
+		}
 
-		} catch (ClientProtocolException e) {
+	}
+
+	public static String PostParam(URL url, HashMap<String, String> postParam) {
+
+		HttpURLConnection urlConn = null;
+		try {
+			urlConn = (HttpURLConnection) url.openConnection();
+			urlConn.setRequestMethod("POST");
+			urlConn.setDoOutput(true);
+			urlConn.setDoInput(true);
+			urlConn.setConnectTimeout(Const.CONNECT_TIMEOUT);
+			urlConn.setReadTimeout(Const.READ_TIMEOUT);
+			String data = "";
+			if (postParam != null) {
+				Iterator<String> iter = postParam.keySet().iterator();
+				while (iter.hasNext()) {
+					String key = iter.next();
+					data = data + key + "="
+							+ URLEncoder.encode(postParam.get(key), "UTF-8")
+							+ "&";
+				}
+				data = data.substring(0, data.length() - 1);
+				System.out.println(data);
+				urlConn.setRequestProperty("Content-Type",
+						"application/x-www-form-urlencoded");
+				urlConn.setRequestProperty("Content-Length",
+						String.valueOf(data.getBytes().length));
+				OutputStream os = urlConn.getOutputStream();
+				os.write(data.getBytes());
+				os.flush();
+			}
+
+			if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+				InputStream inputStream = urlConn.getInputStream();
+				return readInputStream(inputStream);
+			}
+			return null;
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+		} finally {
+			if (urlConn != null) {
+				urlConn.disconnect();
+			}
 		}
 	}
 
-	public HttpResponse Post(URI uri, HashMap<String, String> postParam) {
-		HttpPost httppost = new HttpPost(uri);
-		List<BasicNameValuePair> formParams = new LinkedList<BasicNameValuePair>();
-		Iterator<String> iter = postParam.keySet().iterator();
-		while (iter.hasNext()) {
-			String key = iter.next();
-			formParams.add(new BasicNameValuePair(key, postParam.get(key)));
-		}
+	public static String PostJson(URL url, JSONObject json) {
 
+		HttpURLConnection urlConn = null;
 		try {
-			httppost.setEntity(new UrlEncodedFormEntity(formParams, "utf-8"));
-			HttpResponse response = client.execute(httppost);
-			return response;
-		} catch (ClientProtocolException e) {
+			urlConn = (HttpURLConnection) url.openConnection();
+			urlConn.setDoOutput(true);
+			urlConn.setRequestMethod("POST");
+			urlConn.setDoOutput(true);
+			urlConn.setDoInput(true);
+			urlConn.setConnectTimeout(Const.CONNECT_TIMEOUT);
+			urlConn.setReadTimeout(Const.READ_TIMEOUT);
+			if (json != null) {
+				String data = URLEncoder.encode(json.toString(), "UTF-8");
+				urlConn.setRequestProperty("Content-Type", "application/json");
+				urlConn.setRequestProperty("Content-Length",
+						String.valueOf(data.getBytes().length));
+				OutputStream os = urlConn.getOutputStream();
+				os.write(data.getBytes());
+				os.flush();
+			}
+
+			if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+				InputStream inputStream = urlConn.getInputStream();
+				return readInputStream(inputStream);
+			}
+			return null;
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+		} finally {
+			if (urlConn != null) {
+				urlConn.disconnect();
+			}
 		}
 	}
 

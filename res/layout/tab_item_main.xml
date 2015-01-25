@@ -9,8 +9,8 @@
         android:id="@+id/tab_text"       
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
-        android:textSize="14sp"
-        android:textColor="#ffffff"
+        android:textSize="@dimen/tab_font_size"
+        android:textColor="@color/black"
         android:textStyle="bold">
     </TextView>
 

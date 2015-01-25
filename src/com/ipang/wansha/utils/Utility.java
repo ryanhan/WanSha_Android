@@ -61,7 +61,7 @@ public class Utility {
 	public static String FormatFullDate(Date date) {
 		return DateFormat.getDateInstance(DateFormat.FULL).format(date);
 	}
-	
+
 	public static String FormatDateTime(Date date) {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return df.format(date);
@@ -76,9 +76,24 @@ public class Utility {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return df.parse(dateStr);
 	}
-	
+
 	public static float sp2Pixel(Context context, int sp) {
-	    float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
-	    return sp * scaledDensity;
+		float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+		return sp * scaledDensity;
+	}
+
+	public static String formatText(String text) {
+		return text.replaceAll("<p>", "").replaceAll("</p>", "")
+				.replaceAll("&nbsp;", " ").replaceAll("\t", "")
+				.replaceAll("\n+", "\n").replaceAll("<br/>", "\n")
+				.replaceAll("<br />", "\n").replaceAll("<.*?span.*?>", "");
+	}
+	
+	public static String[] splitChnEng(String text){
+		int index = text.indexOf(' ');
+		String[] res = new String[2];
+		res[0] = text.substring(0, index);
+		res[1] = text.substring(index + 1);
+		return res;
 	}
 }

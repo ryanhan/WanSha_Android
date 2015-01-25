@@ -76,6 +76,7 @@
         android:background="?android:attr/listDivider" />
 
     <RelativeLayout
+        android:id="@+id/my_booking_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
@@ -106,13 +107,14 @@
         android:background="?android:attr/listDivider" />
 
     <RelativeLayout
+        android:id="@+id/my_wishlist_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
         android:layout_marginTop="15dp" >
 
         <ImageView
-            android:id="@+id/wishlist_icon"
+            android:id="@+id/my_wishlist_icon"
             android:layout_width="@dimen/my_status_icon_size"
             android:layout_height="@dimen/my_status_icon_size"
             android:layout_alignParentLeft="true"
@@ -125,7 +127,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/wishlist_icon"
+            android:layout_toRightOf="@id/my_wishlist_icon"
             android:text="@string/my_wishlist"
             android:textSize="18sp" />
     </RelativeLayout>
@@ -136,13 +138,14 @@
         android:background="?android:attr/listDivider" />
 
     <RelativeLayout
+        android:id="@+id/my_viewlist_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
         android:layout_marginTop="15dp" >
 
         <ImageView
-            android:id="@+id/view_list_icon"
+            android:id="@+id/my_viewlist_icon"
             android:layout_width="@dimen/my_status_icon_size"
             android:layout_height="@dimen/my_status_icon_size"
             android:layout_alignParentLeft="true"
@@ -155,7 +158,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/view_list_icon"
+            android:layout_toRightOf="@id/my_viewlist_icon"
             android:text="@string/my_view_list"
             android:textSize="18sp" />
     </RelativeLayout>
@@ -166,13 +169,14 @@
         android:background="?android:attr/listDivider" />
 
     <RelativeLayout
+        android:id="@+id/my_searchlist_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
         android:layout_marginTop="15dp" >
 
         <ImageView
-            android:id="@+id/search_list_icon"
+            android:id="@+id/my_searchlist_icon"
             android:layout_width="@dimen/my_status_icon_size"
             android:layout_height="@dimen/my_status_icon_size"
             android:layout_alignParentLeft="true"
@@ -185,7 +189,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/search_list_icon"
+            android:layout_toRightOf="@id/my_searchlist_icon"
             android:text="@string/my_search_list"
             android:textSize="18sp" />
     </RelativeLayout>
