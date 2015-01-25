@@ -16,7 +16,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
 import com.ipang.wansha.R;
-import com.ipang.wansha.adapter.CityGridAdapter;
+import com.ipang.wansha.adapter.CityListAdapter;
 import com.ipang.wansha.dao.CityDao;
 import com.ipang.wansha.dao.impl.CityDaoImpl;
 import com.ipang.wansha.model.City;
@@ -29,7 +29,7 @@ public class CityListActivity extends Activity {
 	private String countryName;
 	private CityDao cityDao;
 	private List<City> cities;
-	private CityGridAdapter adapter;
+	private CityListAdapter adapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,19 +60,15 @@ public class CityListActivity extends Activity {
 	private void setListView() {
 		cityDao = new CityDaoImpl();
 		cities = new ArrayList<City>();
-		// adapter = new CityListAdapter(this, cities);
 		
 		DisplayMetrics metric = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metric);
 		
 		int height = (int) (metric.widthPixels - 2 * getResources().getDimension(R.dimen.activity_horizontal_margin) - getResources().getDimension(R.dimen.city_gridview_horizontal_space))/2;
 		
-		adapter = new CityGridAdapter(this, cities, height);
+		adapter = new CityListAdapter(this, cities, height);
 		
-		// ListView cityListView = (ListView) findViewById(R.id.city_list_view);
 		GridView cityGridView = (GridView) findViewById(R.id.city_grid_view);
-//		cityGridView.setColumnWidth(width/4);
-				
 		cityGridView.setAdapter(adapter);
 		cityGridView.setOnItemClickListener(new OnItemClickListener() {
 

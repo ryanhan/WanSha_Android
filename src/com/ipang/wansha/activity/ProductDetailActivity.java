@@ -86,6 +86,13 @@ public class ProductDetailActivity extends Activity {
 		setDetailContent();
 		setReviews();
 		Button bookButton = (Button) findViewById(R.id.book_now);
+		if (product.getProductType() == 1) {
+			bookButton.setVisibility(View.VISIBLE);
+		}
+		if (product.getProductType() == 2) {
+			bookButton.setVisibility(View.GONE);
+		}
+		
 		bookButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -222,14 +229,14 @@ public class ProductDetailActivity extends Activity {
 		if (product.getInstruction() != null)
 			instructionContent.setText(product.getInstruction());
 
-		if (product.getProductType() == 1) {
+		if (product.getProductType() == 1) { // 收费
 			detailTitle.setText(getResources().getString(
 					R.string.detail_product));
 			instructionTitle.setText(getResources().getString(
 					R.string.instruction_product));
 			if (product.getOrderDescr() != null)
 				orderContent.setText(product.getOrderDescr());
-		} else if (product.getProductType() == 2) {
+		} else if (product.getProductType() == 2) { // 免费
 			detailTitle
 					.setText(getResources().getString(R.string.detail_sight));
 			instructionTitle.setText(getResources().getString(

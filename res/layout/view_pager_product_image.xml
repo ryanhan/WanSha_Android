@@ -3,10 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ImageView 
+    <ImageView
         android:id="@+id/product_detail_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop" />
+
+    <ProgressBar
+        android:id="@+id/progress_product_detail_image_loading"
+        style="?android:attr/progressBarStyleInverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 
 </FrameLayout>

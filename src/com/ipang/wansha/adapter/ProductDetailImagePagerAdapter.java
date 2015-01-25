@@ -14,10 +14,12 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.utils.Const;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 public class ProductDetailImagePagerAdapter extends PagerAdapter {
@@ -57,6 +59,9 @@ public class ProductDetailImagePagerAdapter extends PagerAdapter {
 		final ImageView imageView = (ImageView) imageLayout
 				.findViewById(R.id.product_detail_image);
 
+		final ProgressBar imageLoadingProgress = (ProgressBar) imageLayout
+				.findViewById(R.id.progress_product_detail_image_loading);
+
 		String imageUri = imageList.get(index);
 
 		ImageLoader.getInstance().displayImage(imageUri, imageView,
@@ -70,7 +75,24 @@ public class ProductDetailImagePagerAdapter extends PagerAdapter {
 									context, R.anim.fade_in);
 							imageView.setAnimation(anim);
 							anim.start();
+							imageLoadingProgress.setVisibility(View.GONE);
 						}
+					}
+
+					@Override
+					public void onLoadingCancelled(String imageUri, View view) {
+						imageLoadingProgress.setVisibility(View.GONE);
+					}
+
+					@Override
+					public void onLoadingFailed(String imageUri, View view,
+							FailReason failReason) {
+						imageLoadingProgress.setVisibility(View.GONE);
+					}
+
+					@Override
+					public void onLoadingStarted(String imageUri, View view) {
+						imageLoadingProgress.setVisibility(View.VISIBLE);
 					}
 				});
 		container.addView(imageLayout, 0);

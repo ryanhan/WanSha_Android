@@ -10,8 +10,10 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ipang.wansha.R;
@@ -20,6 +22,7 @@ import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 public class ProductListAdapter extends ArrayAdapter<Product> {
@@ -34,6 +37,7 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 		public TextView rankingCountTextView;
 		public TextView fromPriceTextView;
 		public ImageView[] rankingImage;
+		public ProgressBar imageLoadingProgress;
 	}
 
 	public ProductListAdapter(Context context, List<Product> objects, int height) {
@@ -55,10 +59,10 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 			holder.productPreviewImage = (ImageView) convertView
 					.findViewById(R.id.image_product_preview);
 
-			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-					LinearLayout.LayoutParams.MATCH_PARENT, height);
+			FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(
+					FrameLayout.LayoutParams.MATCH_PARENT, height);
 			holder.productPreviewImage.setLayoutParams(param);
-			
+
 			holder.productNameTextView = (TextView) convertView
 					.findViewById(R.id.product_name_text);
 			holder.rankingCountTextView = (TextView) convertView
@@ -76,6 +80,9 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 					.findViewById(R.id.product_list_rank4);
 			holder.rankingImage[4] = (ImageView) convertView
 					.findViewById(R.id.product_list_rank5);
+
+			holder.imageLoadingProgress = (ProgressBar) convertView
+					.findViewById(R.id.progress_product_image_loading);
 
 			convertView.setTag(holder);
 		} else {
@@ -118,15 +125,34 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 									context, R.anim.fade_in);
 							viewHolder.productPreviewImage.setAnimation(anim);
 							anim.start();
+							viewHolder.imageLoadingProgress
+									.setVisibility(View.GONE);
+						}
+
+						@Override
+						public void onLoadingCancelled(String imageUri,
+								View view) {
+							viewHolder.imageLoadingProgress
+									.setVisibility(View.GONE);
+						}
+
+						@Override
+						public void onLoadingFailed(String imageUri, View view,
+								FailReason failReason) {
+							viewHolder.imageLoadingProgress
+									.setVisibility(View.GONE);
+						}
+
+						@Override
+						public void onLoadingStarted(String imageUri, View view) {
+							viewHolder.imageLoadingProgress
+									.setVisibility(View.VISIBLE);
 						}
 					});
 
 		}
 
 		float ranking = 0;
-
-		// (float) getItem(position).getReviewTotalRanking()
-		// / getItem(position).getReviewCount();
 
 		Utility.drawRankingStar(viewHolder.rankingImage, ranking);
 

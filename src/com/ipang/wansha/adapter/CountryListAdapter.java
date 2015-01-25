@@ -65,7 +65,7 @@ public class CountryListAdapter extends ArrayAdapter<Country> {
 			holder.productNumberTextView = (TextView) convertView
 					.findViewById(R.id.country_list_product_number);
 			holder.imageLoadingProgress = (ProgressBar) convertView
-					.findViewById(R.id.progress_image_loading);
+					.findViewById(R.id.progress_country_image_loading);
 
 			convertView.setTag(holder);
 		} else {
