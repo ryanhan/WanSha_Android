@@ -26,7 +26,7 @@
             android:textColor="@color/wansha_blue"
             android:textSize="12sp" />
     </LinearLayout>
-    
+
     <LinearLayout
         android:id="@+id/layout_product_list"
         android:layout_width="match_parent"
@@ -40,9 +40,10 @@
             android:id="@+id/product_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:cacheColorHint="@android:color/transparent"
             android:divider="#00000000"
-            android:dividerHeight="@dimen/listview_gap_between_image_item" />
-      
+            android:dividerHeight="@dimen/listview_gap_between_image_item"
+            android:listSelector="@android:color/transparent" />
     </LinearLayout>
 
 </FrameLayout>

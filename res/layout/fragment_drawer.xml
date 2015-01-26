@@ -189,5 +189,48 @@
             android:textColor="@color/drawer_list_text"
             android:textSize="@dimen/drawer_list_font_size" />
     </LinearLayout>
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" 
+        android:layout_marginBottom="15dp"/>
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+    
+    <LinearLayout
+        android:id="@+id/layout_settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/drawer_list_padding_vertical"
+        android:paddingLeft="@dimen/drawer_list_padding_horizontal"
+        android:paddingTop="@dimen/drawer_list_padding_vertical" >
 
+        <ImageView
+            android:layout_width="@dimen/my_status_icon_size"
+            android:layout_height="@dimen/my_status_icon_size"
+            android:layout_gravity="center_vertical"
+            android:scaleType="centerCrop"
+            android:src="@drawable/settings" />
+
+        <TextView
+            android:id="@+id/text_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="@dimen/drawer_list_icon_word"
+            android:text="@string/settings"
+            android:textColor="@color/drawer_list_text"
+            android:textSize="@dimen/drawer_list_font_size" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
 </LinearLayout>
