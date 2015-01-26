@@ -27,42 +27,21 @@ public class ProductDaoImpl implements ProductDao {
 	}
 
 	@Override
-	public List<Product> getProductList(int cityId) throws MalformedURLException,
-			InterruptedException, ExecutionException, JSONException {
+	public List<Product> getProductList(int cityId)
+			throws MalformedURLException, InterruptedException,
+			ExecutionException, JSONException {
 
-		List<Product> products = new ArrayList<Product>();
-		URL url = new URL(Const.SERVERNAME + "/product/plist.json?cityId="
-				+ cityId + "&top=50");
-		String result = RestUtility.GetJson(url);
+		return getProductList(cityId, 0, 500);
 
-		JSONObject jsonObject = null;
-		try {
-			jsonObject = new JSONObject(result);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-		try {
-			JSONArray productList = jsonObject.getJSONArray("productList");
-			for (int i = 0; i < productList.length(); i++) {
-				JSONObject productJson = productList.getJSONObject(i);
-				products.add(createProduct(productJson));
-			}
-		} catch (JSONException e) {
-			JSONObject json = jsonObject.getJSONObject("productList");
-			products.add(createProduct(json));
-		}
-		return products;
 	}
-	
+
 	@Override
 	public List<Product> getProductList(int cityId, int offset, int number)
 			throws MalformedURLException, InterruptedException,
 			ExecutionException, JSONException {
 		List<Product> products = new ArrayList<Product>();
 		URL url = new URL(Const.SERVERNAME + "/product/plist.json?cityId="
-				+ cityId + "&top=" + number + "&=" + offset);
+				+ cityId + "&top=" + number + "&skip=" + offset);
 		String result = RestUtility.GetJson(url);
 
 		JSONObject jsonObject = null;
@@ -73,23 +52,23 @@ public class ProductDaoImpl implements ProductDao {
 			return null;
 		}
 
-		try {
-			JSONArray productList = jsonObject.getJSONArray("productList");
-			for (int i = 0; i < productList.length(); i++) {
-				JSONObject productJson = productList.getJSONObject(i);
-				products.add(createProduct(productJson));
-			}
-		} catch (JSONException e) {
-			JSONObject json = jsonObject.getJSONObject("productList");
-			products.add(createProduct(json));
+		JSONArray productList = jsonObject.getJSONArray("productList");
+
+		if (productList.length() == 0)
+			return null;
+
+		for (int i = 0; i < productList.length(); i++) {
+			JSONObject productJson = productList.getJSONObject(i);
+			products.add(createProduct(productJson));
 		}
+
 		return products;
 	}
-	
 
 	@Override
-	public Product getProductDetail(int productId) throws MalformedURLException,
-			InterruptedException, ExecutionException, JSONException {
+	public Product getProductDetail(int productId)
+			throws MalformedURLException, InterruptedException,
+			ExecutionException, JSONException {
 
 		URL url = new URL(Const.SERVERNAME + "/product/" + productId + ".json");
 		String result = RestUtility.GetJson(url);
@@ -117,37 +96,41 @@ public class ProductDaoImpl implements ProductDao {
 			return null;
 		}
 
-		ArrayList<String> images = new ArrayList<String>();
 		try {
 			JSONArray imageList = json.getJSONArray("pictureList");
-			for (int i = 0; i < imageList.length(); i++) {
-				JSONObject imageJson = imageList.getJSONObject(i);
-				String imageUrl = imageJson.getString("path");
-				if (imageUrl.charAt(0) == '/')
-					imageUrl = Const.SERVERNAME + imageUrl;
-				images.add(imageUrl);
+			if (imageList != null && imageList.length() > 0) {
+				ArrayList<String> images = new ArrayList<String>();
+				for (int i = 0; i < imageList.length(); i++) {
+					JSONObject imageJson = imageList.getJSONObject(i);
+					String imageUrl = imageJson.getString("path");
+					if (imageUrl.charAt(0) == '/')
+						imageUrl = Const.SERVERNAME + imageUrl;
+					images.add(imageUrl);
+				}
+				product.setProductImages(images);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
-		}
-		finally{
-			product.setProductImages(images);
 		}
 
-		try {
-			JSONArray comboList = json.getJSONArray("comboList");
-			float lowest = Float.MAX_VALUE;
-			for (int i = 0; i < comboList.length(); i++) {
-				JSONObject priceJson = comboList.getJSONObject(i);
-				float price = (float) priceJson.getDouble("price");
-				product.setCurrency(Currency.fromString(priceJson
-						.getString("currency")));
-				if (price < lowest)
-					lowest = price;
+		if (product.getProductType() == 1) { // 收费
+			try {
+				JSONArray comboList = json.getJSONArray("comboList");
+				float lowest = Float.MAX_VALUE;
+				for (int i = 0; i < comboList.length(); i++) {
+					JSONObject priceJson = comboList.getJSONObject(i);
+					float price = (float) priceJson.getDouble("price");
+					product.setCurrency(Currency.fromString(priceJson
+							.getString("currency")));
+					if (price < lowest)
+						lowest = price;
+				}
+				product.setPrice(lowest);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				product.setPrice(0);
 			}
-			product.setPrice(lowest);
-		} catch (JSONException e) {
-			e.printStackTrace();
+		} else if (product.getProductType() == 2) { // 免费
 			product.setPrice(0);
 		}
 
@@ -156,21 +139,24 @@ public class ProductDaoImpl implements ProductDao {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
-			product.setExpenseDescr(Utility.formatText(json.getString("expenseDescr")));
+			product.setExpenseDescr(Utility.formatText(json
+					.getString("expenseDescr")));
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
-			product.setInstruction(Utility.formatText(json.getString("instruction")));
+			product.setInstruction(Utility.formatText(json
+					.getString("instruction")));
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
-			product.setOrderDescr(Utility.formatText(json.getString("orderDescr")));
+			product.setOrderDescr(Utility.formatText(json
+					.getString("orderDescr")));
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

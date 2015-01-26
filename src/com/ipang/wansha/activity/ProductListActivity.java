@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -16,7 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductListAdapter;
@@ -43,6 +45,14 @@ public class ProductListActivity extends FragmentActivity implements
 	private XListView productListView;
 	private SortListFragment fragment;
 	private SortType sortType;
+	private ImageView loadingImage;
+	private AnimationDrawable animationDrawable;
+	private LinearLayout loadingLayout;
+	private LinearLayout productLayout;
+	private int offset;
+	private boolean isRefreshing;
+	private boolean isLoadingMore;
+	private boolean didLoadAll;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -73,19 +83,34 @@ public class ProductListActivity extends FragmentActivity implements
 	private void setListView() {
 		productDao = new ProductDaoImpl();
 		products = new ArrayList<Product>();
-		
+
+		loadingImage = (ImageView) findViewById(R.id.image_loading);
+		loadingImage.setBackgroundResource(R.anim.progress_animation);
+		animationDrawable = (AnimationDrawable) loadingImage.getBackground();
+
+		loadingLayout = (LinearLayout) findViewById(R.id.layout_loading);
+		productLayout = (LinearLayout) findViewById(R.id.layout_product_list);
+		productLayout.setVisibility(View.INVISIBLE);
+		loadingLayout.setVisibility(View.VISIBLE);
+		animationDrawable.start();
+
+		offset = 0;
+		isRefreshing = false;
+		isLoadingMore = false;
+		didLoadAll = false;
+
 		DisplayMetrics metric = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metric);
-		
-		int height = (int) ((metric.widthPixels - 2 * getResources().getDimension(R.dimen.activity_horizontal_margin)) * 3 / 5);
-		
+
+		int height = (int) ((metric.widthPixels - 2 * getResources()
+				.getDimension(R.dimen.activity_horizontal_margin)) * 3 / 5);
+
 		adapter = new ProductListAdapter(this, products, height);
 		productListView = (XListView) findViewById(R.id.product_list_view);
 		productListView.setAdapter(adapter);
 		productListView.setPullRefreshEnable(true);
 		productListView.setPullLoadEnable(true);
 		productListView.setXListViewListener(this);
-		productListView.setVisibility(View.INVISIBLE);
 		productListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -103,8 +128,8 @@ public class ProductListActivity extends FragmentActivity implements
 				startActivity(intent);
 			}
 		});
-		ProductListAsyncTask asyncTask = new ProductListAsyncTask();
-		asyncTask.execute(cityId);
+		ProductListAsyncTask asyncTask = new ProductListAsyncTask(true);
+		asyncTask.execute(offset, Const.PRODUCT_PER_PAGE);
 	}
 
 	@Override
@@ -141,23 +166,51 @@ public class ProductListActivity extends FragmentActivity implements
 	private class ProductListAsyncTask extends
 			AsyncTask<Integer, Integer, List<Product>> {
 
+		private boolean isRefresh;
+
+		public ProductListAsyncTask(boolean isRefresh) {
+			this.isRefresh = isRefresh;
+		}
+
 		@Override
 		protected List<Product> doInBackground(Integer... params) {
+			List<Product> productListSegment = null;
 			try {
-				List<Product> tempProductList = productDao.getProductList(params[0]);
-				products.clear();
-				products.addAll(tempProductList);
-				productListView.setVisibility(View.VISIBLE);
+
+				productListSegment = productDao.getProductList(cityId,
+						params[0], params[1]);
+				if (productListSegment == null) {
+					didLoadAll = true;
+					return null;
+				} else if (productListSegment.size() < Const.PRODUCT_PER_PAGE) {
+					didLoadAll = true;
+				}
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			return products;
+			return productListSegment;
 		}
 
 		@Override
 		protected void onPostExecute(List<Product> result) {
+
+			if (isRefresh) {
+				products.clear();
+			}
+			if (result != null){
+				products.addAll(result);
+			}
+			offset = products.size();
 			adapter.notifyDataSetChanged();
-			stopRefresh();
+			if (didLoadAll) {
+				productListView.setPullLoadEnable(false);
+			}
+			if (isRefresh) {
+				stopRefresh();
+			} else {
+				stopLoadMore();
+			}
 		}
 	}
 
@@ -182,7 +235,6 @@ public class ProductListActivity extends FragmentActivity implements
 		}
 	}
 
-
 	@Override
 	public void onSortTypeChanged(SortType sortType) {
 		this.sortType = sortType;
@@ -191,17 +243,39 @@ public class ProductListActivity extends FragmentActivity implements
 
 	@Override
 	public void onRefresh() {
-		ProductListAsyncTask asyncTask = new ProductListAsyncTask();
-		asyncTask.execute(cityId);
+		if (!isRefreshing) {
+			isRefreshing = true;
+			didLoadAll = false;
+			productListView.setPullLoadEnable(true);
+			productLayout.setVisibility(View.INVISIBLE);
+			loadingLayout.setVisibility(View.VISIBLE);
+			animationDrawable.start();
+			offset = 0;
+			ProductListAsyncTask asyncTask = new ProductListAsyncTask(true);
+			asyncTask.execute(offset, Const.PRODUCT_PER_PAGE);
+		}
 	}
 
 	@Override
 	public void onLoadMore() {
-		
+		if (!isLoadingMore && !didLoadAll) {
+			isLoadingMore = true;
+			ProductListAsyncTask asyncTask = new ProductListAsyncTask(false);
+			asyncTask.execute(offset, Const.PRODUCT_PER_PAGE);
+		}
 	}
-	
+
 	private void stopRefresh() {
+		isRefreshing = false;
 		productListView.stopRefresh();
 		productListView.setRefreshTime("刚刚");
+		loadingLayout.setVisibility(View.INVISIBLE);
+		productLayout.setVisibility(View.VISIBLE);
+		animationDrawable.stop();
+	}
+
+	private void stopLoadMore() {
+		isLoadingMore = false;
+		productListView.stopLoadMore();
 	}
 }

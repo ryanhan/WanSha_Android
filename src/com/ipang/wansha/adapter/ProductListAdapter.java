@@ -111,7 +111,8 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 
 		if (getItem(position).getProductImages() == null
 				|| getItem(position).getProductImages().size() == 0) {
-			viewHolder.productPreviewImage.setImageResource(R.drawable.loading);
+			viewHolder.productPreviewImage
+					.setImageResource(R.drawable.no_image);
 		} else {
 
 			ImageLoader.getInstance().displayImage(
@@ -158,4 +159,5 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 
 		return convertView;
 	}
+
 }

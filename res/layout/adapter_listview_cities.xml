@@ -1,55 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin" >
 
-    <ImageView
-        android:id="@+id/city_list_image"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:scaleType="centerCrop" />
-    
-    <ProgressBar
-        android:id="@+id/progress_city_image_loading"
-        style="?android:attr/progressBarStyleInverse"
+    <FrameLayout
+        android:id="@+id/layout_city_list_left"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_height="match_parent" 
+        android:layout_marginRight="@dimen/city_list_horizontal_space">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        <ImageView
+            android:id="@+id/city_list_image_left"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
 
-        <TextView
-            android:id="@+id/city_list_product_number"
+        <ProgressBar
+            android:id="@+id/progress_city_image_loading_left"
+            style="?android:attr/progressBarStyleInverse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginBottom="@dimen/city_list_bottom_margin"
-            android:layout_marginLeft="@dimen/city_list_left_margin"
-            android:background="@color/wansha_blue_transparent"
-            android:paddingBottom="@dimen/city_list_textview_vertical_padding"
-            android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
-            android:paddingRight="@dimen/city_list_textview_horizontal_padding"
-            android:paddingTop="@dimen/city_list_textview_vertical_padding"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/city_list_name"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/city_list_product_number_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginBottom="@dimen/city_list_bottom_margin"
+                android:layout_marginLeft="@dimen/city_list_left_margin"
+                android:background="@color/wansha_blue_transparent"
+                android:paddingBottom="@dimen/city_list_textview_vertical_padding"
+                android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
+                android:paddingRight="@dimen/city_list_textview_horizontal_padding"
+                android:paddingTop="@dimen/city_list_textview_vertical_padding"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/city_list_name_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/city_list_product_number_left"
+                android:layout_alignParentLeft="true"
+                android:layout_marginBottom="@dimen/city_list_bottom_margin"
+                android:layout_marginLeft="@dimen/city_list_left_margin"
+                android:background="@color/white_transparent"
+                android:paddingBottom="@dimen/city_list_textview_vertical_padding"
+                android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
+                android:paddingRight="@dimen/city_list_textview_horizontal_padding"
+                android:paddingTop="@dimen/city_list_textview_vertical_padding"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </FrameLayout>
+    
+    <FrameLayout
+        android:id="@+id/layout_city_list_right"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" 
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/city_list_image_right"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+        <ProgressBar
+            android:id="@+id/progress_city_image_loading_right"
+            style="?android:attr/progressBarStyleInverse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/city_list_product_number"
-            android:layout_alignParentLeft="true"
-            android:layout_marginBottom="@dimen/city_list_bottom_margin"
-            android:layout_marginLeft="@dimen/city_list_left_margin"
-            android:background="@color/white_transparent"
-            android:paddingBottom="@dimen/city_list_textview_vertical_padding"
-            android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
-            android:paddingRight="@dimen/city_list_textview_horizontal_padding"
-            android:paddingTop="@dimen/city_list_textview_vertical_padding" 
-            android:textSize="16sp"/>
-    </RelativeLayout>
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
-</FrameLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/city_list_product_number_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginBottom="@dimen/city_list_bottom_margin"
+                android:layout_marginLeft="@dimen/city_list_left_margin"
+                android:background="@color/wansha_blue_transparent"
+                android:paddingBottom="@dimen/city_list_textview_vertical_padding"
+                android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
+                android:paddingRight="@dimen/city_list_textview_horizontal_padding"
+                android:paddingTop="@dimen/city_list_textview_vertical_padding"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/city_list_name_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/city_list_product_number_right"
+                android:layout_alignParentLeft="true"
+                android:layout_marginBottom="@dimen/city_list_bottom_margin"
+                android:layout_marginLeft="@dimen/city_list_left_margin"
+                android:background="@color/white_transparent"
+                android:paddingBottom="@dimen/city_list_textview_vertical_padding"
+                android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
+                android:paddingRight="@dimen/city_list_textview_horizontal_padding"
+                android:paddingTop="@dimen/city_list_textview_vertical_padding"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </FrameLayout>
+
+</LinearLayout>

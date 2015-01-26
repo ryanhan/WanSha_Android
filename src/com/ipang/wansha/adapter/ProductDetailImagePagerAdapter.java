@@ -53,7 +53,6 @@ public class ProductDetailImagePagerAdapter extends PagerAdapter {
 	@Override
 	public Object instantiateItem(ViewGroup container, int position) {
 
-		int index = position % imageList.size();
 		View imageLayout = mInflater.inflate(R.layout.view_pager_product_image,
 				container, false);
 		final ImageView imageView = (ImageView) imageLayout
@@ -62,39 +61,44 @@ public class ProductDetailImagePagerAdapter extends PagerAdapter {
 		final ProgressBar imageLoadingProgress = (ProgressBar) imageLayout
 				.findViewById(R.id.progress_product_detail_image_loading);
 
-		String imageUri = imageList.get(index);
+		if (imageList == null || imageList.size() == 0) {
+			imageView.setImageResource(R.drawable.no_image);
+		} else {
+			int index = position % imageList.size();
+			String imageUri = imageList.get(index);
+			ImageLoader.getInstance().displayImage(imageUri, imageView,
+					Const.options, new SimpleImageLoadingListener() {
 
-		ImageLoader.getInstance().displayImage(imageUri, imageView,
-				Const.options, new SimpleImageLoadingListener() {
+						@Override
+						public void onLoadingComplete(String imageUri,
+								View view, Bitmap loadedImage) {
+							if (loadedImage != null) {
+								Animation anim = AnimationUtils.loadAnimation(
+										context, R.anim.fade_in);
+								imageView.setAnimation(anim);
+								anim.start();
+								imageLoadingProgress.setVisibility(View.GONE);
+							}
+						}
 
-					@Override
-					public void onLoadingComplete(String imageUri, View view,
-							Bitmap loadedImage) {
-						if (loadedImage != null) {
-							Animation anim = AnimationUtils.loadAnimation(
-									context, R.anim.fade_in);
-							imageView.setAnimation(anim);
-							anim.start();
+						@Override
+						public void onLoadingCancelled(String imageUri,
+								View view) {
 							imageLoadingProgress.setVisibility(View.GONE);
 						}
-					}
 
-					@Override
-					public void onLoadingCancelled(String imageUri, View view) {
-						imageLoadingProgress.setVisibility(View.GONE);
-					}
+						@Override
+						public void onLoadingFailed(String imageUri, View view,
+								FailReason failReason) {
+							imageLoadingProgress.setVisibility(View.GONE);
+						}
 
-					@Override
-					public void onLoadingFailed(String imageUri, View view,
-							FailReason failReason) {
-						imageLoadingProgress.setVisibility(View.GONE);
-					}
-
-					@Override
-					public void onLoadingStarted(String imageUri, View view) {
-						imageLoadingProgress.setVisibility(View.VISIBLE);
-					}
-				});
+						@Override
+						public void onLoadingStarted(String imageUri, View view) {
+							imageLoadingProgress.setVisibility(View.VISIBLE);
+						}
+					});
+		}
 		container.addView(imageLayout, 0);
 		return imageLayout;
 	}

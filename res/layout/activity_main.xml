@@ -10,7 +10,7 @@
         android:background="@color/activity_background"
         android:orientation="vertical" >
 
-        <com.astuetz.PagerSlidingTabStrip
+        <com.ipang.wansha.customview.PagerSlidingTabStrip
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="@dimen/tab_height"

@@ -5,24 +5,25 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.CityListAdapter;
+import com.ipang.wansha.customview.XListView;
+import com.ipang.wansha.customview.XListView.IXListViewListener;
 import com.ipang.wansha.dao.CityDao;
 import com.ipang.wansha.dao.impl.CityDaoImpl;
 import com.ipang.wansha.model.City;
 import com.ipang.wansha.utils.Const;
 
-public class CityListActivity extends Activity {
+public class CityListActivity extends Activity implements IXListViewListener {
 
 	private ActionBar actionBar;
 	private int countryId;
@@ -30,6 +31,12 @@ public class CityListActivity extends Activity {
 	private CityDao cityDao;
 	private List<City> cities;
 	private CityListAdapter adapter;
+	private ImageView loadingImage;
+	private AnimationDrawable animationDrawable;
+	private LinearLayout loadingLayout;
+	private LinearLayout cityLayout;
+	private XListView cityListView;
+	private boolean isRefreshing;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,31 +67,35 @@ public class CityListActivity extends Activity {
 	private void setListView() {
 		cityDao = new CityDaoImpl();
 		cities = new ArrayList<City>();
-		
+
+		loadingImage = (ImageView) findViewById(R.id.image_loading);
+		loadingImage.setBackgroundResource(R.anim.progress_animation);
+		animationDrawable = (AnimationDrawable) loadingImage.getBackground();
+
+		loadingLayout = (LinearLayout) findViewById(R.id.layout_loading);
+		cityLayout = (LinearLayout) findViewById(R.id.layout_city_list);
+		cityLayout.setVisibility(View.INVISIBLE);
+		loadingLayout.setVisibility(View.VISIBLE);
+		animationDrawable.start();
+
+		isRefreshing = false;
+
 		DisplayMetrics metric = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metric);
-		
-		int height = (int) (metric.widthPixels - 2 * getResources().getDimension(R.dimen.activity_horizontal_margin) - getResources().getDimension(R.dimen.city_gridview_horizontal_space))/2;
-		
-		adapter = new CityListAdapter(this, cities, height);
-		
-		GridView cityGridView = (GridView) findViewById(R.id.city_grid_view);
-		cityGridView.setAdapter(adapter);
-		cityGridView.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Intent intent = new Intent();
-				intent.setClass(CityListActivity.this,
-						ProductListActivity.class);
-				intent.putExtra(Const.CITYID, cities.get(position).getCityId());
-				intent.putExtra(Const.CITYNAME, cities.get(position)
-						.getCityName());
-				intent.putExtra(Const.COUNTRYNAME, countryName);
-				startActivity(intent);
-			}
-		});
+		int height = (int) (metric.widthPixels
+				- 2
+				* getResources().getDimension(
+						R.dimen.activity_horizontal_margin) - getResources()
+				.getDimension(R.dimen.city_list_horizontal_space)) / 2;
+
+		adapter = new CityListAdapter(this, cities, height, countryName);
+
+		cityListView = (XListView) findViewById(R.id.city_list_view);
+		cityListView.setAdapter(adapter);
+		cityListView.setPullRefreshEnable(true);
+		cityListView.setPullLoadEnable(false);
+		cityListView.setXListViewListener(this);
 
 		CityListAsyncTask cityListAsyncTask = new CityListAsyncTask();
 		cityListAsyncTask.execute(countryId);
@@ -118,7 +129,35 @@ public class CityListActivity extends Activity {
 		@Override
 		protected void onPostExecute(List<City> result) {
 			adapter.notifyDataSetChanged();
+			loadingLayout.setVisibility(View.INVISIBLE);
+			cityLayout.setVisibility(View.VISIBLE);
+			animationDrawable.stop();
+			stopRefresh();
 		}
 	}
 
+	@Override
+	public void onRefresh() {
+		if (!isRefreshing) {
+			isRefreshing = true;
+			cityLayout.setVisibility(View.INVISIBLE);
+			loadingLayout.setVisibility(View.VISIBLE);
+			animationDrawable.start();
+			CityListAsyncTask cityListAsyncTask = new CityListAsyncTask();
+			cityListAsyncTask.execute(countryId);
+		}
+	}
+
+	@Override
+	public void onLoadMore() {
+	}
+
+	private void stopRefresh() {
+		isRefreshing = false;
+		cityListView.stopRefresh();
+		cityListView.setRefreshTime("刚刚");
+		loadingLayout.setVisibility(View.INVISIBLE);
+		cityLayout.setVisibility(View.VISIBLE);
+		animationDrawable.stop();
+	}
 }

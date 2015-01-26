@@ -1,10 +1,12 @@
 package com.ipang.wansha.activity;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -49,6 +51,10 @@ public class ProductDetailActivity extends Activity {
 	private String cityName;
 	private String countryName;
 	private ScrollView scrollView;
+	private ImageView loadingImage;
+	private AnimationDrawable animationDrawable;
+	private LinearLayout loadingLayout;
+	private LinearLayout productLayout;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +77,17 @@ public class ProductDetailActivity extends Activity {
 
 	private void getProduct() {
 		productDao = new ProductDaoImpl();
+
+		loadingImage = (ImageView) findViewById(R.id.image_loading);
+		loadingImage.setBackgroundResource(R.anim.progress_animation);
+		animationDrawable = (AnimationDrawable) loadingImage.getBackground();
+
+		loadingLayout = (LinearLayout) findViewById(R.id.layout_loading);
+		productLayout = (LinearLayout) findViewById(R.id.layout_product_detail);
+		productLayout.setVisibility(View.INVISIBLE);
+		loadingLayout.setVisibility(View.VISIBLE);
+		animationDrawable.start();
+
 		ProductAsyncTask productAsyncTask = new ProductAsyncTask();
 		productAsyncTask.execute(productId);
 	}
@@ -92,7 +109,7 @@ public class ProductDetailActivity extends Activity {
 		if (product.getProductType() == 2) {
 			bookButton.setVisibility(View.GONE);
 		}
-		
+
 		bookButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -126,35 +143,44 @@ public class ProductDetailActivity extends Activity {
 		actionBar.setDisplayUseLogoEnabled(false);
 	}
 
-	private void initViewPager(final List<String> productImages) {
-		
+	private void initViewPager(List<String> productImages) {
+
 		FrameLayout layout = (FrameLayout) findViewById(R.id.product_detail_image_layout);
-		
+
 		DisplayMetrics metric = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metric);
-		int height = (int) ((metric.widthPixels - 2 * getResources().getDimension(R.dimen.activity_horizontal_margin)) * 3 / 5);
-		
-		LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+		int height = (int) ((metric.widthPixels - 2 * getResources()
+				.getDimension(R.dimen.activity_horizontal_margin)) * 3 / 5);
+
+		LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.MATCH_PARENT, height);
 		layout.setLayoutParams(param);
 
 		ViewPager viewPager = (ViewPager) findViewById(R.id.product_detail_viewpager);
-		setDotBar(productImages.size());
 
-		
-		viewPager.setAdapter(new ProductDetailImagePagerAdapter(this,
-				productImages));
+		final int imageCount;
+
+		if (productImages == null || productImages.size() == 0) {
+			imageCount = 1;
+		} else {
+			productImages.remove(0);
+			imageCount = productImages.size();
+		}
+
+		setDotBar(imageCount);
+
+		viewPager.setAdapter(new ProductDetailImagePagerAdapter(this, productImages));
 		viewPager
 				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
-						for (int i = 0; i < productImages.size(); i++) {
-							dots[i].setBackgroundResource(i == (position % productImages
-									.size()) ? R.drawable.dot_selected
+						for (int i = 0; i < imageCount; i++) {
+							dots[i].setBackgroundResource(i == (position % imageCount) ? R.drawable.dot_selected
 									: R.drawable.dot);
 						}
 					}
 				});
-		viewPager.setCurrentItem(productImages.size() * 100);
+		viewPager.setCurrentItem(imageCount * 100);
 
 	}
 
@@ -339,6 +365,9 @@ public class ProductDetailActivity extends Activity {
 		@Override
 		protected void onPostExecute(Product result) {
 			avgScore = 0;
+			loadingLayout.setVisibility(View.INVISIBLE);
+			productLayout.setVisibility(View.VISIBLE);
+			animationDrawable.stop();
 			setProductView();
 		}
 	}

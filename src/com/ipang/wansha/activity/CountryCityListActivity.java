@@ -8,11 +8,14 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ExpandableListView.OnChildClickListener;
 
 import com.ipang.wansha.R;
@@ -30,6 +33,9 @@ public class CountryCityListActivity extends Activity {
 	private ArrayList<ArrayList<City>> cities;
 	private ExpandableListView countryCityList;
 	private CityDao cityDao;
+	private ImageView loadingImage;
+	private AnimationDrawable animationDrawable;
+	private LinearLayout loadingLayout;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,17 @@ public class CountryCityListActivity extends Activity {
 	private void setListView() {
 		cityDao = new CityDaoImpl();
 		countryCityList = (ExpandableListView) findViewById(R.id.country_expandable_list);
+		
+		loadingImage = (ImageView) findViewById(R.id.image_loading);
+		loadingImage.setBackgroundResource(R.anim.progress_animation);
+        animationDrawable = (AnimationDrawable) loadingImage.getBackground();
+        
+        loadingLayout = (LinearLayout) findViewById(R.id.layout_loading);
+        countryCityList.setVisibility(View.INVISIBLE);
+		loadingLayout.setVisibility(View.VISIBLE);
+        animationDrawable.start();
+		
+		
 		countries = new ArrayList<String>();
 		cities = new ArrayList<ArrayList<City>>();
 		adapter = new CountryCityListAdapter(countries, cities, this);
@@ -123,6 +140,9 @@ public class CountryCityListActivity extends Activity {
 			for (int i = 0; i < groupCount; i++) {
 				countryCityList.expandGroup(i);
 			}
+			loadingLayout.setVisibility(View.INVISIBLE);
+			countryCityList.setVisibility(View.VISIBLE);
+	        animationDrawable.stop();
 		}
 	}
 

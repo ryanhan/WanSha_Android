@@ -21,7 +21,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 		mFragment = new ArrayList<Fragment>();
 		mFragment.add(new RecommendFragment());
 		mFragment.add(new PlaceFragment());
-		mFragment.add(new TogetherFragment());
+		//mFragment.add(new TogetherFragment());
 		this.tabTitle = tabTitle;
 	}
 

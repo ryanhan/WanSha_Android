@@ -2,7 +2,6 @@ package com.ipang.wansha.activity;
 
 import java.util.ArrayList;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -14,10 +13,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.astuetz.PagerSlidingTabStrip;
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.SectionsPagerAdapter;
-import com.ipang.wansha.fragment.DrawerFragment;
+import com.ipang.wansha.customview.PagerSlidingTabStrip;
 
 public class MainActivity extends FragmentActivity {
 

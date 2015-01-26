@@ -23,5 +23,6 @@
     <color name="tab_widget_stated">#CFCFCF</color>
     <color name="tab_widget_unstated">#FFFFFF</color>
     <color name="drawer_list_text">#7E7E7E</color>
-
+    <color name="background_tab_pressed">#6633B5E5</color>
+    
 </resources>

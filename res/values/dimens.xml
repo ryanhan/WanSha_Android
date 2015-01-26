@@ -36,7 +36,7 @@
     <dimen name="drawer_list_icon_word">20dp</dimen>
     <dimen name="drawer_width">280dp</dimen>
     <dimen name="button_padding_vertical">10dp</dimen>
-    <dimen name="city_gridview_horizontal_space">10dp</dimen>
+    <dimen name="city_list_horizontal_space">10dp</dimen>
     <dimen name="user_admin_padding_horizontal">20dp</dimen>
     <dimen name="user_admin_padding_vertical">20dp</dimen>
     <dimen name="user_admin_title_size">16dp</dimen>

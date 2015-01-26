@@ -66,7 +66,6 @@ public class CityDaoImpl implements CityDao {
 			country.setCountryImage(images.get(countryId));
 			country.setCountryProductCount(productCounts.get(countryId));
 			countries.add(country);
-			System.out.println(country.getCountryName());
 		}
 
 		return countries;

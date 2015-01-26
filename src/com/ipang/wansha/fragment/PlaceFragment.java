@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,8 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.activity.CityListActivity;
@@ -27,6 +30,7 @@ import com.ipang.wansha.customview.XListView.IXListViewListener;
 import com.ipang.wansha.dao.CityDao;
 import com.ipang.wansha.dao.impl.CityDaoImpl;
 import com.ipang.wansha.model.Country;
+import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
 
 public class PlaceFragment extends Fragment implements IXListViewListener {
@@ -37,13 +41,17 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 	private List<Country> countries;
 	private CountryListAdapter adapter;
 	private XListView countryListView;
-	private boolean refresh;
+	private boolean hasRefreshed;
+	private ImageView loadingImage;
+	private AnimationDrawable animationDrawable;
+	private LinearLayout loadingLayout;
+	private LinearLayout placeLayout;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		context = this.getActivity();
-		refresh = false;
+		hasRefreshed = false;
 	}
 
 	@Override
@@ -57,6 +65,19 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 	private void setViews() {
 		cityDao = new CityDaoImpl();
 		countries = new ArrayList<Country>();
+
+		loadingImage = (ImageView) fragmentView
+				.findViewById(R.id.image_loading);
+		loadingImage.setBackgroundResource(R.anim.progress_animation);
+		animationDrawable = (AnimationDrawable) loadingImage.getBackground();
+
+		loadingLayout = (LinearLayout) fragmentView
+				.findViewById(R.id.layout_loading);
+		placeLayout = (LinearLayout) fragmentView
+				.findViewById(R.id.fragment_place_layout);
+		placeLayout.setVisibility(View.INVISIBLE);
+		loadingLayout.setVisibility(View.VISIBLE);
+		animationDrawable.start();
 
 		DisplayMetrics metric = new DisplayMetrics();
 		this.getActivity().getWindowManager().getDefaultDisplay()
@@ -127,21 +148,26 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 
 		@Override
 		protected List<Country> doInBackground(Void... params) {
+			List<Country> tempCountryList = null;
 
 			try {
-				List<Country> tempCountryList = cityDao.getCountryList();
-				countries.clear();
-				countries.addAll(tempCountryList);
+				tempCountryList = cityDao.getCountryList();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			return countries;
+			return tempCountryList;
 		}
 
 		@Override
 		protected void onPostExecute(List<Country> result) {
+
+			if (result != null) {
+				countries.clear();
+				countries.addAll(result);
+			}
 			adapter.notifyDataSetChanged();
-			if (!refresh)
+			animationDrawable.stop();
+			if (!hasRefreshed)
 				addFooterButton();
 			stopRefresh();
 		}
@@ -149,7 +175,10 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 
 	@Override
 	public void onRefresh() {
-		refresh = true;
+		hasRefreshed = true;
+		placeLayout.setVisibility(View.INVISIBLE);
+		loadingLayout.setVisibility(View.VISIBLE);
+		animationDrawable.start();
 		CountryListAsyncTask countryListAsyncTask = new CountryListAsyncTask();
 		countryListAsyncTask.execute();
 	}
@@ -161,5 +190,8 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 	private void stopRefresh() {
 		countryListView.stopRefresh();
 		countryListView.setRefreshTime("刚刚");
+		loadingLayout.setVisibility(View.INVISIBLE);
+		placeLayout.setVisibility(View.VISIBLE);
+		animationDrawable.stop();
 	}
 }

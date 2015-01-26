@@ -32,6 +32,10 @@ public class Const {
 	public static final int CONNECT_TIMEOUT = 3000;
 	public static final int READ_TIMEOUT = 5000;
 	
+	public static final int PRODUCT_PER_PAGE = 10;
+	public static final int CITY_PER_PAGE = 10;
+
+	
 	public static final DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.color.light_grey)
 			.showImageForEmptyUri(R.drawable.no_image).cacheInMemory()
