@@ -3,14 +3,14 @@ package com.ipang.wansha.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.ActionBar;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockListActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.BookingListAdapter;
 import com.ipang.wansha.dao.UserDao;
@@ -19,7 +19,7 @@ import com.ipang.wansha.model.Booking;
 import com.ipang.wansha.utils.Const;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class MyBookingListActivity extends SherlockListActivity {
+public class MyBookingListActivity extends ListActivity {
 
 	private ActionBar actionBar;
 	private SharedPreferences pref;
@@ -42,7 +42,7 @@ public class MyBookingListActivity extends SherlockListActivity {
 	}
 
 	private void setActionBar() {
-		actionBar = this.getSupportActionBar();
+		actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(false);
 		actionBar.setDisplayShowTitleEnabled(true);

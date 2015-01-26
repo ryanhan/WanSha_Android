@@ -20,6 +20,8 @@ import android.widget.ListView;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductListAdapter;
+import com.ipang.wansha.customview.XListView;
+import com.ipang.wansha.customview.XListView.IXListViewListener;
 import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.dao.impl.ProductDaoImpl;
 import com.ipang.wansha.enums.SortType;
@@ -29,7 +31,7 @@ import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
 
 public class ProductListActivity extends FragmentActivity implements
-		OnSortTypeChangedListener {
+		OnSortTypeChangedListener, IXListViewListener {
 
 	private int cityId;
 	private String cityName;
@@ -38,7 +40,7 @@ public class ProductListActivity extends FragmentActivity implements
 	private ProductDao productDao;
 	private ProductListAdapter adapter;
 	private List<Product> products;
-	private ListView productListView;
+	private XListView productListView;
 	private SortListFragment fragment;
 	private SortType sortType;
 
@@ -78,8 +80,12 @@ public class ProductListActivity extends FragmentActivity implements
 		int height = (int) ((metric.widthPixels - 2 * getResources().getDimension(R.dimen.activity_horizontal_margin)) * 3 / 5);
 		
 		adapter = new ProductListAdapter(this, products, height);
-		productListView = (ListView) findViewById(R.id.product_list_view);
+		productListView = (XListView) findViewById(R.id.product_list_view);
 		productListView.setAdapter(adapter);
+		productListView.setPullRefreshEnable(true);
+		productListView.setPullLoadEnable(true);
+		productListView.setXListViewListener(this);
+		productListView.setVisibility(View.INVISIBLE);
 		productListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -88,9 +94,9 @@ public class ProductListActivity extends FragmentActivity implements
 				Intent intent = new Intent();
 				intent.setClass(ProductListActivity.this,
 						ProductDetailActivity.class);
-				intent.putExtra(Const.PRODUCTID, products.get(position)
+				intent.putExtra(Const.PRODUCTID, products.get(position - 1)
 						.getProductId());
-				intent.putExtra(Const.PRODUCTNAME, products.get(position)
+				intent.putExtra(Const.PRODUCTNAME, products.get(position - 1)
 						.getProductName());
 				intent.putExtra(Const.CITYNAME, cityName);
 				intent.putExtra(Const.COUNTRYNAME, countryName);
@@ -138,8 +144,10 @@ public class ProductListActivity extends FragmentActivity implements
 		@Override
 		protected List<Product> doInBackground(Integer... params) {
 			try {
+				List<Product> tempProductList = productDao.getProductList(params[0]);
 				products.clear();
-				products.addAll(productDao.getProductList(params[0]));
+				products.addAll(tempProductList);
+				productListView.setVisibility(View.VISIBLE);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -149,6 +157,7 @@ public class ProductListActivity extends FragmentActivity implements
 		@Override
 		protected void onPostExecute(List<Product> result) {
 			adapter.notifyDataSetChanged();
+			stopRefresh();
 		}
 	}
 
@@ -179,5 +188,20 @@ public class ProductListActivity extends FragmentActivity implements
 		this.sortType = sortType;
 		finishFragment();
 	}
+
+	@Override
+	public void onRefresh() {
+		ProductListAsyncTask asyncTask = new ProductListAsyncTask();
+		asyncTask.execute(cityId);
+	}
+
+	@Override
+	public void onLoadMore() {
+		
+	}
 	
+	private void stopRefresh() {
+		productListView.stopRefresh();
+		productListView.setRefreshTime("刚刚");
+	}
 }

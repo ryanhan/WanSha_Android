@@ -12,6 +12,8 @@ public interface ProductDao {
 
 	public List<Product> getProductList(int cityId) throws MalformedURLException, InterruptedException, ExecutionException, JSONException;
 	
+	public List<Product> getProductList(int cityId, int offset, int number) throws MalformedURLException, InterruptedException, ExecutionException, JSONException;
+	
 	public Product getProductDetail(int productId) throws MalformedURLException, InterruptedException, ExecutionException, JSONException;
 
 }

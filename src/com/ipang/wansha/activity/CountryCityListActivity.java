@@ -34,7 +34,7 @@ public class CountryCityListActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_country_list);
+		setContentView(R.layout.activity_country_city_list);
 		setActionBar();
 		setListView();
 	}

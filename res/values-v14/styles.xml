@@ -10,7 +10,7 @@
         <item name="android:actionBarTabTextStyle">@style/Widget.MyStyle.ActionBar.TabText</item>
     </style>
 
-    <style name="Widget.MyStyle.ActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+    <style name="Widget.MyStyle.ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/wansha_blue</item>
         <item name="android:height">@dimen/actionBar_height</item>
     </style>

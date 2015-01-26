@@ -3,23 +3,23 @@ package com.ipang.wansha.activity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.ipang.wansha.R;
 import com.ipang.wansha.dao.UserDao;
 import com.ipang.wansha.dao.impl.UserDaoImpl;
 
-public class RegisterActivity extends SherlockActivity {
+public class RegisterActivity extends Activity {
 
 	private ActionBar actionBar;
 	private EditText username;
@@ -37,7 +37,7 @@ public class RegisterActivity extends SherlockActivity {
 	}
 
 	private void setActionBar() {
-		actionBar = this.getSupportActionBar();
+		actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(false);
 		actionBar.setDisplayShowTitleEnabled(true);

@@ -14,15 +14,15 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        <item name="actionBarStyle">@style/Widget.MyStyle.ActionBar</item>
-        <item name="actionBarTabTextStyle">@style/Widget.MyStyle.ActionBar.TabText</item>
+        <item name="android:actionBarStyle">@style/Widget.MyStyle.ActionBar</item>
+        <item name="android:actionBarTabTextStyle">@style/Widget.MyStyle.ActionBar.TabText</item>
         <item name="android:actionBarTabStyle">@style/Widget.MyStyle.ActionBar.TabStyle</item>
         <item name="android:windowAnimationStyle">@style/activityAnimation</item>
     </style>
 
     <style name="Widget.MyStyle.ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-        <item name="background">@color/wansha_blue</item>
-        <item name="height">@dimen/actionBar_height</item>
+        <item name="android:background">@color/wansha_blue</item>
+        <item name="android:height">@dimen/actionBar_height</item>
     </style>
 
     <style name="Widget.MyStyle.ActionBar.TabStyle" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">

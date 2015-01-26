@@ -14,15 +14,6 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="11dp" >
 
-        <!--
-             <ListView
-            android:id="@+id/city_list_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="#00000000"
-            android:dividerHeight="@dimen/fragment_city_list_gap" />
-        -->
-
         <GridView
             android:id="@+id/city_grid_view"
             android:layout_width="match_parent"

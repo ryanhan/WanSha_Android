@@ -55,6 +55,37 @@ public class ProductDaoImpl implements ProductDao {
 		}
 		return products;
 	}
+	
+	@Override
+	public List<Product> getProductList(int cityId, int offset, int number)
+			throws MalformedURLException, InterruptedException,
+			ExecutionException, JSONException {
+		List<Product> products = new ArrayList<Product>();
+		URL url = new URL(Const.SERVERNAME + "/product/plist.json?cityId="
+				+ cityId + "&top=" + number + "&=" + offset);
+		String result = RestUtility.GetJson(url);
+
+		JSONObject jsonObject = null;
+		try {
+			jsonObject = new JSONObject(result);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		try {
+			JSONArray productList = jsonObject.getJSONArray("productList");
+			for (int i = 0; i < productList.length(); i++) {
+				JSONObject productJson = productList.getJSONObject(i);
+				products.add(createProduct(productJson));
+			}
+		} catch (JSONException e) {
+			JSONObject json = jsonObject.getJSONObject("productList");
+			products.add(createProduct(json));
+		}
+		return products;
+	}
+	
 
 	@Override
 	public Product getProductDetail(int productId) throws MalformedURLException,

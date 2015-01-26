@@ -1,5 +1,6 @@
 package com.ipang.wansha.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,12 +15,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.LaunchImagePagerAdapter;
 import com.ipang.wansha.utils.Const;
 
-public class SplashActivity extends SherlockActivity {
+public class SplashActivity extends Activity {
 
 	private final int SPLASH_DISPLAY_LENGHT = 1000;
 	private SharedPreferences pref;
