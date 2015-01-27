@@ -20,6 +20,8 @@ public class Const {
 	public static final String PASSWORD = "password";
 	public static final String HASLOGIN = "haslogin";
 	public static final String FIRST = "first";
+	public static final String JSESSIONID = "JSESSIONID";
+
 
 	public static final int LOGIN_REQUEST = 1;
 	public static final int CHANGE_PASSWORD = 2;

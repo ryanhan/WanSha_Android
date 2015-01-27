@@ -80,6 +80,7 @@ public class LoginActivity extends Activity {
 		editor.putInt(Const.USERID, user.getUserId());
 		editor.putString(Const.USERNAME, user.getUserName());
 		editor.putString(Const.PASSWORD, user.getPassword());
+		editor.putString(Const.JSESSIONID, user.getJSessionId());
 		editor.putBoolean(Const.HASLOGIN, true);
 		editor.commit();
 	}

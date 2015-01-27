@@ -16,7 +16,7 @@ import com.ipang.wansha.dao.CityDao;
 import com.ipang.wansha.model.City;
 import com.ipang.wansha.model.Country;
 import com.ipang.wansha.utils.Const;
-import com.ipang.wansha.utils.RestUtility;
+import com.ipang.wansha.utils.HttpUtility;
 
 public class CityDaoImpl implements CityDao {
 
@@ -27,7 +27,7 @@ public class CityDaoImpl implements CityDao {
 		List<Country> countries = new ArrayList<Country>();
 
 		URL url = new URL(Const.SERVERNAME + "/geodata/city/list.json");
-		String result = RestUtility.GetJson(url);
+		String result = HttpUtility.GetJson(url);
 
 		JSONArray jsonArray = new JSONArray(result);
 		
@@ -79,7 +79,7 @@ public class CityDaoImpl implements CityDao {
 		List<Country> countries = new ArrayList<Country>();
 
 		URL url = new URL(Const.SERVERNAME + "/genericdb/continent/list.json");
-		String result = RestUtility.GetJson(url);
+		String result = HttpUtility.GetJson(url);
 
 		JSONArray jsonArray = new JSONArray(result);
 
@@ -104,7 +104,7 @@ public class CityDaoImpl implements CityDao {
 		List<City> cities = new ArrayList<City>();
 		URL url = new URL(Const.SERVERNAME + "/geodata/city/list.json");
 
-		String result = RestUtility.GetJson(url);
+		String result = HttpUtility.GetJson(url);
 
 		JSONArray jsonArray = new JSONArray(result);
 
@@ -124,7 +124,7 @@ public class CityDaoImpl implements CityDao {
 		HashMap<String, List<City>> map = new HashMap<String, List<City>>();
 		URL url = new URL(Const.SERVERNAME + "/geodata/city/list.json");
 
-		String result = RestUtility.GetJson(url);
+		String result = HttpUtility.GetJson(url);
 
 		JSONArray jsonArray = new JSONArray(result);
 
@@ -193,7 +193,7 @@ public class CityDaoImpl implements CityDao {
 		HashMap<Integer, City> cities = new HashMap<Integer, City>();
 		URL url = new URL(Const.SERVERNAME + "/geodata/city/list.json");
 
-		String result = RestUtility.GetJson(url);
+		String result = HttpUtility.GetJson(url);
 
 		JSONArray jsonArray = new JSONArray(result);
 

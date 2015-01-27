@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,12 +19,14 @@ import android.widget.Toast;
 import com.ipang.wansha.R;
 import com.ipang.wansha.dao.UserDao;
 import com.ipang.wansha.dao.impl.UserDaoImpl;
+import com.ipang.wansha.model.User;
 import com.ipang.wansha.utils.Const;
 
 public class ChangePasswordActivity extends Activity {
 
 	private ActionBar actionBar;
 	private SharedPreferences pref;
+	private String userName;
 	private UserDao userDao;
 	private EditText currentPassword;
 	private EditText newPassword;
@@ -34,6 +37,7 @@ public class ChangePasswordActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_change_password);
 		pref = this.getSharedPreferences(Const.USERINFO, Context.MODE_PRIVATE);
+		userName = pref.getString(Const.USERNAME, null);
 		userDao = new UserDaoImpl();
 		setActionBar();
 		setViews();
@@ -97,8 +101,26 @@ public class ChangePasswordActivity extends Activity {
 
 		@Override
 		protected Boolean doInBackground(String... params) {
+
+			User user = null;
 			try {
-				return userDao.changePassword(params[0], params[1]);
+				user = userDao.isAlive(pref.getString(Const.JSESSIONID, null));
+				if (user == null) {
+					user = userDao.login(userName, params[0]);
+					Editor editor = pref.edit();
+					editor.putString(Const.JSESSIONID, user.getJSessionId());
+					editor.commit();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			if (user == null)
+				return false;
+
+			try {
+				return userDao.changePassword(params[0], params[1],
+						user.getJSessionId());
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
@@ -111,7 +133,8 @@ public class ChangePasswordActivity extends Activity {
 				Toast.makeText(ChangePasswordActivity.this, "修改密码成功",
 						Toast.LENGTH_SHORT).show();
 				Intent intent = new Intent();
-				intent.putExtra(Const.PASSWORD, newPassword.getText().toString());
+				intent.putExtra(Const.PASSWORD, newPassword.getText()
+						.toString());
 				setResult(RESULT_OK, intent);
 				ChangePasswordActivity.this.finish();
 			} else {

@@ -2,28 +2,16 @@ package com.ipang.wansha.dao.impl;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.dao.UserDao;
-import com.ipang.wansha.model.Booking;
 import com.ipang.wansha.model.User;
 import com.ipang.wansha.utils.Const;
-import com.ipang.wansha.utils.RestUtility;
-import com.ipang.wansha.utils.Utility;
+import com.ipang.wansha.utils.HttpUtility;
 
 public class UserDaoImpl implements UserDao {
 
@@ -40,7 +28,7 @@ public class UserDaoImpl implements UserDao {
 		} catch (JSONException e) {
 			return false;
 		}
-		String response = RestUtility.PostJson(url, json);
+		String response = HttpUtility.PostJson(url, json);
 		System.out.println(response);
 
 		try {
@@ -64,7 +52,18 @@ public class UserDaoImpl implements UserDao {
 		postParam.put("user", userName);
 		postParam.put("password", password);
 
-		String response = RestUtility.PostParam(url, postParam);
+		String JSessionId = null;
+		try {
+			JSessionId = HttpUtility.getJSessionId();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (JSessionId == null)
+			return null;
+
+		String response = HttpUtility.PostParam(url, postParam, JSessionId);
+		System.out.println("login: " + response);
 
 		try {
 			JSONObject json = new JSONObject(response);
@@ -73,8 +72,11 @@ public class UserDaoImpl implements UserDao {
 				user.setUserId(json.getInt("id"));
 				user.setUserName(json.getString("uname"));
 				user.setPassword(password);
-				user.setEmail(json.isNull("email") ? null : json.getString("email"));
-				user.setMobile(json.isNull("mobile") ? null : json.getString("mobile"));
+				user.setEmail(json.isNull("email") ? null : json
+						.getString("email"));
+				user.setMobile(json.isNull("mobile") ? null : json
+						.getString("mobile"));
+				user.setJSessionId(JSessionId);
 				return user;
 			}
 		} catch (JSONException e) {
@@ -83,11 +85,12 @@ public class UserDaoImpl implements UserDao {
 		}
 		return null;
 	}
-	
-	public User isAlive() throws MalformedURLException{
+
+	public User isAlive(String JSessionId) throws MalformedURLException {
 		URL url = new URL(Const.SERVERNAME + "/user/isAlive.json");
 
-		String response = RestUtility.GetJson(url);
+		String response = HttpUtility.GetJson(url, JSessionId);
+		System.out.println("isAlive: " + response);
 
 		try {
 			JSONObject json = new JSONObject(response);
@@ -95,8 +98,11 @@ public class UserDaoImpl implements UserDao {
 				User user = new User();
 				user.setUserId(json.getInt("id"));
 				user.setUserName(json.getString("uname"));
-				user.setEmail(json.isNull("email") ? null : json.getString("email"));
-				user.setMobile(json.isNull("mobile") ? null : json.getString("mobile"));
+				user.setEmail(json.isNull("email") ? null : json
+						.getString("email"));
+				user.setMobile(json.isNull("mobile") ? null : json
+						.getString("mobile"));
+				user.setJSessionId(JSessionId);
 				return user;
 			}
 		} catch (JSONException e) {
@@ -107,15 +113,35 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public boolean changePassword(String oldPassword, String newPassword) throws MalformedURLException {
+	public boolean changePassword(String oldPassword, String newPassword,
+			String JSessionId) throws MalformedURLException {
 		URL url = new URL(Const.SERVERNAME + "/user/changepass.json");
 		HashMap<String, String> postParam = new HashMap<String, String>();
 		postParam.put("oldPass", oldPassword);
 		postParam.put("newPass", newPassword);
 
-		//String response = RestUtility.PostParam(url, postParam);
-		
-		return false;
+		String response = HttpUtility.PostParam(url, postParam, JSessionId);
+		System.out.println("changePassword: " + response);
+
+		try {
+			JSONObject json = new JSONObject(response);
+			int code = json.getInt("code");
+			if (code == 0) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Override
+	public void logout(String JSESSIONID) throws MalformedURLException {
+		URL url = new URL(Const.SERVERNAME + "/user/logout.json");
+		String response = HttpUtility.GetJson(url, JSESSIONID);
+		System.out.println("logout: " + response);
 	}
 
 }

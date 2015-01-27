@@ -8,6 +8,7 @@ public class User {
 	private String password;
 	private String email;
 	private String mobile;
+	private String jSessionid;
 	
 
 	public int getUserId() {
@@ -48,6 +49,14 @@ public class User {
 
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
+	}
+
+	public String getJSessionId() {
+		return jSessionid;
+	}
+
+	public void setJSessionId(String jSessionId) {
+		jSessionid = jSessionId;
 	}
 
 }

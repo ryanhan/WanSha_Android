@@ -83,11 +83,10 @@ public class UserAdminActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Editor editor = pref.edit();
-				editor.clear();
-				editor.putBoolean(Const.HASLOGIN, false);
-				editor.commit();
-				UserAdminActivity.this.finish();
+				
+				LogoutAsyncTask logoutAsyncTask = new LogoutAsyncTask();
+				logoutAsyncTask.execute();
+				
 			}
 		});
 
@@ -103,6 +102,33 @@ public class UserAdminActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	private class LogoutAsyncTask extends AsyncTask<Void, Integer, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			User user = null;
+			try {
+				user = userDao.isAlive(pref.getString(Const.JSESSIONID, null));
+				if (user != null) {
+					userDao.logout(pref.getString(Const.JSESSIONID, null));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			Editor editor = pref.edit();
+			editor.clear();
+			editor.putBoolean(Const.HASLOGIN, false);
+			editor.commit();
+			UserAdminActivity.this.finish();
+		}
+	}
+	
 	private class UserInfoAsyncTask extends AsyncTask<String, Integer, User> {
 
 		@Override
@@ -110,12 +136,13 @@ public class UserAdminActivity extends Activity {
 
 			User user = null;
 			try {
-				// user = userDao.isAlive();
-
-				// if (user == null) {
-				user = userDao.login(params[0], params[1]);
-				// }
-
+				user = userDao.isAlive(pref.getString(Const.JSESSIONID, null));
+				if (user == null) {
+					user = userDao.login(params[0], params[1]);
+					Editor editor = pref.edit();
+					editor.putString(Const.JSESSIONID, user.getJSessionId());
+					editor.commit();
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				return null;
@@ -132,11 +159,12 @@ public class UserAdminActivity extends Activity {
 					.getString(R.string.not_bind) : result.getMobile());
 		}
 	}
-	
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);  
-		if (requestCode == Const.CHANGE_PASSWORD && resultCode == Activity.RESULT_OK) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == Const.CHANGE_PASSWORD
+				&& resultCode == Activity.RESULT_OK) {
 			// pref. change password
 		}
 	}

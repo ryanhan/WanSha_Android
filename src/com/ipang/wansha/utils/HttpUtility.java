@@ -1,43 +1,39 @@
 package com.ipang.wansha.utils;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookieStore;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.json.JSONObject;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-public class RestUtility {
-
-	private static String readInputStream(InputStream inputStream)
-			throws IOException {
-		StringBuffer out = new StringBuffer();
-		int n = 1;
-		while (n > 0) {
-			byte[] b = new byte[4096];
-			n = inputStream.read(b);
-			if (n > 0)
-				out.append(new String(b, 0, n));
-		}
-		inputStream.close();
-		return out.toString();
+public class HttpUtility {
+	
+	public static String GetJson(URL url) {
+		return GetJson(url, null);
 	}
 
-	public static String GetJson(URL url) {
+	public static String GetJson(URL url, String JSessionId) {
+
 		HttpURLConnection urlConn = null;
 		try {
 			urlConn = (HttpURLConnection) url.openConnection();
 			urlConn.addRequestProperty("accept", "application/json");
 			urlConn.setConnectTimeout(Const.CONNECT_TIMEOUT);
 			urlConn.setReadTimeout(Const.READ_TIMEOUT);
+			if (JSessionId != null)
+				urlConn.setRequestProperty("Cookie", Const.JSESSIONID + "=" + JSessionId);
 
 			int responseCode = urlConn.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -54,10 +50,13 @@ public class RestUtility {
 				urlConn.disconnect();
 			}
 		}
-
+	}
+	
+	public static String PostParam(URL url, HashMap<String, String> postParam) {
+		return PostParam(url, postParam, null);
 	}
 
-	public static String PostParam(URL url, HashMap<String, String> postParam) {
+	public static String PostParam(URL url, HashMap<String, String> postParam, String JSessionId) {
 
 		HttpURLConnection urlConn = null;
 		try {
@@ -67,6 +66,9 @@ public class RestUtility {
 			urlConn.setDoInput(true);
 			urlConn.setConnectTimeout(Const.CONNECT_TIMEOUT);
 			urlConn.setReadTimeout(Const.READ_TIMEOUT);
+			if (JSessionId != null)
+				urlConn.setRequestProperty("Cookie", Const.JSESSIONID + "=" + JSessionId);
+			
 			String data = "";
 			if (postParam != null) {
 				Iterator<String> iter = postParam.keySet().iterator();
@@ -102,8 +104,12 @@ public class RestUtility {
 			}
 		}
 	}
-
+	
 	public static String PostJson(URL url, JSONObject json) {
+		return PostJson(url, json, null);
+	}
+
+	public static String PostJson(URL url, JSONObject json, String JSessionId) {
 
 		HttpURLConnection urlConn = null;
 		try {
@@ -114,6 +120,9 @@ public class RestUtility {
 			urlConn.setDoInput(true);
 			urlConn.setConnectTimeout(Const.CONNECT_TIMEOUT);
 			urlConn.setReadTimeout(Const.READ_TIMEOUT);
+			if (JSessionId != null)
+				urlConn.setRequestProperty("Cookie", Const.JSESSIONID + "=" + JSessionId);
+			
 			if (json != null) {
 				String data = URLEncoder.encode(json.toString(), "UTF-8");
 				urlConn.setRequestProperty("Content-Type", "application/json");
@@ -140,21 +149,33 @@ public class RestUtility {
 		}
 	}
 
-	public Bitmap ImageGet(String path) {
-		try {
-			URL url = new URL(path);
-			InputStream in = url.openStream();
-			InputStream buf = new BufferedInputStream(in);
-			Bitmap bm = BitmapFactory.decodeStream(buf);
-			if (in != null) {
-				in.close();
-			}
-			if (buf != null) {
-				buf.close();
-			}
-			return bm;
-		} catch (Exception e) {
-			return null;
+	private static String readInputStream(InputStream inputStream)
+			throws IOException {
+		StringBuffer out = new StringBuffer();
+		int n = 1;
+		while (n > 0) {
+			byte[] b = new byte[4096];
+			n = inputStream.read(b);
+			if (n > 0)
+				out.append(new String(b, 0, n));
 		}
+		inputStream.close();
+		return out.toString();
+	}
+
+	public static String getJSessionId() throws IOException {
+		CookieManager manager = new CookieManager();
+		CookieHandler.setDefault(manager);
+		URL url = new URL(Const.SERVERNAME);
+		URLConnection connection = url.openConnection();
+		connection.getContent();
+		CookieStore cookieJar = manager.getCookieStore();
+		List<HttpCookie> cookies = cookieJar.getCookies();
+		for (HttpCookie cookie : cookies) {
+			if (cookie.getName().equals("JSESSIONID")) {
+				return cookie.getValue();
+			}
+		}
+		return null;
 	}
 }

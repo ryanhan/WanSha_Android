@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import com.ipang.wansha.dao.ReviewDao;
 import com.ipang.wansha.model.Review;
 import com.ipang.wansha.utils.Const;
-import com.ipang.wansha.utils.RestUtility;
+import com.ipang.wansha.utils.HttpUtility;
 import com.ipang.wansha.utils.Utility;
 
 public class ReviewDaoImpl implements ReviewDao {
@@ -27,7 +27,7 @@ public class ReviewDaoImpl implements ReviewDao {
 		ArrayList<Review> reviews = new ArrayList<Review>();
 		URL url = new URL(Const.SERVERNAME + "/rest/review?product="
 				+ productId);
-		String result = RestUtility.GetJson(url);
+		String result = HttpUtility.GetJson(url);
 		if (result == null)
 			return null;
 
@@ -56,7 +56,7 @@ public class ReviewDaoImpl implements ReviewDao {
 		int[] ranking = new int[5];
 		URL url = new URL(Const.SERVERNAME + "/rest/product/" + productId
 				+ "/ranking");
-		String result = RestUtility.GetJson(url);
+		String result = HttpUtility.GetJson(url);
 
 		if (result == null)
 			return null;

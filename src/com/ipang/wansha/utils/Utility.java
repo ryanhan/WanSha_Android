@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -82,14 +83,18 @@ public class Utility {
 		return sp * scaledDensity;
 	}
 
+	/**
+	 * @param text
+	 * @return
+	 */
 	public static String formatText(String text) {
-		return text.replaceAll("<p>", "").replaceAll("</p>", "")
-				.replaceAll("&nbsp;", " ").replaceAll("\t", "")
-				.replaceAll("\n+", "\n").replaceAll("<br/>", "\n")
-				.replaceAll("<br />", "\n").replaceAll("<.*?span.*?>", "");
+		text = text.replaceAll("<img src=\"/", "<img src=\"" + Const.SERVERNAME + "/");
+		String converted = Html.fromHtml(text).toString().replaceAll("\t", "")
+				.replaceAll("\n\n", "\n").replaceAll("\n\n\n+", "\n\n");
+		return converted;
 	}
-	
-	public static String[] splitChnEng(String text){
+
+	public static String[] splitChnEng(String text) {
 		int index = text.indexOf(' ');
 		String[] res = new String[2];
 		res[0] = text.substring(0, index);

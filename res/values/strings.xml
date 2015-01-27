@@ -89,7 +89,7 @@
     <string name="not_bind">未绑定</string>
     <string name="user_change_password">修改密码</string>
     <string name="logout">退出登录</string>
-    <string name="loading_waiting">LOADING&#8230;</string>
+    <string name="loading_waiting">努力加载中&#8230;</string>
     
     
     <string name="xlistview_header_hint_normal">下拉刷新</string>
