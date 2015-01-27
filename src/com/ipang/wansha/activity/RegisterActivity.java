@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.ipang.wansha.R;
 import com.ipang.wansha.dao.UserDao;
 import com.ipang.wansha.dao.impl.UserDaoImpl;
+import com.ipang.wansha.exception.UserException;
 
 public class RegisterActivity extends Activity {
 
@@ -51,31 +52,35 @@ public class RegisterActivity extends Activity {
 		confirm = (EditText) findViewById(R.id.register_confirm_password);
 		Button registerButton = (Button) findViewById(R.id.button_register);
 		registerButton.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				if (TextUtils.isEmpty(username.getText())){
-					Toast.makeText(RegisterActivity.this, "请输入邮箱地址", Toast.LENGTH_SHORT).show();
-				}
-				else{
-					Pattern pattern = Pattern.compile("[\\w\\.\\-]+@([\\w\\-]+\\.)+[\\w\\-]+",Pattern.CASE_INSENSITIVE);
+				if (TextUtils.isEmpty(username.getText())) {
+					Toast.makeText(RegisterActivity.this, "请输入邮箱地址",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					Pattern pattern = Pattern.compile(
+							"[\\w\\.\\-]+@([\\w\\-]+\\.)+[\\w\\-]+",
+							Pattern.CASE_INSENSITIVE);
 					Matcher matcher = pattern.matcher(username.getText());
-					if (!matcher.matches()){
-						Toast.makeText(RegisterActivity.this, "邮箱格式不正确", Toast.LENGTH_SHORT).show();
-					}
-					else if (TextUtils.isEmpty(password.getText())){
-						Toast.makeText(RegisterActivity.this, "请输入密码", Toast.LENGTH_SHORT).show();
-					}
-					else if(password.getText().length() < 6){
-						Toast.makeText(RegisterActivity.this, "请输入6位以上密码", Toast.LENGTH_SHORT).show();
-					}
-					else if (!password.getText().toString().equals(confirm.getText().toString())){
-						Toast.makeText(RegisterActivity.this, "请保证两次密码输入一致", Toast.LENGTH_SHORT).show();
-					}
-					else {
+					if (!matcher.matches()) {
+						Toast.makeText(RegisterActivity.this, "邮箱格式不正确",
+								Toast.LENGTH_SHORT).show();
+					} else if (TextUtils.isEmpty(password.getText())) {
+						Toast.makeText(RegisterActivity.this, "请输入密码",
+								Toast.LENGTH_SHORT).show();
+					} else if (password.getText().length() < 6) {
+						Toast.makeText(RegisterActivity.this, "请输入6位以上密码",
+								Toast.LENGTH_SHORT).show();
+					} else if (!password.getText().toString()
+							.equals(confirm.getText().toString())) {
+						Toast.makeText(RegisterActivity.this, "请保证两次密码输入一致",
+								Toast.LENGTH_SHORT).show();
+					} else {
 						RegisterAsyncTask registerAsyncTask = new RegisterAsyncTask();
-						registerAsyncTask
-								.execute(username.getText().toString(), password.getText().toString());
+						registerAsyncTask.execute(
+								username.getText().toString(), password
+										.getText().toString());
 					}
 				}
 			}
@@ -97,11 +102,12 @@ public class RegisterActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(String... params) {
 			try {
-				return userDao.register(params[0], params[1]);
-			} catch (Exception e) {
+				userDao.register(params[0], params[1]);
+			} catch (UserException e) {
 				e.printStackTrace();
 				return false;
 			}
+			return true;
 		}
 
 		@Override

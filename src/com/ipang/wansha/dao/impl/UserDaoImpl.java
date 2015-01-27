@@ -9,6 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.ipang.wansha.dao.UserDao;
+import com.ipang.wansha.exception.HttpException;
+import com.ipang.wansha.exception.UserException;
 import com.ipang.wansha.model.User;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.HttpUtility;
@@ -16,38 +18,55 @@ import com.ipang.wansha.utils.HttpUtility;
 public class UserDaoImpl implements UserDao {
 
 	@Override
-	public boolean register(String userName, String password)
-			throws MalformedURLException {
+	public void register(String userName, String password) throws UserException {
 
-		URL url = new URL(Const.SERVERNAME + "/user/register.json");
+		URL url = null;
+		try {
+			url = new URL(Const.SERVERNAME + "/user/register.json");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			throw new UserException(UserException.UNKNOWN_ERROR);
+		}
 
 		JSONObject json = new JSONObject();
 		try {
 			json.put("uname", userName);
 			json.put("password", password);
 		} catch (JSONException e) {
-			return false;
+			throw new UserException(UserException.JSON_FORMAT_NOT_MATCH);
 		}
-		String response = HttpUtility.PostJson(url, json);
-		System.out.println(response);
+
+		String response = null;
+		try {
+			response = HttpUtility.PostJson(url, json);
+		} catch (HttpException e) {
+			e.printStackTrace();
+			throw new UserException(UserException.NETWORK_CONNECT_FAILED);
+		}
+		System.out.println("register: " + response);
 
 		try {
 			JSONObject responseJson = new JSONObject(response);
-			if (responseJson.getInt("code") == 0) {
-				return true;
+			if (responseJson.getInt("code") != 0) {
+				throw new UserException(UserException.REGISTER_FAILED);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
-			return false;
+			throw new UserException(UserException.REGISTER_FAILED);
 		}
-		return false;
 	}
 
 	@Override
-	public User login(String userName, String password)
-			throws MalformedURLException {
+	public User login(String userName, String password) throws UserException {
 
-		URL url = new URL(Const.SERVERNAME + "/user/login.json");
+		URL url = null;
+		try {
+			url = new URL(Const.SERVERNAME + "/user/login.json");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			throw new UserException(UserException.UNKNOWN_ERROR);
+		}
+
 		HashMap<String, String> postParam = new HashMap<String, String>();
 		postParam.put("user", userName);
 		postParam.put("password", password);
@@ -57,91 +76,161 @@ public class UserDaoImpl implements UserDao {
 			JSessionId = HttpUtility.getJSessionId();
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw new UserException(UserException.JSESSION_NOT_FOUND);
 		}
 
-		if (JSessionId == null)
-			return null;
+		if (JSessionId == null) {
+			throw new UserException(UserException.JSESSION_NOT_FOUND);
+		}
 
-		String response = HttpUtility.PostParam(url, postParam, JSessionId);
+		String response = null;
+		try {
+			response = HttpUtility.PostParam(url, postParam, JSessionId);
+		} catch (HttpException e) {
+			e.printStackTrace();
+			throw new UserException(UserException.NETWORK_CONNECT_FAILED);
+		}
 		System.out.println("login: " + response);
 
+		User user = new User();
+		JSONObject json = null;
 		try {
-			JSONObject json = new JSONObject(response);
-			if (json.getInt("status") == 1) {
-				User user = new User();
+			json = new JSONObject(response);
+			if (json.getInt("status") != 1) {
+				throw new UserException(UserException.LOGIN_FAILED);
+			} else {
 				user.setUserId(json.getInt("id"));
 				user.setUserName(json.getString("uname"));
-				user.setPassword(password);
-				user.setEmail(json.isNull("email") ? null : json
-						.getString("email"));
-				user.setMobile(json.isNull("mobile") ? null : json
-						.getString("mobile"));
-				user.setJSessionId(JSessionId);
-				return user;
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
-			return null;
+			throw new UserException(UserException.JSON_FORMAT_NOT_MATCH);
 		}
-		return null;
+		try {
+			if (!json.isNull("email")) {
+				user.setEmail(json.getString("email"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		try {
+			if (!json.isNull("mobile")) {
+				user.setMobile(json.getString("mobile"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		user.setPassword(password);
+		user.setJSessionId(JSessionId);
+		return user;
 	}
 
-	public User isAlive(String JSessionId) throws MalformedURLException {
-		URL url = new URL(Const.SERVERNAME + "/user/isAlive.json");
+	public User isAlive(String JSessionId) throws UserException {
 
-		String response = HttpUtility.GetJson(url, JSessionId);
+		URL url = null;
+		try {
+			url = new URL(Const.SERVERNAME + "/user/isAlive.json");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			throw new UserException(UserException.UNKNOWN_ERROR);
+		}
+
+		String response = null;
+		try {
+			response = HttpUtility.GetJson(url, JSessionId);
+		} catch (HttpException e) {
+			e.printStackTrace();
+			throw new UserException(UserException.NETWORK_CONNECT_FAILED);
+		}
 		System.out.println("isAlive: " + response);
 
+		User user = new User();
+		JSONObject json = null;
 		try {
-			JSONObject json = new JSONObject(response);
-			if (json.getInt("status") == 1) {
-				User user = new User();
+			json = new JSONObject(response);
+			if (json.getInt("status") != 1) {
+				throw new UserException(UserException.NOT_ALIVE);
+			} else {
 				user.setUserId(json.getInt("id"));
 				user.setUserName(json.getString("uname"));
-				user.setEmail(json.isNull("email") ? null : json
-						.getString("email"));
-				user.setMobile(json.isNull("mobile") ? null : json
-						.getString("mobile"));
-				user.setJSessionId(JSessionId);
-				return user;
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
-			return null;
+			throw new UserException(UserException.JSON_FORMAT_NOT_MATCH);
 		}
-		return null;
+		try {
+			if (!json.isNull("email")) {
+				user.setEmail(json.getString("email"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		try {
+			if (!json.isNull("mobile")) {
+				user.setMobile(json.getString("mobile"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		user.setJSessionId(JSessionId);
+		return user;
 	}
 
 	@Override
-	public boolean changePassword(String oldPassword, String newPassword,
-			String JSessionId) throws MalformedURLException {
-		URL url = new URL(Const.SERVERNAME + "/user/changepass.json");
+	public void changePassword(String oldPassword, String newPassword,
+			String JSessionId) throws UserException {
+
+		URL url = null;
+		try {
+			url = new URL(Const.SERVERNAME + "/user/changepass.json");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			throw new UserException(UserException.UNKNOWN_ERROR);
+		}
+
 		HashMap<String, String> postParam = new HashMap<String, String>();
 		postParam.put("oldPass", oldPassword);
 		postParam.put("newPass", newPassword);
 
-		String response = HttpUtility.PostParam(url, postParam, JSessionId);
+		String response = null;
+		try {
+			response = HttpUtility.PostParam(url, postParam, JSessionId);
+		} catch (HttpException e) {
+			e.printStackTrace();
+			throw new UserException(UserException.NETWORK_CONNECT_FAILED);
+		}
 		System.out.println("changePassword: " + response);
 
 		try {
 			JSONObject json = new JSONObject(response);
 			int code = json.getInt("code");
-			if (code == 0) {
-				return true;
-			} else {
-				return false;
+			if (code != 0) {
+				throw new UserException(UserException.CHANGE_PASSWORD_FAILED);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
-			return false;
+			throw new UserException(UserException.JSON_FORMAT_NOT_MATCH);
 		}
 	}
 
 	@Override
-	public void logout(String JSESSIONID) throws MalformedURLException {
-		URL url = new URL(Const.SERVERNAME + "/user/logout.json");
-		String response = HttpUtility.GetJson(url, JSESSIONID);
+	public void logout(String JSESSIONID) throws UserException {
+		URL url = null;
+		try {
+			url = new URL(Const.SERVERNAME + "/user/logout.json");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			throw new UserException(UserException.UNKNOWN_ERROR);
+		}
+
+		String response = null;
+		try {
+			response = HttpUtility.GetJson(url, JSESSIONID);
+		} catch (HttpException e) {
+			e.printStackTrace();
+			throw new UserException(UserException.NETWORK_CONNECT_FAILED);
+		}
 		System.out.println("logout: " + response);
 	}
-
 }

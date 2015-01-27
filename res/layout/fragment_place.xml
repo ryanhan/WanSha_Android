@@ -40,6 +40,7 @@
             android:layout_height="wrap_content"
             android:cacheColorHint="@android:color/transparent"
             android:divider="#00000000"
+            android:minHeight="200dp"
             android:dividerHeight="@dimen/listview_gap_between_image_item"
             android:listSelector="@android:color/transparent" />
     </LinearLayout>

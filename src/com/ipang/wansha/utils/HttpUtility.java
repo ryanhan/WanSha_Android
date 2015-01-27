@@ -8,7 +8,6 @@ import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -18,13 +17,16 @@ import java.util.List;
 
 import org.json.JSONObject;
 
+import com.ipang.wansha.exception.HttpException;
+
 public class HttpUtility {
-	
-	public static String GetJson(URL url) {
+
+	public static String GetJson(URL url) throws HttpException {
 		return GetJson(url, null);
 	}
 
-	public static String GetJson(URL url, String JSessionId) {
+	public static String GetJson(URL url, String JSessionId)
+			throws HttpException {
 
 		HttpURLConnection urlConn = null;
 		try {
@@ -33,30 +35,33 @@ public class HttpUtility {
 			urlConn.setConnectTimeout(Const.CONNECT_TIMEOUT);
 			urlConn.setReadTimeout(Const.READ_TIMEOUT);
 			if (JSessionId != null)
-				urlConn.setRequestProperty("Cookie", Const.JSESSIONID + "=" + JSessionId);
+				urlConn.setRequestProperty("Cookie", Const.JSESSIONID + "="
+						+ JSessionId);
 
 			int responseCode = urlConn.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				InputStream inputStream = urlConn.getInputStream();
 				return readInputStream(inputStream);
+			} else {
+				throw new HttpException(HttpException.HTTP_RESPONSE_ERROR);
 			}
-			return null;
-
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			throw new HttpException(HttpException.HOST_CONNECT_FAILED);
 		} finally {
 			if (urlConn != null) {
 				urlConn.disconnect();
 			}
 		}
 	}
-	
-	public static String PostParam(URL url, HashMap<String, String> postParam) {
+
+	public static String PostParam(URL url, HashMap<String, String> postParam)
+			throws HttpException {
 		return PostParam(url, postParam, null);
 	}
 
-	public static String PostParam(URL url, HashMap<String, String> postParam, String JSessionId) {
+	public static String PostParam(URL url, HashMap<String, String> postParam,
+			String JSessionId) throws HttpException {
 
 		HttpURLConnection urlConn = null;
 		try {
@@ -67,8 +72,9 @@ public class HttpUtility {
 			urlConn.setConnectTimeout(Const.CONNECT_TIMEOUT);
 			urlConn.setReadTimeout(Const.READ_TIMEOUT);
 			if (JSessionId != null)
-				urlConn.setRequestProperty("Cookie", Const.JSESSIONID + "=" + JSessionId);
-			
+				urlConn.setRequestProperty("Cookie", Const.JSESSIONID + "="
+						+ JSessionId);
+
 			String data = "";
 			if (postParam != null) {
 				Iterator<String> iter = postParam.keySet().iterator();
@@ -92,24 +98,25 @@ public class HttpUtility {
 			if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				InputStream inputStream = urlConn.getInputStream();
 				return readInputStream(inputStream);
+			} else {
+				throw new HttpException(HttpException.HTTP_RESPONSE_ERROR);
 			}
-			return null;
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			throw new HttpException(HttpException.HOST_CONNECT_FAILED);
 		} finally {
 			if (urlConn != null) {
 				urlConn.disconnect();
 			}
 		}
 	}
-	
-	public static String PostJson(URL url, JSONObject json) {
+
+	public static String PostJson(URL url, JSONObject json) throws HttpException {
 		return PostJson(url, json, null);
 	}
 
-	public static String PostJson(URL url, JSONObject json, String JSessionId) {
+	public static String PostJson(URL url, JSONObject json, String JSessionId) throws HttpException {
 
 		HttpURLConnection urlConn = null;
 		try {
@@ -121,8 +128,9 @@ public class HttpUtility {
 			urlConn.setConnectTimeout(Const.CONNECT_TIMEOUT);
 			urlConn.setReadTimeout(Const.READ_TIMEOUT);
 			if (JSessionId != null)
-				urlConn.setRequestProperty("Cookie", Const.JSESSIONID + "=" + JSessionId);
-			
+				urlConn.setRequestProperty("Cookie", Const.JSESSIONID + "="
+						+ JSessionId);
+
 			if (json != null) {
 				String data = URLEncoder.encode(json.toString(), "UTF-8");
 				urlConn.setRequestProperty("Content-Type", "application/json");
@@ -136,12 +144,13 @@ public class HttpUtility {
 			if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				InputStream inputStream = urlConn.getInputStream();
 				return readInputStream(inputStream);
+			} else {
+				throw new HttpException(HttpException.HTTP_RESPONSE_ERROR);
 			}
-			return null;
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			throw new HttpException(HttpException.HOST_CONNECT_FAILED);
 		} finally {
 			if (urlConn != null) {
 				urlConn.disconnect();

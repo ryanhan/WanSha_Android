@@ -4,15 +4,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.ipang.wansha.dao.ProductDao;
-import com.ipang.wansha.dao.ReviewDao;
 import com.ipang.wansha.enums.Currency;
+import com.ipang.wansha.exception.HttpException;
+import com.ipang.wansha.exception.ProductException;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.HttpUtility;
@@ -20,86 +20,102 @@ import com.ipang.wansha.utils.Utility;
 
 public class ProductDaoImpl implements ProductDao {
 
-	private ReviewDao reviewDao;
-
-	public ProductDaoImpl() {
-		reviewDao = new ReviewDaoImpl();
-	}
-
 	@Override
-	public List<Product> getProductList(int cityId)
-			throws MalformedURLException, InterruptedException,
-			ExecutionException, JSONException {
-
+	public List<Product> getProductList(int cityId) throws ProductException {
 		return getProductList(cityId, 0, 500);
-
 	}
 
 	@Override
 	public List<Product> getProductList(int cityId, int offset, int number)
-			throws MalformedURLException, InterruptedException,
-			ExecutionException, JSONException {
+			throws ProductException {
 		List<Product> products = new ArrayList<Product>();
-		URL url = new URL(Const.SERVERNAME + "/product/plist.json?cityId="
-				+ cityId + "&top=" + number + "&skip=" + offset);
-		String result = HttpUtility.GetJson(url);
 
-		JSONObject jsonObject = null;
+		URL url = null;
 		try {
-			jsonObject = new JSONObject(result);
-		} catch (JSONException e) {
+			url = new URL(Const.SERVERNAME + "/product/plist.json?cityId="
+					+ cityId + "&top=" + number + "&skip=" + offset);
+		} catch (MalformedURLException e) {
 			e.printStackTrace();
-			return null;
+			throw new ProductException(ProductException.UNKNOWN_ERROR);
 		}
 
-		JSONArray productList = jsonObject.getJSONArray("productList");
+		String result = null;
+		try {
+			result = HttpUtility.GetJson(url);
+		} catch (HttpException e) {
+			e.printStackTrace();
+			throw new ProductException(ProductException.NETWORK_CONNECT_FAILED);
+		}
 
-		if (productList.length() == 0)
-			return null;
+		JSONArray productList = null;
+		try {
+			JSONObject jsonObject = new JSONObject(result);
+			productList = jsonObject.getJSONArray("productList");
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new ProductException(ProductException.JSON_FORMAT_NOT_MATCH);
+		}
 
 		for (int i = 0; i < productList.length(); i++) {
-			JSONObject productJson = productList.getJSONObject(i);
-			products.add(createProduct(productJson));
+			try {
+				JSONObject productJson = productList.getJSONObject(i);
+				products.add(createProduct(productJson));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return products;
 	}
 
 	@Override
-	public Product getProductDetail(int productId)
-			throws MalformedURLException, InterruptedException,
-			ExecutionException, JSONException {
+	public Product getProductDetail(int productId) throws ProductException {
 
-		URL url = new URL(Const.SERVERNAME + "/product/" + productId + ".json");
-		String result = HttpUtility.GetJson(url);
+		URL url = null;
+		try {
+			url = new URL(Const.SERVERNAME + "/product/" + productId + ".json");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			throw new ProductException(ProductException.UNKNOWN_ERROR);
+		}
 
+		String result = null;
+		try {
+			result = HttpUtility.GetJson(url);
+		} catch (HttpException e) {
+			e.printStackTrace();
+			throw new ProductException(ProductException.NETWORK_CONNECT_FAILED);
+		}
+		
 		JSONObject jsonObject = null;
 		try {
 			jsonObject = new JSONObject(result);
 		} catch (JSONException e) {
 			e.printStackTrace();
-			return null;
+			throw new ProductException(ProductException.JSON_FORMAT_NOT_MATCH);
 		}
 
-		return createProduct(jsonObject);
-	}
-
-	private Product createProduct(JSONObject json) {
-
-		Product product = new Product();
 		try {
-			product.setProductId(json.getInt("id"));
-			product.setProductName(json.getString("productName"));
-			product.setProductType(json.getInt("productType"));
+			return createProduct(jsonObject);
 		} catch (JSONException e) {
 			e.printStackTrace();
-			return null;
+			throw new ProductException(ProductException.JSON_FORMAT_NOT_MATCH);
 		}
+	}
+
+	private Product createProduct(JSONObject json) throws JSONException {
+
+		Product product = new Product();
+		product.setProductId(json.getInt("id"));
+		product.setProductName(json.getString("productName"));
+		product.setProductType(json.getInt("productType"));
 
 		if (!json.isNull("pictureList")) {
 			JSONArray imageList = null;
 			try {
-				imageList = json.getJSONArray("pictureList");
+				if (!json.isNull("pictureList")) {
+					imageList = json.getJSONArray("pictureList");
+				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -142,10 +158,9 @@ public class ProductDaoImpl implements ProductDao {
 										.fromString(priceJson
 												.getString("currency")));
 							}
-							if (lowest == -1 && price >= 0){
+							if (lowest == -1 && price >= 0) {
 								lowest = price;
-							}
-							else if (lowest != -1 && price < lowest)
+							} else if (lowest != -1 && price < lowest)
 								lowest = price;
 						} catch (JSONException e) {
 							e.printStackTrace();
@@ -158,42 +173,42 @@ public class ProductDaoImpl implements ProductDao {
 			product.setPrice(0);
 		}
 
-		if (!json.isNull("detail")) {
-			try {
+		try {
+			if (!json.isNull("detail")) {
 				product.setDetail(Utility.formatText(json.getString("detail")));
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 
-		if (!json.isNull("expenseDescr")) {
-			try {
+		try {
+			if (!json.isNull("expenseDescr")) {
 				product.setExpenseDescr(Utility.formatText(json
 						.getString("expenseDescr")));
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 
-		if (!json.isNull("instruction")) {
-			try {
+		try {
+			if (!json.isNull("instruction")) {
+
 				product.setInstruction(Utility.formatText(json
 						.getString("instruction")));
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 
-		if (!json.isNull("orderDescr")) {
-			try {
+		try {
+			if (!json.isNull("orderDescr")) {
 				product.setOrderDescr(Utility.formatText(json
 						.getString("orderDescr")));
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 
 		return product;
 	}
-
 }

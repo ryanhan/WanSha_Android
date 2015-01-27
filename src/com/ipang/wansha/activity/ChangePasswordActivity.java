@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.ipang.wansha.R;
 import com.ipang.wansha.dao.UserDao;
 import com.ipang.wansha.dao.impl.UserDaoImpl;
+import com.ipang.wansha.exception.UserException;
 import com.ipang.wansha.model.User;
 import com.ipang.wansha.utils.Const;
 
@@ -111,20 +112,22 @@ public class ChangePasswordActivity extends Activity {
 					editor.putString(Const.JSESSIONID, user.getJSessionId());
 					editor.commit();
 				}
-			} catch (Exception e) {
+			} catch (UserException e) {
 				e.printStackTrace();
 				return false;
 			}
+			
 			if (user == null)
 				return false;
 
 			try {
-				return userDao.changePassword(params[0], params[1],
+				userDao.changePassword(params[0], params[1],
 						user.getJSessionId());
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
+			return true;
 		}
 
 		@Override

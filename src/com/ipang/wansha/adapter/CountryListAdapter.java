@@ -20,7 +20,6 @@ import com.ipang.wansha.model.Country;
 import com.ipang.wansha.utils.Const;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 public class CountryListAdapter extends ArrayAdapter<Country> {
@@ -73,6 +72,7 @@ public class CountryListAdapter extends ArrayAdapter<Country> {
 		}
 
 		final ViewHolder viewHolder = holder;
+
 		viewHolder.countryNameTextView.setText(getItem(position)
 				.getCountryName());
 		viewHolder.productNumberTextView.setText(getItem(position)

@@ -89,6 +89,7 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 		countryListView = (XListView) fragmentView
 				.findViewById(R.id.listview_place);
 		countryListView.setAdapter(adapter);
+		countryListView.setPullRefreshEnable(true);
 		countryListView.setPullLoadEnable(false);
 		countryListView.setXListViewListener(this);
 
@@ -114,10 +115,19 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 	}
 
 	private void addFooterButton() {
-		Button button = new Button(this.getActivity());
-		AbsListView.LayoutParams buttonParams = new AbsListView.LayoutParams(
+		hasRefreshed = true;
+		LinearLayout layout = new LinearLayout(this.getActivity());
+		AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(
 				AbsListView.LayoutParams.MATCH_PARENT,
 				AbsListView.LayoutParams.WRAP_CONTENT);
+		layout.setLayoutParams(layoutParams);
+		
+		Button button = new Button(this.getActivity());
+		LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.MATCH_PARENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT);
+		buttonParams.leftMargin = (int) this.getResources().getDimension(R.dimen.activity_horizontal_margin);
+		buttonParams.rightMargin = (int) this.getResources().getDimension(R.dimen.activity_horizontal_margin);
 		button.setLayoutParams(buttonParams);
 		button.setPadding(
 				0,
@@ -139,8 +149,9 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 				startActivity(intent);
 			}
 		});
-
-		countryListView.addFooterView(button);
+		
+		layout.addView(button);
+		countryListView.addFooterView(layout);
 	}
 
 	private class CountryListAsyncTask extends
@@ -165,6 +176,7 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 				countries.clear();
 				countries.addAll(result);
 			}
+			
 			adapter.notifyDataSetChanged();
 			animationDrawable.stop();
 			if (!hasRefreshed)
@@ -175,7 +187,6 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 
 	@Override
 	public void onRefresh() {
-		hasRefreshed = true;
 		placeLayout.setVisibility(View.INVISIBLE);
 		loadingLayout.setVisibility(View.VISIBLE);
 		animationDrawable.start();
