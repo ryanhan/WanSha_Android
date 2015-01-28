@@ -224,7 +224,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:paddingLeft="@dimen/drawer_list_icon_word"
-            android:text="@string/settings"
+            android:text="@string/system_settings"
             android:textColor="@color/drawer_list_text"
             android:textSize="@dimen/drawer_list_font_size" />
     </LinearLayout>

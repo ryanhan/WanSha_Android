@@ -36,6 +36,9 @@ public class Const {
 	
 	public static final int PRODUCT_PER_PAGE = 10;
 	public static final int CITY_PER_PAGE = 10;
+	
+	public static final String FIR_IM_URL = "http://fir.im/api/v2/app/version/";
+	public static final String FIR_IM_ID = "54c88d12adc9a1a24a0000b2";
 
 	
 	public static final DisplayImageOptions options = new DisplayImageOptions.Builder()

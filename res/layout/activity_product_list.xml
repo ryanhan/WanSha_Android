@@ -39,7 +39,7 @@
         <com.ipang.wansha.customview.XListView
             android:id="@+id/product_list_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:cacheColorHint="@android:color/transparent"
             android:divider="#00000000"
             android:dividerHeight="@dimen/listview_gap_between_image_item"

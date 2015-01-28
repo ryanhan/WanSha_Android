@@ -73,6 +73,7 @@
     <string name="discount">优惠券</string>
     <string name="my_message">我的消息</string>
     <string name="settings">设置</string>
+    <string name="system_settings">系统设置</string>
     <string name="free">景点</string>
     <string name="expense_descr">费用说明</string>
     <string name="detail_sight">景点资讯</string>
@@ -90,7 +91,11 @@
     <string name="user_change_password">修改密码</string>
     <string name="logout">退出登录</string>
     <string name="loading_waiting">努力加载中&#8230;</string>
-    
+    <string name="without_wifi">非WIFI网络下加载图片</string>
+	<string name="feedback">意见反馈</string>
+    <string name="clear_cache">清除缓存</string>
+    <string name="check_update">检查更新</string>
+    <string name="about">关于</string>
     
     <string name="xlistview_header_hint_normal">下拉刷新</string>
     <string name="xlistview_header_hint_ready">松开刷新数据</string>

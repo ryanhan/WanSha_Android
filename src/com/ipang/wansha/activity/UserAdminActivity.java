@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.ipang.wansha.R;
 import com.ipang.wansha.dao.UserDao;
 import com.ipang.wansha.dao.impl.UserDaoImpl;
-import com.ipang.wansha.fragment.DrawerFragment;
+import com.ipang.wansha.exception.UserException;
 import com.ipang.wansha.model.User;
 import com.ipang.wansha.utils.Const;
 
@@ -83,10 +83,10 @@ public class UserAdminActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				
+
 				LogoutAsyncTask logoutAsyncTask = new LogoutAsyncTask();
 				logoutAsyncTask.execute();
-				
+
 			}
 		});
 
@@ -128,7 +128,7 @@ public class UserAdminActivity extends Activity {
 			UserAdminActivity.this.finish();
 		}
 	}
-	
+
 	private class UserInfoAsyncTask extends AsyncTask<String, Integer, User> {
 
 		@Override
@@ -137,26 +137,32 @@ public class UserAdminActivity extends Activity {
 			User user = null;
 			try {
 				user = userDao.isAlive(pref.getString(Const.JSESSIONID, null));
-				if (user == null) {
-					user = userDao.login(params[0], params[1]);
-					Editor editor = pref.edit();
-					editor.putString(Const.JSESSIONID, user.getJSessionId());
-					editor.commit();
-				}
-			} catch (Exception e) {
+			} catch (UserException e) {
 				e.printStackTrace();
-				return null;
+				try {
+					user = userDao.login(params[0], params[1]);
+				} catch (UserException e1) {
+					e1.printStackTrace();
+					return null;
+				}
+				Editor editor = pref.edit();
+				editor.putString(Const.JSESSIONID, user.getJSessionId());
+				editor.commit();
 			}
+			
 			return user;
 		}
 
 		@Override
 		protected void onPostExecute(User result) {
-			nickName.setText(result.getUserName());
-			email.setText(result.getEmail() == null ? getResources().getString(
-					R.string.not_bind) : result.getEmail());
-			mobile.setText(result.getMobile() == null ? getResources()
-					.getString(R.string.not_bind) : result.getMobile());
+			if (result != null) {
+				nickName.setText(result.getUserName());
+				email.setText(result.getEmail() == null ? getResources()
+						.getString(R.string.not_bind) : result.getEmail());
+				mobile.setText(result.getMobile() == null ? getResources()
+						.getString(R.string.not_bind) : result.getMobile());
+			}
+
 		}
 	}
 

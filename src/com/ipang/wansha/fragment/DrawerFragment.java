@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.activity.LoginActivity;
+import com.ipang.wansha.activity.SystemSettingActivity;
 import com.ipang.wansha.activity.UserAdminActivity;
 import com.ipang.wansha.utils.Const;
 
@@ -51,6 +52,8 @@ public class DrawerFragment extends Fragment {
 				.findViewById(R.id.layout_discout);
 		LinearLayout messageLayout = (LinearLayout) view
 				.findViewById(R.id.layout_my_message);
+		LinearLayout settingsLayout = (LinearLayout) view
+				.findViewById(R.id.layout_settings);
 		
 		loginLayout.setOnClickListener(new OnClickListener() {
 
@@ -108,7 +111,17 @@ public class DrawerFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+			}
+		});
+		
+		settingsLayout.setOnClickListener(new OnClickListener() {
 
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setClass(DrawerFragment.this.getActivity(),
+						SystemSettingActivity.class);
+				startActivity(intent);
 			}
 		});
 

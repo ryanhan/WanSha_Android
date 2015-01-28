@@ -39,27 +39,11 @@
         <com.ipang.wansha.customview.XListView
             android:id="@+id/city_list_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:cacheColorHint="@android:color/transparent"
             android:divider="#00000000"
             android:dividerHeight="@dimen/listview_gap_between_image_item"
             android:listSelector="@android:color/transparent" />
-
-        <!--
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-     
-
-        <GridView
-            android:id="@+id/city_grid_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:horizontalSpacing="@dimen/city_list_horizontal_space"
-            android:numColumns="2"
-            android:stretchMode="columnWidth"
-            android:verticalSpacing="10dp" />
-        -->
     </LinearLayout>
 
 </FrameLayout>

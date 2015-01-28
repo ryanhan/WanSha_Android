@@ -30,7 +30,6 @@ import com.ipang.wansha.customview.XListView.IXListViewListener;
 import com.ipang.wansha.dao.CityDao;
 import com.ipang.wansha.dao.impl.CityDaoImpl;
 import com.ipang.wansha.model.Country;
-import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
 
 public class PlaceFragment extends Fragment implements IXListViewListener {
@@ -46,6 +45,7 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 	private AnimationDrawable animationDrawable;
 	private LinearLayout loadingLayout;
 	private LinearLayout placeLayout;
+	private int screenWidth;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -82,7 +82,8 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 		DisplayMetrics metric = new DisplayMetrics();
 		this.getActivity().getWindowManager().getDefaultDisplay()
 				.getMetrics(metric);
-		int height = (int) ((metric.widthPixels - 2 * getResources()
+		screenWidth = metric.widthPixels;
+		int height = (int) ((screenWidth - 2 * getResources()
 				.getDimension(R.dimen.activity_horizontal_margin)) * 3 / 5);
 
 		adapter = new CountryListAdapter(this.getActivity(), countries, height);
@@ -121,13 +122,15 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 				AbsListView.LayoutParams.MATCH_PARENT,
 				AbsListView.LayoutParams.WRAP_CONTENT);
 		layout.setLayoutParams(layoutParams);
-		
+
 		Button button = new Button(this.getActivity());
 		LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.MATCH_PARENT,
 				LinearLayout.LayoutParams.WRAP_CONTENT);
-		buttonParams.leftMargin = (int) this.getResources().getDimension(R.dimen.activity_horizontal_margin);
-		buttonParams.rightMargin = (int) this.getResources().getDimension(R.dimen.activity_horizontal_margin);
+		buttonParams.leftMargin = (int) this.getResources().getDimension(
+				R.dimen.activity_horizontal_margin);
+		buttonParams.rightMargin = (int) this.getResources().getDimension(
+				R.dimen.activity_horizontal_margin);
 		button.setLayoutParams(buttonParams);
 		button.setPadding(
 				0,
@@ -149,7 +152,7 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 				startActivity(intent);
 			}
 		});
-		
+
 		layout.addView(button);
 		countryListView.addFooterView(layout);
 	}
@@ -175,14 +178,14 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 			if (result != null) {
 				countries.clear();
 				countries.addAll(result);
-			}
-			
-			adapter.notifyDataSetChanged();
-			animationDrawable.stop();
-			if (!hasRefreshed)
-				addFooterButton();
+				adapter.notifyDataSetChanged();
+				if (!hasRefreshed) {
+					addFooterButton();
+				}
+			} 
 			stopRefresh();
 		}
+
 	}
 
 	@Override
