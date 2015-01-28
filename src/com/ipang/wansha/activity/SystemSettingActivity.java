@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ipang.wansha.R;
@@ -102,6 +104,18 @@ public class SystemSettingActivity extends Activity {
 
 			}
 		});
+
+		TextView checkUpdateText = (TextView) findViewById(R.id.check_update);
+
+		try {
+			PackageManager packageManager = getPackageManager();
+			PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
+			String currentVersion = packInfo.versionName;
+			checkUpdateText.setText(currentVersion);
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override

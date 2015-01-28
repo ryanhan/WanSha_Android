@@ -2,12 +2,15 @@ package com.ipang.wansha.activity;
 
 import java.util.ArrayList;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,6 +28,7 @@ public class MainActivity extends FragmentActivity {
 	private ArrayList<String> tabTitle;
 	private DrawerLayout drawerLayout;
 	private ActionBarDrawerToggle toggle;
+	private boolean drawerOpen;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -42,6 +46,8 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private void setViews() {
+		
+		drawerOpen = false;
 
 		tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
 		tabs.setShouldExpand(true);
@@ -54,14 +60,13 @@ public class MainActivity extends FragmentActivity {
 		mViewPager.setOffscreenPageLimit(mSectionsPagerAdapter.getCount());
 		tabs.setViewPager(mViewPager);
 
-		tabs.setIndicatorColor(getResources().getColor(
-				R.color.wansha_blue));
+		tabs.setIndicatorColor(getResources().getColor(R.color.wansha_blue));
 		tabs.setIndicatorHeight(10);
 		tabs.setUnderlineHeight(0);
 		tabs.setDividerColor(getResources().getColor(R.color.white));
 		tabs.setTextSize(getResources().getDimensionPixelSize(
 				R.dimen.tab_font_size));
-		
+
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		toggle = new ActionBarDrawerToggle(this, drawerLayout,
 				R.drawable.ic_drawer, R.string.drawer_open,
@@ -70,11 +75,13 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onDrawerClosed(View drawerView) {
 				super.onDrawerClosed(drawerView);
+				drawerOpen = false;
 			}
 
 			@Override
 			public void onDrawerOpened(View drawerView) {
 				super.onDrawerOpened(drawerView);
+				drawerOpen = true;
 			}
 		};
 
@@ -108,12 +115,28 @@ public class MainActivity extends FragmentActivity {
 		super.onPostCreate(savedInstanceState);
 		toggle.syncState();
 	}
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.activity_main, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+			if (drawerOpen) {
+				drawerLayout.closeDrawers();
+			}
+			else{
+				MainActivity.this.finish();
+			}
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 }
