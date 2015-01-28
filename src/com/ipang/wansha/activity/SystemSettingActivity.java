@@ -1,10 +1,16 @@
 package com.ipang.wansha.activity;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -13,15 +19,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.support.v4.app.NotificationCompat.Builder;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.RelativeLayout;
-import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.dao.AppDao;
@@ -34,12 +40,8 @@ public class SystemSettingActivity extends Activity {
 	private ActionBar actionBar;
 	private SharedPreferences pref;
 	private AppDao appDao;
-
-	private NotificationManager notificationManager;
-
-	// private RemoteViews remoteView;
-	// private Notification notification;
-	// private NotificationManager manager = null;
+	private NotificationManager notifyManager;
+	private Builder mBuilder;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -87,6 +89,8 @@ public class SystemSettingActivity extends Activity {
 			public void onClick(View v) {
 				CheckUpdateAysncTask checkUpdateAysncTask = new CheckUpdateAysncTask();
 				checkUpdateAysncTask.execute();
+				Toast.makeText(SystemSettingActivity.this, "正在检查更新...",
+						Toast.LENGTH_SHORT).show();
 			}
 		});
 
@@ -120,6 +124,8 @@ public class SystemSettingActivity extends Activity {
 				return appInfo;
 			} catch (AppInfoException e) {
 				e.printStackTrace();
+				Toast.makeText(SystemSettingActivity.this, "检查更新出错，请重试",
+						Toast.LENGTH_SHORT).show();
 				return null;
 			}
 		}
@@ -137,12 +143,17 @@ public class SystemSettingActivity extends Activity {
 					System.out.println("Current Version: " + currentVersion);
 					System.out.println("Latest Version: " + latestVersion);
 
-					// if (currentVersion < latestVersion) {
-					confirmDownload(result.getUrl());
-					// }
+					if (currentVersion < latestVersion) {
+						confirmDownload(result.getUrl());
+					} else {
+						Toast.makeText(SystemSettingActivity.this, "已是最新版本",
+								Toast.LENGTH_SHORT).show();
+					}
 
 				} catch (Exception e) {
 					e.printStackTrace();
+					Toast.makeText(SystemSettingActivity.this, "检查更新出错，请重试",
+							Toast.LENGTH_SHORT).show();
 				}
 
 			}
@@ -158,6 +169,8 @@ public class SystemSettingActivity extends Activity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						startDownload(url);
+						Toast.makeText(SystemSettingActivity.this, "开始下载更新...",
+								Toast.LENGTH_SHORT).show();
 					}
 
 				}).create();
@@ -165,31 +178,111 @@ public class SystemSettingActivity extends Activity {
 	}
 
 	private void startDownload(String url) {
+		notifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mBuilder = new Builder(this);
+		mBuilder.setContentTitle("玩啥").setContentText("开始准备下载")
+				.setSmallIcon(R.drawable.ic_launcher).setTicker("玩啥开始下载更新")
+				.setOngoing(true);
 
-		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		
-		String tickerText = "开始下载更新";
+		AppDownloaderAysncTask appDownloader = new AppDownloaderAysncTask();
+		appDownloader.execute(url);
+	}
 
-		int icon = R.drawable.ic_launcher;
+	private class AppDownloaderAysncTask extends
+			AsyncTask<String, Integer, File> {
 
-		Intent notificationIntent = new Intent(this, this.getClass());
-		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-				notificationIntent, 0);
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			mBuilder.setProgress(100, 0, false);
+			notifyManager.notify(1, mBuilder.build());
+		}
 
-		Notification notification = new Notification(icon, tickerText,
-				System.currentTimeMillis());
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			mBuilder.setContentText("正在下载中 ( " + values[0] + "% )");
+			mBuilder.setProgress(100, values[0], false);
+			notifyManager.notify(1, mBuilder.build());
+			super.onProgressUpdate(values);
+		}
 
-		notification.flags |= Notification.FLAG_ONGOING_EVENT;
+		@Override
+		protected File doInBackground(String... params) {
+			try {
+				int count;
 
-		RemoteViews contentView = new RemoteViews(getPackageName(),
-				R.layout.notification_download);
-		contentView.setTextViewText(R.id.download_rate, "35%");
-		contentView.setProgressBar(R.id.download_progress, 100, 35, false);
+				URL url = new URL(params[0]);
+				URLConnection connection = url.openConnection();
+				connection.connect();
 
-		notification.contentView = contentView;
-		notification.contentIntent = pendingIntent;
+				int lenghtOfFile = connection.getContentLength();
+				InputStream input = new BufferedInputStream(url.openStream());
 
-		notificationManager.notify(1, notification);
+				String fileName = "wansha.apk";
+				File downloadDir = new File(getExternalCacheDir(),
+						Const.DOWNLOAD_DIRECTORY);
+				if (!downloadDir.exists()) {
+					downloadDir.mkdir();
+				}
+
+				File filePath = new File(downloadDir, fileName);
+
+				FileOutputStream fos = new FileOutputStream(filePath);
+
+				byte data[] = new byte[1024];
+				long total = 0;
+				while ((count = input.read(data)) != -1) {
+					total += count;
+					publishProgress((int) ((total * 100) / lenghtOfFile));
+					fos.write(data, 0, count);
+				}
+				fos.flush();
+				fos.close();
+				input.close();
+				return filePath;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+
+		}
+
+		@Override
+		protected void onPostExecute(File result) {
+			if (result == null) {
+				mBuilder.setContentText("下载失败");
+				mBuilder.setProgress(0, 0, false);
+				mBuilder.setOngoing(false);
+				notifyManager.notify(1, mBuilder.build());
+				Toast.makeText(SystemSettingActivity.this, "下载发生错误",
+						Toast.LENGTH_SHORT).show();
+			} else {
+				mBuilder.setContentText("下载完成");
+				mBuilder.setProgress(0, 0, false);
+				mBuilder.setOngoing(false);
+
+				Intent intent = new Intent();
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				intent.setAction(android.content.Intent.ACTION_VIEW);
+				intent.setDataAndType(Uri.fromFile(result),
+						"application/vnd.android.package-archive");
+
+				PendingIntent contentIntent = PendingIntent.getActivity(
+						SystemSettingActivity.this, 0, intent,
+						PendingIntent.FLAG_CANCEL_CURRENT);
+				mBuilder.setContentIntent(contentIntent);
+
+				notifyManager.notify(1, mBuilder.build());
+
+				System.out.println(result.getPath());
+				Toast.makeText(SystemSettingActivity.this, "下载成功",
+						Toast.LENGTH_SHORT).show();
+				installApk(intent);
+			}
+		}
+	}
+
+	private void installApk(Intent intent) {
+		startActivity(intent);
 	}
 }

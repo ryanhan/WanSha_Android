@@ -39,6 +39,7 @@ public class Const {
 	
 	public static final String FIR_IM_URL = "http://fir.im/api/v2/app/version/";
 	public static final String FIR_IM_ID = "54c88d12adc9a1a24a0000b2";
+	public static final String DOWNLOAD_DIRECTORY = "Download";
 
 	
 	public static final DisplayImageOptions options = new DisplayImageOptions.Builder()
