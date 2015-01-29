@@ -138,15 +138,17 @@ public class SystemSettingActivity extends Activity {
 				return appInfo;
 			} catch (AppInfoException e) {
 				e.printStackTrace();
-				Toast.makeText(SystemSettingActivity.this, "检查更新出错，请重试",
-						Toast.LENGTH_SHORT).show();
 				return null;
 			}
 		}
 
 		@Override
 		protected void onPostExecute(AppInfo result) {
-			if (result != null) {
+			if (result == null){
+				Toast.makeText(SystemSettingActivity.this, "检查更新出错，请重试",
+						Toast.LENGTH_SHORT).show();
+			}
+			else {
 				try {
 					PackageManager packageManager = getPackageManager();
 					PackageInfo packInfo = packageManager.getPackageInfo(

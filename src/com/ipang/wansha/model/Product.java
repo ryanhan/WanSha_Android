@@ -22,6 +22,7 @@ public class Product implements Serializable {
 	private String instruction;
 	private String orderDescr;
 	private List<String> productImages;
+	private String brief;
 
 	public int getProductId() {
 		return productId;
@@ -125,6 +126,14 @@ public class Product implements Serializable {
 
 	public void setOrderDescr(String orderDescr) {
 		this.orderDescr = orderDescr;
+	}
+
+	public String getBrief() {
+		return brief;
+	}
+
+	public void setBrief(String brief) {
+		this.brief = brief;
 	}
 
 }

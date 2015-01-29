@@ -1,11 +1,13 @@
 package com.ipang.wansha.activity;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -44,8 +45,8 @@ public class ProductDetailActivity extends Activity {
 	private ProductDao productDao;
 	// private ReviewDao reviewDao;
 	private float avgScore;
-	// private SharedPreferences pref;
-	// private boolean hasLogin;
+	private SharedPreferences pref;
+	private boolean hasLogin;
 	private int productId;
 	private String productName;
 	private String cityName;
@@ -71,8 +72,8 @@ public class ProductDetailActivity extends Activity {
 		productName = bundle.getString(Const.PRODUCTNAME);
 		cityName = bundle.getString(Const.CITYNAME);
 		countryName = bundle.getString(Const.COUNTRYNAME);
-		// pref = getSharedPreferences(Const.USERINFO, Context.MODE_PRIVATE);
-		// hasLogin = pref.getBoolean(Const.HASLOGIN, false);
+		pref = getSharedPreferences(Const.USERINFO, Context.MODE_PRIVATE);
+		hasLogin = pref.getBoolean(Const.HASLOGIN, false);
 	}
 
 	private void getProduct() {
@@ -149,8 +150,7 @@ public class ProductDetailActivity extends Activity {
 
 		DisplayMetrics metric = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metric);
-		int height = (int) ((metric.widthPixels - 2 * getResources()
-				.getDimension(R.dimen.activity_horizontal_margin)) * 3 / 5);
+		int height = (int) (metric.widthPixels * 3 / 5);
 
 		LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.MATCH_PARENT, height);
@@ -339,16 +339,6 @@ public class ProductDetailActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	// @Override
-	// public void onActivityResult(int requestCode, int resultCode, Intent
-	// data) {
-	// super.onActivityResult(requestCode, resultCode, data);
-	// if (requestCode == Const.LOGIN_REQUEST
-	// && resultCode == Activity.RESULT_OK) {
-	// hasLogin = data.getBooleanExtra(Const.HASLOGIN, false);
-	// }
-	// }
 
 	private class ProductAsyncTask extends AsyncTask<Integer, Integer, Product> {
 

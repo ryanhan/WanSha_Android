@@ -88,7 +88,8 @@ public class Utility {
 	 * @return
 	 */
 	public static String formatText(String text) {
-		text = text.replaceAll("<img src=\"/", "<img src=\"" + Const.SERVERNAME + "/");
+		text = text.replaceAll("<img src=\"/", "<img src=\"" + Const.SERVERNAME
+				+ "/");
 		String converted = Html.fromHtml(text).toString().replaceAll("\t", "")
 				.replaceAll("\n\n", "\n").replaceAll("\n\n\n+", "\n\n");
 		return converted;
@@ -97,8 +98,17 @@ public class Utility {
 	public static String[] splitChnEng(String text) {
 		int index = text.indexOf(' ');
 		String[] res = new String[2];
+		if (index == -1) {
+			res[0] = text;
+			res[1] = "";
+			return res;
+		}
 		res[0] = text.substring(0, index);
-		res[1] = text.substring(index + 1);
+		if (index == text.length() - 1) {
+			res[1] = "";
+		} else {
+			res[1] = text.substring(index + 1);
+		}
 		return res;
 	}
 }

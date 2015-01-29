@@ -1,7 +1,8 @@
 package com.ipang.wansha.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -11,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -40,8 +42,7 @@ public class HttpUtility {
 
 			int responseCode = urlConn.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
-				InputStream inputStream = urlConn.getInputStream();
-				return readInputStream(inputStream);
+				return readInputStream(urlConn);
 			} else {
 				throw new HttpException(HttpException.HTTP_RESPONSE_ERROR);
 			}
@@ -96,8 +97,7 @@ public class HttpUtility {
 			}
 
 			if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-				InputStream inputStream = urlConn.getInputStream();
-				return readInputStream(inputStream);
+				return readInputStream(urlConn);
 			} else {
 				throw new HttpException(HttpException.HTTP_RESPONSE_ERROR);
 			}
@@ -112,11 +112,13 @@ public class HttpUtility {
 		}
 	}
 
-	public static String PostJson(URL url, JSONObject json) throws HttpException {
+	public static String PostJson(URL url, JSONObject json)
+			throws HttpException {
 		return PostJson(url, json, null);
 	}
 
-	public static String PostJson(URL url, JSONObject json, String JSessionId) throws HttpException {
+	public static String PostJson(URL url, JSONObject json, String JSessionId)
+			throws HttpException {
 
 		HttpURLConnection urlConn = null;
 		try {
@@ -142,8 +144,7 @@ public class HttpUtility {
 			}
 
 			if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-				InputStream inputStream = urlConn.getInputStream();
-				return readInputStream(inputStream);
+				return readInputStream(urlConn);
 			} else {
 				throw new HttpException(HttpException.HTTP_RESPONSE_ERROR);
 			}
@@ -158,18 +159,17 @@ public class HttpUtility {
 		}
 	}
 
-	private static String readInputStream(InputStream inputStream)
-			throws IOException {
-		StringBuffer out = new StringBuffer();
-		int n = 1;
-		while (n > 0) {
-			byte[] b = new byte[4096];
-			n = inputStream.read(b);
-			if (n > 0)
-				out.append(new String(b, 0, n));
+	private static String readInputStream(HttpURLConnection urlConn) throws IOException {
+		Charset charset = Charset.forName("UTF-8");
+		InputStreamReader stream = new InputStreamReader(
+				urlConn.getInputStream(), charset);
+		BufferedReader reader = new BufferedReader(stream);
+		StringBuffer responseBuffer = new StringBuffer();
+		String read = "";
+		while ((read = reader.readLine()) != null) {
+			responseBuffer.append(read);
 		}
-		inputStream.close();
-		return out.toString();
+		return responseBuffer.toString();
 	}
 
 	public static String getJSessionId() throws IOException {

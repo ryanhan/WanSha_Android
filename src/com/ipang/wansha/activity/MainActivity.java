@@ -2,8 +2,11 @@ package com.ipang.wansha.activity;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -15,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.SectionsPagerAdapter;
@@ -132,7 +136,17 @@ public class MainActivity extends FragmentActivity {
 				drawerLayout.closeDrawers();
 			}
 			else{
-				MainActivity.this.finish();
+				Dialog alertDialog = new AlertDialog.Builder(MainActivity.this).setTitle("退出提示")
+						.setMessage("确定退出玩啥？").setNegativeButton("取消", null)
+						.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								MainActivity.this.finish();
+							}
+
+						}).create();
+				alertDialog.show();
 			}
 			return true;
 		}

@@ -28,6 +28,7 @@ public class ProductDaoImpl implements ProductDao {
 	@Override
 	public List<Product> getProductList(int cityId, int offset, int number)
 			throws ProductException {
+		
 		List<Product> products = new ArrayList<Product>();
 
 		URL url = null;
@@ -86,7 +87,7 @@ public class ProductDaoImpl implements ProductDao {
 			e.printStackTrace();
 			throw new ProductException(ProductException.NETWORK_CONNECT_FAILED);
 		}
-		
+
 		JSONObject jsonObject = null;
 		try {
 			jsonObject = new JSONObject(result);
@@ -102,6 +103,48 @@ public class ProductDaoImpl implements ProductDao {
 			throw new ProductException(ProductException.JSON_FORMAT_NOT_MATCH);
 		}
 	}
+	
+	@Override
+	public List<Product> getRecommendProductList() throws ProductException {
+		
+		List<Product> products = new ArrayList<Product>();
+
+		URL url = null;
+		try {
+			url = new URL(Const.SERVERNAME + "/promt/products.json");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			throw new ProductException(ProductException.UNKNOWN_ERROR);
+		}
+
+		String result = null;
+		try {
+			result = HttpUtility.GetJson(url);
+		} catch (HttpException e) {
+			e.printStackTrace();
+			throw new ProductException(ProductException.NETWORK_CONNECT_FAILED);
+		}
+
+		JSONArray productList = null;
+		try {
+			productList = new JSONArray(result);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new ProductException(ProductException.JSON_FORMAT_NOT_MATCH);
+		}
+
+		for (int i = 0; i < productList.length(); i++) {
+			try {
+				JSONObject productJson = productList.getJSONObject(i);
+				products.add(createProduct(productJson));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return products;
+	}
+
 
 	private Product createProduct(JSONObject json) throws JSONException {
 
@@ -209,6 +252,15 @@ public class ProductDaoImpl implements ProductDao {
 			e.printStackTrace();
 		}
 
+		try {
+			if (!json.isNull("brief")) {
+				product.setBrief(Utility.formatText(json.getString("brief")));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
 		return product;
 	}
+
 }

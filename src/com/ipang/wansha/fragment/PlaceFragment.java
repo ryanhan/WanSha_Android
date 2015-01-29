@@ -45,7 +45,6 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 	private AnimationDrawable animationDrawable;
 	private LinearLayout loadingLayout;
 	private LinearLayout placeLayout;
-	private int screenWidth;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -82,8 +81,7 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 		DisplayMetrics metric = new DisplayMetrics();
 		this.getActivity().getWindowManager().getDefaultDisplay()
 				.getMetrics(metric);
-		screenWidth = metric.widthPixels;
-		int height = (int) ((screenWidth - 2 * getResources()
+		int height = (int) ((metric.widthPixels - 2 * getResources()
 				.getDimension(R.dimen.activity_horizontal_margin)) * 3 / 5);
 
 		adapter = new CountryListAdapter(this.getActivity(), countries, height);
