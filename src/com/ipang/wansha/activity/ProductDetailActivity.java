@@ -115,21 +115,21 @@ public class ProductDetailActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// if (hasLogin) {
-				// Intent intent = new Intent();
-				// intent.setClass(ProductDetailActivity.this,
-				// BookingActivity.class);
-				// intent.putExtra(Const.PRODUCTID, product.getProductId());
-				// intent.putExtra(Const.CURRENCY, product.getCurrency()
-				// .getIndex());
-				// startActivity(intent);
-				// } else {
-				// Intent intent = new Intent();
-				// intent.setClass(ProductDetailActivity.this,
-				// LoginActivity.class);
-				// startActivityForResult(intent, Const.LOGIN_REQUEST);
-				// overridePendingTransition(R.anim.bottom_up, R.anim.fade_out);
-				// }
+				if (hasLogin) {
+					Intent intent = new Intent();
+					intent.setClass(ProductDetailActivity.this,
+							BookingActivity.class);
+					intent.putExtra(Const.PRODUCTID, product.getProductId());
+					intent.putExtra(Const.CURRENCY, product.getCurrency()
+							.getIndex());
+					startActivity(intent);
+				} else {
+					Intent intent = new Intent();
+					intent.setClass(ProductDetailActivity.this,
+							LoginActivity.class);
+					startActivityForResult(intent, Const.LOGIN_REQUEST);
+					overridePendingTransition(R.anim.bottom_up, R.anim.fade_out);
+				}
 
 			}
 		});

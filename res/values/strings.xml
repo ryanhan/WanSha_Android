@@ -24,8 +24,7 @@
     <string name="more_review">更多评论</string>
     <string name="confirm_booking">确认预订</string>
     <string name="date">日期</string>
-    <string name="select_date">选择日期</string>
-    <string name="first_select_date">请先选择日期</string>
+    <string name="select_date">请选择日期</string>
     <string name="time_not_found">当日没有出行</string>
     <string name="member">人数</string>
     <string name="price">价格</string>
@@ -97,6 +96,11 @@
     <string name="check_update">检查更新</string>
     <string name="about">关于</string>
     <string name="wansha_recommend">大玩家精选</string>
+    <string name="booking_date">出行日期</string>
+    <string name="booking_members">出行人数</string>
+    <string name="adult">成人</string>
+    <string name="child">儿童</string>
+    
     
     
     

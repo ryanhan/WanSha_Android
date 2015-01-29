@@ -44,5 +44,15 @@
     <dimen name="user_admin_padding_horizontal">20dp</dimen>
     <dimen name="user_admin_padding_vertical">20dp</dimen>
     <dimen name="user_admin_title_size">16dp</dimen>
+    <dimen name="booking_image_vertical_margin">10dp</dimen>
+    <dimen name="booking_image_horizontal_margin">10dp</dimen>
+    <dimen name="booking_image_gap">20dp</dimen>
+    <dimen name="booking_calendar_title_horizontal_margin">20dp</dimen>
+    <dimen name="booking_calendar_title_vertical_margin">10dp</dimen>
+    <dimen name="booking_title_icon_gap">10dp</dimen>
+    <dimen name="booking_calendar_content_gap">30dp</dimen>
+    <dimen name="select_date">10dp</dimen>
+    <dimen name="booking_member_title_horizontal_margin">20dp</dimen>
+    <dimen name="booking_member_title_vertical_margin">10dp</dimen>
 
 </resources>

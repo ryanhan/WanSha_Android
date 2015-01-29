@@ -7,132 +7,150 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/fragment_login_vertical_margin"
-        android:paddingLeft="@dimen/fragment_login_horizontal_margin"
-        android:paddingRight="@dimen/fragment_login_horizontal_margin"
-        android:paddingTop="@dimen/fragment_login_vertical_margin" >
+        android:orientation="vertical" >
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:orientation="horizontal" >
+            android:paddingBottom="@dimen/booking_image_vertical_margin"
+            android:paddingLeft="@dimen/booking_image_horizontal_margin"
+            android:paddingRight="@dimen/booking_image_horizontal_margin"
+            android:paddingTop="@dimen/booking_image_vertical_margin" >
+
+            <ImageView
+                android:id="@+id/booking_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="@dimen/booking_image_gap"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/booking_product_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/booking_image"
+                android:layout_toRightOf="@id/booking_image"
+                android:textSize="18sp" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/booking_calendar_title_vertical_margin"
+            android:paddingLeft="@dimen/booking_calendar_title_horizontal_margin"
+            android:paddingRight="@dimen/booking_calendar_title_horizontal_margin"
+            android:paddingTop="@dimen/booking_calendar_title_vertical_margin" >
+
+            <ImageView
+                android:id="@+id/book_calendar_icon"
+                android:layout_width="@dimen/my_status_icon_size"
+                android:layout_height="@dimen/my_status_icon_size"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/booking_title_icon_gap"
+                android:scaleType="centerCrop"
+                android:src="@drawable/booking_calendar" />
+
+            <TextView
+                android:id="@+id/book_calendar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/booking_calendar_content_gap"
+                android:layout_toRightOf="@id/book_calendar_icon"
+                android:text="@string/booking_date"
+                android:textSize="16sp" />
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:text="@string/date"
-                android:textSize="@dimen/medium_text_size" />
-
-            <Button
-                android:id="@+id/select_date_button"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/booking_button_height"
-                android:background="@drawable/button_bg"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/book_calendar_title"
                 android:text="@string/select_date"
-                android:textSize="14sp" />
-        </LinearLayout>
+                android:textColor="@color/dark_grey"
+                android:textSize="16sp" />
 
-        <LinearLayout
+            <ImageView
+                android:id="@+id/book_calendar_forward"
+                android:layout_width="@dimen/my_status_icon_size"
+                android:layout_height="@dimen/my_status_icon_size"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/back" >
+            </ImageView>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:orientation="horizontal" >
+            android:paddingBottom="@dimen/booking_member_title_vertical_margin"
+            android:paddingLeft="@dimen/booking_member_title_horizontal_margin"
+            android:paddingRight="@dimen/booking_member_title_horizontal_margin"
+            android:paddingTop="@dimen/booking_member_title_vertical_margin" >
+
+            <ImageView
+                android:id="@+id/book_member_icon"
+                android:layout_width="@dimen/my_status_icon_size"
+                android:layout_height="@dimen/my_status_icon_size"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/booking_title_icon_gap"
+                android:scaleType="centerCrop"
+                android:src="@drawable/booking_members" />
 
             <TextView
+                android:id="@+id/book_member_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:gravity="center_vertical"
-                android:text="@string/activity_time"
-                android:textSize="@dimen/medium_text_size" />
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/book_member_icon"
+                android:text="@string/booking_members"
+                android:textSize="16sp" />
+        </RelativeLayout>
 
-            <Spinner
-                android:id="@+id/spinner_activity_time"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/booking_button_height"
-                android:clickable="false"
-                android:gravity="center"
-                android:minWidth="100dp"
-                android:textSize="12sp" />
-        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal" >
+            android:paddingBottom="@dimen/booking_member_title_vertical_margin"
+            android:paddingLeft="@dimen/booking_member_title_horizontal_margin"
+            android:paddingRight="@dimen/booking_member_title_horizontal_margin"
+            android:paddingTop="@dimen/booking_member_title_vertical_margin" >
 
             <TextView
+                android:id="@+id/book_member_adult"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:text="@string/member"
-                android:textSize="@dimen/medium_text_size" />
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:text="@string/adult"
+                android:textSize="16sp" />
 
-            <Button
-                android:id="@+id/member_minus"
-                android:layout_width="@dimen/booking_button_height"
-                android:layout_height="@dimen/booking_button_height"
-                android:background="@drawable/button_bg"
-                android:text="-" />
-
-            <EditText
-                android:id="@+id/booking_member"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:gravity="center_horizontal"
-                android:inputType="number"
-                android:maxLength="2"
-                android:text="1" />
-
-            <Button
-                android:id="@+id/member_plus"
-                android:layout_width="@dimen/booking_button_height"
-                android:layout_height="@dimen/booking_button_height"
-                android:background="@drawable/button_bg"
-                android:text="+" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal" >
-
-            <TextView
+            <NumberPicker
+                android:id="@+id/numberPicker1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:text="@string/price"
-                android:textSize="@dimen/medium_text_size" />
+                android:layout_alignParentRight="true"
+                android:layout_centerHorizontal="true" />
 
-            <TextView
-                android:id="@+id/booking_price"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/green"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/confirm_booking"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/green"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
-            android:text="@string/confirm_booking"
-            android:textColor="@color/white" />
+        </RelativeLayout>
     </LinearLayout>
 
 </ScrollView>
