@@ -100,9 +100,10 @@
     <string name="booking_members">出行人数</string>
     <string name="adult">成人</string>
     <string name="child">儿童</string>
+    <string name="total_price">订单总额：</string>
+    <string name="origin_price">门市价</string>
     
-    
-    
+
     
     <string name="xlistview_header_hint_normal">下拉刷新</string>
     <string name="xlistview_header_hint_ready">松开刷新数据</string>

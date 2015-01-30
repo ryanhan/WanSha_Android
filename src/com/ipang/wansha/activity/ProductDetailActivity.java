@@ -120,8 +120,6 @@ public class ProductDetailActivity extends Activity {
 					intent.setClass(ProductDetailActivity.this,
 							BookingActivity.class);
 					intent.putExtra(Const.PRODUCTID, product.getProductId());
-					intent.putExtra(Const.CURRENCY, product.getCurrency()
-							.getIndex());
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent();
@@ -169,7 +167,8 @@ public class ProductDetailActivity extends Activity {
 
 		setDotBar(imageCount);
 
-		viewPager.setAdapter(new ProductDetailImagePagerAdapter(this, productImages));
+		viewPager.setAdapter(new ProductDetailImagePagerAdapter(this,
+				productImages));
 		viewPager
 				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
@@ -339,6 +338,16 @@ public class ProductDetailActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Const.LOGIN_REQUEST && resultCode == Activity.RESULT_OK) {
+			hasLogin = data.getBooleanExtra(Const.HASLOGIN, false);
+		}
+	}
+
+
 
 	private class ProductAsyncTask extends AsyncTask<Integer, Integer, Product> {
 
@@ -354,11 +363,13 @@ public class ProductDetailActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Product result) {
-			avgScore = 0;
-			loadingLayout.setVisibility(View.INVISIBLE);
-			productLayout.setVisibility(View.VISIBLE);
-			animationDrawable.stop();
-			setProductView();
+			if (product != null) {
+				avgScore = 0;
+				loadingLayout.setVisibility(View.INVISIBLE);
+				productLayout.setVisibility(View.VISIBLE);
+				animationDrawable.stop();
+				setProductView();
+			}
 		}
 	}
 }

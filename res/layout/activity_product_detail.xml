@@ -643,7 +643,7 @@
             android:id="@+id/book_now"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/green"
+            android:background="@color/orange"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
             android:text="@string/book_now"
