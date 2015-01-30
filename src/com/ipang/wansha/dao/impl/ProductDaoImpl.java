@@ -13,6 +13,7 @@ import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.enums.Currency;
 import com.ipang.wansha.exception.HttpException;
 import com.ipang.wansha.exception.ProductException;
+import com.ipang.wansha.model.Combo;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.HttpUtility;
@@ -187,8 +188,10 @@ public class ProductDaoImpl implements ProductDao {
 					comboList = json.getJSONArray("comboList");
 				} catch (JSONException e) {
 					e.printStackTrace();
-					product.setPrice(0);
+					product.setLowestPrice(0);
 				}
+				List<Combo> combos = new ArrayList<Combo>();
+				
 				if (comboList != null && comboList.length() > 0) {
 					float lowest = -1;
 					for (int i = 0; i < comboList.length(); i++) {
@@ -205,15 +208,25 @@ public class ProductDaoImpl implements ProductDao {
 								lowest = price;
 							} else if (lowest != -1 && price < lowest)
 								lowest = price;
+							int type = priceJson.getInt("type");
+							int from = priceJson.getInt("fromcount");
+							int to = priceJson.getInt("tocount");
+							Combo combo = new Combo();
+							combo.setFrom(from);
+							combo.setTo(to);
+							combo.setType(type);
+							combo.setPrice(price);
+							combos.add(combo);
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
 					}
-					product.setPrice(lowest == -1 ? 0 : lowest);
+					product.setLowestPrice(lowest == -1 ? 0 : lowest);
+					product.setCombos(combos);
 				}
 			}
 		} else if (product.getProductType() == 2) { // 免费
-			product.setPrice(0);
+			product.setLowestPrice(0);
 		}
 
 		try {

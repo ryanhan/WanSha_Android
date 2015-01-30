@@ -96,7 +96,7 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 		viewHolder.rankingCountTextView.setText("没有评分");
 
 		View from = convertView.findViewById(R.id.from);
-		if (getItem(position).getPrice() == 0) {
+		if (getItem(position).getLowestPrice() == 0) {
 			from.setVisibility(View.INVISIBLE);
 			viewHolder.fromPriceTextView.setText(context.getResources()
 					.getString(R.string.free));
@@ -106,7 +106,7 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 			viewHolder.fromPriceTextView.setText(getItem(position)
 					.getCurrency().getSymbol()
 					+ " "
-					+ getItem(position).getPrice());
+					+ getItem(position).getLowestPrice());
 		}
 
 		if (getItem(position).getProductImages() == null

@@ -185,6 +185,7 @@
                         android:background="?android:attr/listDivider" />
 
                     <RelativeLayout
+                        android:id="@+id/layout_adult"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="@dimen/booking_member_title_vertical_margin"
@@ -211,7 +212,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentTop="true"
-                                android:text="￥5000"
                                 android:textSize="18sp" />
 
                             <TextView
@@ -219,7 +219,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@id/per_adult_price"
-                                android:text="￥8000"
                                 android:textColor="@color/dark_grey"
                                 android:textSize="14sp" />
                         </RelativeLayout>
@@ -261,11 +260,13 @@
                     </RelativeLayout>
 
                     <View
+                        android:id="@+id/divider_adult"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="?android:attr/listDivider" />
 
                     <RelativeLayout
+                        android:id="@+id/layout_child"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="@dimen/booking_member_title_vertical_margin"
@@ -292,7 +293,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentTop="true"
-                                android:text="￥5000"
                                 android:textSize="18sp" />
 
                             <TextView
@@ -300,7 +300,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@id/per_child_price"
-                                android:text="门市价 ￥8000"
                                 android:textColor="@color/dark_grey"
                                 android:textSize="14sp" />
                         </RelativeLayout>
@@ -342,6 +341,7 @@
                     </RelativeLayout>
 
                     <View
+                        android:id="@+id/divider_child"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="?android:attr/listDivider" />

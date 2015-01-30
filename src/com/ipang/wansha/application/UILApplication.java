@@ -1,13 +1,9 @@
 package com.ipang.wansha.application;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import android.app.Application;
 
-import com.ipang.wansha.enums.Currency;
-import com.ipang.wansha.enums.TimeUnit;
 import com.ipang.wansha.model.City;
 import com.ipang.wansha.model.Product;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;

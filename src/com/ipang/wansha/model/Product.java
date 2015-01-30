@@ -15,7 +15,7 @@ public class Product implements Serializable {
 	private int reviewTotalRanking;
 	private int reviewCount;
 	private int[] starCount;
-	private float price;
+	private float lowestPrice;
 	private Currency currency;
 	private String detail;
 	private String expenseDescr;
@@ -23,6 +23,7 @@ public class Product implements Serializable {
 	private String orderDescr;
 	private List<String> productImages;
 	private String brief;
+	private List<Combo> combos;
 
 	public int getProductId() {
 		return productId;
@@ -56,12 +57,12 @@ public class Product implements Serializable {
 		this.starCount = starCount;
 	}
 
-	public float getPrice() {
-		return price;
+	public float getLowestPrice() {
+		return lowestPrice;
 	}
 
-	public void setPrice(float price) {
-		this.price = price;
+	public void setLowestPrice(float lowestPrice) {
+		this.lowestPrice = lowestPrice;
 	}
 
 	public Currency getCurrency() {
@@ -134,6 +135,14 @@ public class Product implements Serializable {
 
 	public void setBrief(String brief) {
 		this.brief = brief;
+	}
+
+	public List<Combo> getCombos() {
+		return combos;
+	}
+
+	public void setCombos(List<Combo> combos) {
+		this.combos = combos;
 	}
 
 }

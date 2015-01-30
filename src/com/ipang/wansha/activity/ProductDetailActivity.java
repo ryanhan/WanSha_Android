@@ -226,12 +226,12 @@ public class ProductDetailActivity extends Activity {
 		Utility.drawRankingStar(rankImages, avgScore);
 		rankcount.setText("(0)");
 
-		if (product.getPrice() == 0) {
+		if (product.getLowestPrice() == 0) {
 			from.setVisibility(View.INVISIBLE);
 			price.setText(getResources().getString(R.string.free));
 		} else {
 			price.setText(product.getCurrency().getSymbol() + " "
-					+ new DecimalFormat(".00").format(product.getPrice()));
+					+ new DecimalFormat(".00").format(product.getLowestPrice()));
 		}
 	}
 

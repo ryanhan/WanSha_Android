@@ -1,5 +1,8 @@
 package com.ipang.wansha.activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -13,9 +16,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.View.OnTouchListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
@@ -24,12 +29,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.dao.impl.ProductDaoImpl;
+import com.ipang.wansha.model.Combo;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;
@@ -49,8 +55,11 @@ public class BookingActivity extends Activity {
 	private int adultPrice;
 	private int childPrice;
 	private TextView priceText;
-	
-	private ScrollView scrollView;
+	private List<Integer> adultCount;
+	private List<Float> perAdult;
+	private List<Integer> childCount;
+	private List<Float> perChild;
+
 	private ImageView loadingImage;
 	private AnimationDrawable animationDrawable;
 	private LinearLayout loadingLayout;
@@ -71,6 +80,10 @@ public class BookingActivity extends Activity {
 		productId = bundle.getInt(Const.PRODUCTID);
 		pref = getSharedPreferences(Const.USERINFO, Context.MODE_PRIVATE);
 		hasLogin = pref.getBoolean(Const.HASLOGIN, false);
+		adultCount = new ArrayList<Integer>();
+		perAdult = new ArrayList<Float>();
+		childCount = new ArrayList<Integer>();
+		perChild = new ArrayList<Float>();
 	}
 
 	private void setActionBar() {
@@ -82,8 +95,25 @@ public class BookingActivity extends Activity {
 		actionBar.setDisplayUseLogoEnabled(false);
 	}
 
+	private void getProduct() {
+		productDao = new ProductDaoImpl();
+
+		loadingImage = (ImageView) findViewById(R.id.image_loading);
+		loadingImage.setBackgroundResource(R.anim.progress_animation);
+		animationDrawable = (AnimationDrawable) loadingImage.getBackground();
+
+		loadingLayout = (LinearLayout) findViewById(R.id.layout_loading);
+		bookingLayout = (LinearLayout) findViewById(R.id.layout_booking);
+		bookingLayout.setVisibility(View.INVISIBLE);
+		loadingLayout.setVisibility(View.VISIBLE);
+		animationDrawable.start();
+
+		ProductAsyncTask productAsyncTask = new ProductAsyncTask();
+		productAsyncTask.execute(productId);
+	}
+
 	private void setProductView() {
-		
+
 		final ImageView productImage = (ImageView) findViewById(R.id.booking_image);
 		TextView productTitle = (TextView) findViewById(R.id.booking_product_title);
 
@@ -91,16 +121,19 @@ public class BookingActivity extends Activity {
 		getWindowManager().getDefaultDisplay().getMetrics(metric);
 		int width = (int) (metric.widthPixels * 2 / 5);
 		int height = width * 4 / 5;
-		
-		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
+
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width,
+				height);
 		productImage.setLayoutParams(params);
-		
+
 		imageLoadingProgress = (ProgressBar) findViewById(R.id.progress_image_loading);
-		
-		if (product.getProductImages() == null || product.getProductImages().size() == 0) {
+
+		if (product.getProductImages() == null
+				|| product.getProductImages().size() == 0) {
 			productImage.setImageResource(R.drawable.no_image);
 		} else {
-			ImageLoader.getInstance().displayImage(product.getProductImages().get(0), productImage,
+			ImageLoader.getInstance().displayImage(
+					product.getProductImages().get(0), productImage,
 					Const.options, new SimpleImageLoadingListener() {
 
 						@Override
@@ -133,7 +166,7 @@ public class BookingActivity extends Activity {
 						}
 					});
 		}
-		
+
 		productTitle.setText(Utility.splitChnEng(product.getProductName())[0]);
 
 		LinearLayout selectDateLayout = (LinearLayout) findViewById(R.id.layout_select_date);
@@ -141,167 +174,257 @@ public class BookingActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 
 			}
 		});
 
-		TextView adultPriceText = (TextView) findViewById(R.id.per_adult_price);
-		TextView adultOriginPriceText = (TextView) findViewById(R.id.per_adult_origin_price);
-		TextView childPriceText = (TextView) findViewById(R.id.per_child_price);
-		TextView childOriginPriceText = (TextView) findViewById(R.id.per_child_origin_price);
+		List<Combo> combos = product.getCombos();
 
-		adultOriginPriceText.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-		childOriginPriceText.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-
-		final EditText adultNumber = (EditText) findViewById(R.id.member_adult_text);
-		final EditText childNumber = (EditText) findViewById(R.id.member_child_text);
-
-		adultNumber.setOnFocusChangeListener(new NumberChangeListener());
-		childNumber.setOnFocusChangeListener(new NumberChangeListener());
-
-		adultNumber.addTextChangedListener(new TextWatcher() {
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void afterTextChanged(Editable s) {
-				int number;
-				try {
-					number = Integer.parseInt(s.toString());
-				} catch (Exception e) {
-					number = 0;
-				}
-				adultPrice = number * 10000;
-				totalPrice = adultPrice + childPrice;
-				priceText.setText("￥" + totalPrice);
-			}
-		});
-
-		childNumber.addTextChangedListener(new TextWatcher() {
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
-			}
-
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-			}
-
-			@Override
-			public void afterTextChanged(Editable s) {
-				int number;
-				try {
-					number = Integer.parseInt(s.toString());
-				} catch (Exception e) {
-					number = 0;
-				}
-				childPrice = number * 1000;
-				totalPrice = adultPrice + childPrice;
-				priceText.setText("￥" + totalPrice);
-			}
-		});
-
-		TextView adultPlus = (TextView) findViewById(R.id.member_adult_plus);
-		TextView adultMinus = (TextView) findViewById(R.id.member_adult_minus);
-		TextView childPlus = (TextView) findViewById(R.id.member_child_plus);
-		TextView childMinus = (TextView) findViewById(R.id.member_child_minus);
-
-		adultPlus.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				int number;
-				try {
-					number = Integer.parseInt(adultNumber.getText().toString());
-
-				} catch (Exception e) {
-					number = 0;
-				}
-				adultNumber.setText(number + 1 + "");
-			}
-		});
-
-		adultMinus.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				try {
-					int number = Integer.parseInt(adultNumber.getText()
-							.toString());
-					if (number > 0) {
-						adultNumber.setText(number - 1 + "");
+		for (Combo combo : combos) {
+			if (combo.getType() == 0) { // 儿童
+				if (childCount.size() == 0) {
+					childCount.add(combo.getTo());
+					perChild.add(combo.getPrice());
+				} else {
+					boolean flag = false;
+					for (int i = 0; i < childCount.size(); i++) {
+						if (childCount.get(i) > combo.getFrom()) {
+							childCount.add(i, combo.getTo());
+							perChild.add(i, combo.getPrice());
+							flag = true;
+							break;
+						}
 					}
-				} catch (Exception e) {
-					adultNumber.setText("0");
-				}
-			}
-		});
-
-		childPlus.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				int number;
-				try {
-					number = Integer.parseInt(childNumber.getText().toString());
-
-				} catch (Exception e) {
-					number = 0;
-				}
-				childNumber.setText(number + 1 + "");
-			}
-		});
-
-		childMinus.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				try {
-					int number = Integer.parseInt(childNumber.getText()
-							.toString());
-					if (number > 0) {
-						childNumber.setText(number - 1 + "");
+					if (!flag) {
+						childCount.add(combo.getTo());
+						perChild.add(combo.getPrice());
 					}
-				} catch (Exception e) {
-					childNumber.setText("0");
+				}
+
+			} else if (combo.getType() == 1) { // 成人
+				if (adultCount.size() == 0) {
+					adultCount.add(combo.getTo());
+					perAdult.add(combo.getPrice());
+				} else {
+					boolean flag = false;
+					for (int i = 0; i < adultCount.size(); i++) {
+						if (adultCount.get(i) > combo.getFrom()) {
+							adultCount.add(i, combo.getTo());
+							perAdult.add(i, combo.getPrice());
+							flag = true;
+							break;
+						}
+					}
+					if (!flag) {
+						adultCount.add(combo.getTo());
+						perAdult.add(combo.getPrice());
+					}
 				}
 			}
-		});
+		}
+
+		if (adultCount.size() > 0) {
+			final TextView adultPriceText = (TextView) findViewById(R.id.per_adult_price);
+			adultPriceText.setText(product.getCurrency().getSymbol()
+					+ getUnitPrice(1, adultCount, perAdult));
+			TextView adultOriginPriceText = (TextView) findViewById(R.id.per_adult_origin_price);
+			adultOriginPriceText.setText(getResources().getString(
+					R.string.origin_price)
+					+ " "
+					+ product.getCurrency().getSymbol()
+					+ getUnitPrice(0, adultCount, perAdult));
+			adultOriginPriceText.getPaint().setFlags(
+					Paint.STRIKE_THRU_TEXT_FLAG);
+			final EditText adultNumber = (EditText) findViewById(R.id.member_adult_text);
+			final TextView adultPlus = (TextView) findViewById(R.id.member_adult_plus);
+			final TextView adultMinus = (TextView) findViewById(R.id.member_adult_minus);
+
+			adultNumber.setOnFocusChangeListener(new NumberChangeListener());
+
+			adultNumber.addTextChangedListener(new TextWatcher() {
+
+				@Override
+				public void onTextChanged(CharSequence s, int start,
+						int before, int count) {
+				}
+
+				@Override
+				public void beforeTextChanged(CharSequence s, int start,
+						int count, int after) {
+				}
+
+				@Override
+				public void afterTextChanged(Editable s) {
+					int number;
+					try {
+						number = Integer.parseInt(s.toString());
+					} catch (Exception e) {
+						number = 0;
+					}
+					int unit = 0;
+					if (number > 0) {
+						unit = getUnitPrice(number, adultCount, perAdult);
+						if (unit == -1) {
+							Toast.makeText(BookingActivity.this, "warning",
+									Toast.LENGTH_SHORT).show();
+							unit = 0;
+							adultNumber.setText(""
+									+ adultCount.get(adultCount.size() - 1));
+							adultNumber.setSelection(adultNumber.getText()
+									.length());
+							adultPriceText.setText(product.getCurrency()
+									.getSymbol()
+									+ getUnitPrice(1, adultCount, perAdult));
+						} else {
+							adultPriceText.setText(product.getCurrency()
+									.getSymbol() + unit);
+						}
+					} else {
+						adultPriceText.setText(product.getCurrency()
+								.getSymbol()
+								+ getUnitPrice(1, adultCount, perAdult));
+					}
+					adultPrice = (int) (number * unit);
+					totalPrice = adultPrice + childPrice;
+					priceText.setText("￥" + totalPrice);
+				}
+			});
+
+			adultPlus.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					int number;
+					try {
+						number = Integer.parseInt(adultNumber.getText()
+								.toString());
+					} catch (Exception e) {
+						number = 0;
+					}
+					if (number < adultCount.get(adultCount.size() - 1)) {
+						adultNumber.setText(number + 1 + "");
+					}
+				}
+			});
+
+			adultMinus.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					try {
+						int number = Integer.parseInt(adultNumber.getText()
+								.toString());
+						if (number > 0) {
+							adultNumber.setText(number - 1 + "");
+						}
+					} catch (Exception e) {
+						adultNumber.setText("0");
+					}
+				}
+			});
+		} else {
+			RelativeLayout adultLayout = (RelativeLayout) findViewById(R.id.layout_adult);
+			adultLayout.setVisibility(View.GONE);
+			View adultDivider = (View) findViewById(R.id.divider_adult);
+			adultDivider.setVisibility(View.GONE);
+		}
+
+		if (childCount.size() > 0) {
+			final TextView childPriceText = (TextView) findViewById(R.id.per_child_price);
+			childPriceText.setText(product.getCurrency().getSymbol()
+					+ getUnitPrice(1, childCount, perChild));
+			TextView childOriginPriceText = (TextView) findViewById(R.id.per_child_origin_price);
+			childOriginPriceText.setText(getResources().getString(
+					R.string.origin_price)
+					+ " "
+					+ product.getCurrency().getSymbol()
+					+ getUnitPrice(0, childCount, perChild));
+			childOriginPriceText.getPaint().setFlags(
+					Paint.STRIKE_THRU_TEXT_FLAG);
+			final EditText childNumber = (EditText) findViewById(R.id.member_child_text);
+			final TextView childPlus = (TextView) findViewById(R.id.member_child_plus);
+			final TextView childMinus = (TextView) findViewById(R.id.member_child_minus);
+
+			childNumber.setOnFocusChangeListener(new NumberChangeListener());
+
+			childNumber.addTextChangedListener(new TextWatcher() {
+
+				@Override
+				public void onTextChanged(CharSequence s, int start,
+						int before, int count) {
+				}
+
+				@Override
+				public void beforeTextChanged(CharSequence s, int start,
+						int count, int after) {
+				}
+
+				@Override
+				public void afterTextChanged(Editable s) {
+					int number;
+					try {
+						number = Integer.parseInt(s.toString());
+					} catch (Exception e) {
+						number = 0;
+					}
+					int unit = 0;
+					if (number > 0) {
+						unit = getUnitPrice(number, childCount, perChild);
+						childPriceText.setText(product.getCurrency()
+								.getSymbol() + unit);
+					} else {
+						childPriceText.setText(product.getCurrency()
+								.getSymbol()
+								+ getUnitPrice(1, childCount, perChild));
+					}
+					childPrice = (int) (number * unit);
+					totalPrice = adultPrice + childPrice;
+					priceText.setText("￥" + totalPrice);
+				}
+			});
+
+			childPlus.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					int number;
+					try {
+						number = Integer.parseInt(childNumber.getText()
+								.toString());
+
+					} catch (Exception e) {
+						number = 0;
+					}
+					if (number < childCount.get(childCount.size() - 1)) {
+						childNumber.setText(number + 1 + "");
+					}
+				}
+			});
+
+			childMinus.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					try {
+						int number = Integer.parseInt(childNumber.getText()
+								.toString());
+						if (number > 0) {
+							childNumber.setText(number - 1 + "");
+						}
+					} catch (Exception e) {
+						childNumber.setText("0");
+					}
+				}
+			});
+		} else {
+			RelativeLayout childLayout = (RelativeLayout) findViewById(R.id.layout_child);
+			childLayout.setVisibility(View.GONE);
+			View childDivider = (View) findViewById(R.id.divider_child);
+			childDivider.setVisibility(View.GONE);
+		}
 
 		priceText = (TextView) findViewById(R.id.total_price);
 		priceText.setText("￥" + totalPrice);
-	}
-
-	private void getProduct() {
-		productDao = new ProductDaoImpl();
-
-		loadingImage = (ImageView) findViewById(R.id.image_loading);
-		loadingImage.setBackgroundResource(R.anim.progress_animation);
-		animationDrawable = (AnimationDrawable) loadingImage.getBackground();
-
-		loadingLayout = (LinearLayout) findViewById(R.id.layout_loading);
-		bookingLayout = (LinearLayout) findViewById(R.id.layout_booking);
-		bookingLayout.setVisibility(View.INVISIBLE);
-		loadingLayout.setVisibility(View.VISIBLE);
-		animationDrawable.start();
-		
-		ProductAsyncTask productAsyncTask = new ProductAsyncTask();
-		productAsyncTask.execute(productId);
 	}
 
 	@Override
@@ -318,6 +441,12 @@ public class BookingActivity extends Activity {
 
 		@Override
 		public void onFocusChange(View v, boolean hasFocus) {
+			if (hasFocus) {
+				if (v instanceof EditText) {
+					EditText text = (EditText) v;
+					text.setText("");
+				}
+			}
 			if (!hasFocus) {
 				if (v instanceof EditText) {
 					EditText text = (EditText) v;
@@ -344,11 +473,30 @@ public class BookingActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Product result) {
-			loadingLayout.setVisibility(View.INVISIBLE);
-			bookingLayout.setVisibility(View.VISIBLE);
-			animationDrawable.stop();
-			setProductView();
+			if (result != null) {
+				loadingLayout.setVisibility(View.INVISIBLE);
+				bookingLayout.setVisibility(View.VISIBLE);
+				animationDrawable.stop();
+				setProductView();
+			}
 		}
+	}
+
+	private int getUnitPrice(int number, List<Integer> countList,
+			List<Float> priceList) {
+		float unit = 0;
+		boolean flag = false;
+		for (int i = 0; i < countList.size(); i++) {
+			if (countList.get(i) >= number) {
+				unit = priceList.get(i);
+				flag = true;
+				break;
+			}
+		}
+		if (!flag) {
+			return -1;
+		}
+		return (int) unit;
 	}
 
 }
