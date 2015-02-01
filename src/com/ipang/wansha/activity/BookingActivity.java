@@ -1,28 +1,29 @@
 package com.ipang.wansha.activity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.View.OnTouchListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -32,6 +33,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fourmob.datetimepicker.date.DatePickerDialog;
+import com.fourmob.datetimepicker.date.DatePickerDialog.OnDateSetListener;
 import com.ipang.wansha.R;
 import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.dao.impl.ProductDaoImpl;
@@ -43,7 +46,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
-public class BookingActivity extends Activity {
+public class BookingActivity extends FragmentActivity implements
+		OnDateSetListener {
 
 	private ActionBar actionBar;
 	private SharedPreferences pref;
@@ -54,7 +58,10 @@ public class BookingActivity extends Activity {
 	private int totalPrice;
 	private int adultPrice;
 	private int childPrice;
+	private EditText adultNumber;
+	private EditText childNumber;
 	private TextView priceText;
+	private TextView selectDate;
 	private List<Integer> adultCount;
 	private List<Float> perAdult;
 	private List<Integer> childCount;
@@ -65,6 +72,7 @@ public class BookingActivity extends Activity {
 	private LinearLayout loadingLayout;
 	private LinearLayout bookingLayout;
 	private ProgressBar imageLoadingProgress;
+	private DatePickerDialog datePickerDialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +92,10 @@ public class BookingActivity extends Activity {
 		perAdult = new ArrayList<Float>();
 		childCount = new ArrayList<Integer>();
 		perChild = new ArrayList<Float>();
+		Calendar calendar = Calendar.getInstance();
+		datePickerDialog = DatePickerDialog.newInstance(this,
+				calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+				calendar.get(Calendar.DAY_OF_MONTH), false);
 	}
 
 	private void setActionBar() {
@@ -174,7 +186,12 @@ public class BookingActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-
+				datePickerDialog.setVibrate(false);
+				datePickerDialog.setYearRange(1985, 2028);
+				datePickerDialog.setCloseOnSingleTapDay(false);
+				datePickerDialog.show(
+						BookingActivity.this.getSupportFragmentManager(),
+						"datePickerDialog");
 			}
 		});
 
@@ -235,7 +252,7 @@ public class BookingActivity extends Activity {
 					+ getUnitPrice(0, adultCount, perAdult));
 			adultOriginPriceText.getPaint().setFlags(
 					Paint.STRIKE_THRU_TEXT_FLAG);
-			final EditText adultNumber = (EditText) findViewById(R.id.member_adult_text);
+			adultNumber = (EditText) findViewById(R.id.member_adult_text);
 			final TextView adultPlus = (TextView) findViewById(R.id.member_adult_plus);
 			final TextView adultMinus = (TextView) findViewById(R.id.member_adult_minus);
 
@@ -341,7 +358,7 @@ public class BookingActivity extends Activity {
 					+ getUnitPrice(0, childCount, perChild));
 			childOriginPriceText.getPaint().setFlags(
 					Paint.STRIKE_THRU_TEXT_FLAG);
-			final EditText childNumber = (EditText) findViewById(R.id.member_child_text);
+			childNumber = (EditText) findViewById(R.id.member_child_text);
 			final TextView childPlus = (TextView) findViewById(R.id.member_child_plus);
 			final TextView childMinus = (TextView) findViewById(R.id.member_child_minus);
 
@@ -370,12 +387,25 @@ public class BookingActivity extends Activity {
 					int unit = 0;
 					if (number > 0) {
 						unit = getUnitPrice(number, childCount, perChild);
-						childPriceText.setText(product.getCurrency()
-								.getSymbol() + unit);
+						if (unit == -1) {
+							Toast.makeText(BookingActivity.this, "warning",
+									Toast.LENGTH_SHORT).show();
+							unit = 0;
+							childNumber.setText(""
+									+ adultCount.get(adultCount.size() - 1));
+							childNumber.setSelection(childNumber.getText()
+									.length());
+							childPriceText.setText(product.getCurrency()
+									.getSymbol()
+									+ getUnitPrice(1, adultCount, perAdult));
+						} else {
+							childPriceText.setText(product.getCurrency()
+									.getSymbol() + unit);
+						}
 					} else {
 						childPriceText.setText(product.getCurrency()
 								.getSymbol()
-								+ getUnitPrice(1, childCount, perChild));
+								+ getUnitPrice(1, adultCount, perAdult));
 					}
 					childPrice = (int) (number * unit);
 					totalPrice = adultPrice + childPrice;
@@ -425,6 +455,24 @@ public class BookingActivity extends Activity {
 
 		priceText = (TextView) findViewById(R.id.total_price);
 		priceText.setText("￥" + totalPrice);
+
+		Button book = (Button) findViewById(R.id.book_now);
+		book.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setClass(BookingActivity.this,
+						BookingContactActivity.class);
+				intent.putExtra(Const.PRODUCTID, product.getProductId());
+				intent.putExtra(Const.ADULTNUMBER, Integer.parseInt(adultNumber.getText().toString()));
+				intent.putExtra(Const.CHILDNUMBER, Integer.parseInt(childNumber.getText().toString()));
+				intent.putExtra(Const.TRAVELDATE, Integer.parseInt(selectDate.getText().toString()));
+				intent.putExtra(Const.TOTALPRICE, totalPrice);
+				startActivity(intent);
+			}
+		});
+
 	}
 
 	@Override
@@ -497,6 +545,16 @@ public class BookingActivity extends Activity {
 			return -1;
 		}
 		return (int) unit;
+	}
+
+	@Override
+	public void onDateSet(DatePickerDialog datePickerDialog, int year,
+			int month, int day) {
+		month++;
+		selectDate = (TextView) findViewById(R.id.select_date);
+		selectDate.setTextColor(getResources().getColor(R.color.black));
+		selectDate.setText(year + "-" + (month < 10 ? "0" + month : month)
+				+ "-" + (day < 10 ? "0" + day : day));
 	}
 
 }

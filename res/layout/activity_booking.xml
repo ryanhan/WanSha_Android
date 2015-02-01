@@ -31,8 +31,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/activity_background"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:orientation="vertical" >
 
         <ScrollView
@@ -116,7 +114,7 @@
                         <TextView
                             android:id="@+id/book_calendar_title"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_toRightOf="@id/book_calendar_icon"
                             android:text="@string/booking_date"
@@ -132,8 +130,9 @@
                             android:orientation="horizontal" >
 
                             <TextView
+                                android:id="@+id/select_date"
                                 android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_marginRight="@dimen/booking_calendar_select_gap"
                                 android:text="@string/select_date"
                                 android:textColor="@color/dark_grey"
@@ -382,11 +381,13 @@
 
             <Button
                 android:id="@+id/book_now"
-                android:layout_width="70dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:background="@color/dark_orange"
                 android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
                 android:paddingTop="10dp"
                 android:text="@string/book_now"
                 android:textColor="@color/white"

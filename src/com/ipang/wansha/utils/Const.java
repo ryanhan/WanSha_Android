@@ -21,7 +21,10 @@ public class Const {
 	public static final String HASLOGIN = "haslogin";
 	public static final String FIRST = "first";
 	public static final String JSESSIONID = "JSESSIONID";
-
+	public static final String ADULTNUMBER = "adultnumber";
+	public static final String CHILDNUMBER = "childnumber";
+	public static final String TRAVELDATE = "traveldate";
+	public static final String TOTALPRICE = "totalprice";
 
 	public static final int LOGIN_REQUEST = 1;
 	public static final int CHANGE_PASSWORD = 2;

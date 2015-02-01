@@ -102,8 +102,13 @@
     <string name="child">儿童</string>
     <string name="total_price">订单总额：</string>
     <string name="origin_price">门市价</string>
+    <string name="contact">联系人</string>
+    <string name="name">姓名</string>
+    <string name="tel">电话</string>
+    <string name="email">邮箱</string>
+    <string name="travel_member">出行人</string>
+    <string name="go_to_pay">去支付</string>
     
-
     
     <string name="xlistview_header_hint_normal">下拉刷新</string>
     <string name="xlistview_header_hint_ready">松开刷新数据</string>

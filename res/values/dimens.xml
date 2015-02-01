@@ -55,5 +55,6 @@
     <dimen name="booking_member_title_horizontal_margin">20dp</dimen>
     <dimen name="booking_member_title_vertical_margin">10dp</dimen>
     <dimen name="booking_member_button_size">40dp</dimen>
-    
+    <dimen name="booking_contact_font_size">16sp</dimen>
+
 </resources>
