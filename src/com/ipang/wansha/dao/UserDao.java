@@ -16,4 +16,6 @@ public interface UserDao {
 			String JSessionId) throws UserException;
 
 	public void logout(String JSESSIONID) throws UserException;
+	
+	public User checkLoginStatus(String userName, String password, String JSESSIONID) throws UserException;
 }

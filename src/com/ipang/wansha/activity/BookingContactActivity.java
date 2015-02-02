@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,15 +15,21 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.dao.BookingDao;
+import com.ipang.wansha.dao.UserDao;
 import com.ipang.wansha.dao.impl.BookingDaoImpl;
+import com.ipang.wansha.dao.impl.UserDaoImpl;
+import com.ipang.wansha.exception.BookingException;
+import com.ipang.wansha.exception.UserException;
 import com.ipang.wansha.model.Contact;
 import com.ipang.wansha.model.Traveller;
+import com.ipang.wansha.model.User;
 import com.ipang.wansha.utils.Const;
 
 public class BookingContactActivity extends Activity {
@@ -30,6 +38,9 @@ public class BookingContactActivity extends Activity {
 	private SharedPreferences pref;
 	private LayoutInflater iInflater;
 	private int productId;
+	private String userName;
+	private String password;
+	private User user;
 	private int adultNumber;
 	private int childNumber;
 	private int totalPrice;
@@ -37,7 +48,12 @@ public class BookingContactActivity extends Activity {
 	private String currency;
 	private View[] contactViews;
 	private Traveller[] travellers;
+	private UserDao userDao;
 	private BookingDao bookingDao;
+	private ImageView loadingImage;
+	private AnimationDrawable animationDrawable;
+	private LinearLayout loadingLayout;
+	private LinearLayout bookingContactLayout;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,12 +61,14 @@ public class BookingContactActivity extends Activity {
 		setContentView(R.layout.activity_booking_contact);
 		getBundle();
 		setActionBar();
-		setViews();
+		getUserInfo();
 	}
 
 	private void getBundle() {
 		Bundle bundle = getIntent().getExtras();
 		pref = getSharedPreferences(Const.USERINFO, Context.MODE_PRIVATE);
+		userName = pref.getString(Const.USERNAME, null);
+		password = pref.getString(Const.PASSWORD, null);
 		productId = bundle.getInt(Const.PRODUCTID);
 		adultNumber = bundle.getInt(Const.ADULTNUMBER);
 		childNumber = bundle.getInt(Const.CHILDNUMBER);
@@ -66,7 +84,23 @@ public class BookingContactActivity extends Activity {
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setTitle(getResources().getString(R.string.book_now));
 		actionBar.setDisplayUseLogoEnabled(false);
+	}
 
+	private void getUserInfo() {
+		userDao = new UserDaoImpl();
+
+		loadingImage = (ImageView) findViewById(R.id.image_loading);
+		loadingImage.setBackgroundResource(R.anim.progress_animation);
+		animationDrawable = (AnimationDrawable) loadingImage.getBackground();
+
+		loadingLayout = (LinearLayout) findViewById(R.id.layout_loading);
+		bookingContactLayout = (LinearLayout) findViewById(R.id.layout_booking_contact);
+		bookingContactLayout.setVisibility(View.INVISIBLE);
+		loadingLayout.setVisibility(View.VISIBLE);
+		animationDrawable.start();
+
+		UserInfoAsyncTask userInfoAsyncTask = new UserInfoAsyncTask();
+		userInfoAsyncTask.execute(userName, password);
 	}
 
 	private void setViews() {
@@ -160,6 +194,7 @@ public class BookingContactActivity extends Activity {
 							Toast.LENGTH_SHORT).show();
 				} else {
 					Contact contact = new Contact();
+					contact.setName(contactName.getText().toString());
 					if (contactTel.getText().toString() == null
 							|| contactTel.getText().toString().equals("")) {
 						contact.setTel(contactTel.getText().toString());
@@ -222,19 +257,77 @@ public class BookingContactActivity extends Activity {
 
 	}
 
-	private class BookingAsyncTask extends AsyncTask<Contact, Integer, Void> {
+	private class UserInfoAsyncTask extends AsyncTask<String, Integer, User> {
 
 		@Override
-		protected Void doInBackground(Contact... params) {
-			
-			//TODO
-			//bookingDao.submitBooking(productId, travelDate, totalPrice, adultNumber, childNumber, travellers, params[0], JSessionId);
-			
-			return null;
+		protected User doInBackground(String... params) {
+
+			try {
+				user = userDao.checkLoginStatus(params[0], params[1],
+						Const.JSESSIONID);
+			} catch (UserException e) {
+				e.printStackTrace();
+				if (e.getExceptionCause() == UserException.LOGIN_FAILED) {
+					Editor editor = pref.edit();
+					editor.clear();
+					editor.putBoolean(Const.HASLOGIN, false);
+					editor.commit();
+					Intent intent = new Intent();
+					intent.setClass(BookingContactActivity.this,
+							LoginActivity.class);
+					startActivityForResult(intent, Const.LOGIN_REQUEST);
+					BookingContactActivity.this.overridePendingTransition(
+							R.anim.bottom_up, R.anim.fade_out);
+				}
+			}
+
+			if (user != null) {
+				Editor editor = pref.edit();
+				editor.putString(Const.JSESSIONID, user.getJSessionId());
+				editor.commit();
+			}
+
+			return user;
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
+		protected void onPostExecute(User result) {
+			if (result != null) {
+				setViews();
+				loadingLayout.setVisibility(View.INVISIBLE);
+				bookingContactLayout.setVisibility(View.VISIBLE);
+				animationDrawable.stop();
+			} else {
+				BookingContactActivity.this.finish();
+			}
+		}
+	}
+
+	private class BookingAsyncTask extends AsyncTask<Contact, Integer, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(Contact... params) {
+			try {
+				bookingDao.submitBooking(productId, travelDate, totalPrice,
+						adultNumber, childNumber, 0, travellers, params[0],
+						user.getJSessionId());
+				return true;
+			} catch (BookingException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if (result) {
+				Intent intent = new Intent();
+				intent.setClass(BookingContactActivity.this,
+						BookingSuccessActivity.class);
+				startActivity(intent);
+			} else {
+				Toast.makeText(BookingContactActivity.this, getResources().getString(R.string.book_failed), Toast.LENGTH_SHORT).show();
+			}
 		}
 	}
 

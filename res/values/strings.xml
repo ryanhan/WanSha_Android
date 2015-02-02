@@ -117,8 +117,9 @@
     <string name="please_select_date">请选择出行日期</string>
     <string name="please_add_traveller">请至少选择一个出行人</string>
     <string name="please_input_contact_name">请输入出行人姓名</string>
-    <string name="please_input_contact_method">请输入出行人姓名</string>
+    <string name="please_input_contact_method">请留下至少一种联系方式</string>
     <string name="wrong_email_format">邮箱格式不正确</string>
+    <string name="book_failed">预订错误</string>
     
     
     

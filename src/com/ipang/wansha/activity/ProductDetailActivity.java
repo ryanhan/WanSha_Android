@@ -24,14 +24,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductDetailImagePagerAdapter;
 import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.dao.impl.ProductDaoImpl;
-import com.ipang.wansha.model.City;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;
@@ -40,7 +38,6 @@ public class ProductDetailActivity extends Activity {
 
 	private ActionBar actionBar;
 	private Product product;
-	private City city;
 	private ImageView[] dots;
 	private ProductDao productDao;
 	// private ReviewDao reviewDao;
@@ -51,7 +48,6 @@ public class ProductDetailActivity extends Activity {
 	private String productName;
 	private String cityName;
 	private String countryName;
-	private ScrollView scrollView;
 	private ImageView loadingImage;
 	private AnimationDrawable animationDrawable;
 	private LinearLayout loadingLayout;
@@ -94,7 +90,6 @@ public class ProductDetailActivity extends Activity {
 	}
 
 	private void setProductView() {
-		scrollView = (ScrollView) findViewById(R.id.product_detail_scroll);
 		if (product == null) {
 			ProductAsyncTask productAsyncTask = new ProductAsyncTask();
 			productAsyncTask.execute(productId);
@@ -338,16 +333,14 @@ public class ProductDetailActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == Const.LOGIN_REQUEST && resultCode == Activity.RESULT_OK) {
+		if (requestCode == Const.LOGIN_REQUEST
+				&& resultCode == Activity.RESULT_OK) {
 			hasLogin = data.getBooleanExtra(Const.HASLOGIN, false);
 		}
 	}
-
-
 
 	private class ProductAsyncTask extends AsyncTask<Integer, Integer, Product> {
 
@@ -363,13 +356,13 @@ public class ProductDetailActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Product result) {
-			if (product != null) {
+			if (result != null) {
 				avgScore = 0;
-				loadingLayout.setVisibility(View.INVISIBLE);
-				productLayout.setVisibility(View.VISIBLE);
-				animationDrawable.stop();
 				setProductView();
 			}
+			loadingLayout.setVisibility(View.INVISIBLE);
+			productLayout.setVisibility(View.VISIBLE);
+			animationDrawable.stop();
 		}
 	}
 }

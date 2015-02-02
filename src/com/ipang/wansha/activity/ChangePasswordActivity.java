@@ -105,25 +105,32 @@ public class ChangePasswordActivity extends Activity {
 
 			User user = null;
 			try {
-				user = userDao.isAlive(pref.getString(Const.JSESSIONID, null));
-				if (user == null) {
-					user = userDao.login(userName, params[0]);
-					Editor editor = pref.edit();
-					editor.putString(Const.JSESSIONID, user.getJSessionId());
-					editor.commit();
-				}
+				user = userDao.checkLoginStatus(userName, params[0],
+						Const.JSESSIONID);
 			} catch (UserException e) {
 				e.printStackTrace();
-				return false;
+				if (e.getExceptionCause() == UserException.LOGIN_FAILED) {
+					Editor editor = pref.edit();
+					editor.clear();
+					editor.putBoolean(Const.HASLOGIN, false);
+					editor.commit();
+					Intent intent = new Intent();
+					intent.setClass(ChangePasswordActivity.this,
+							LoginActivity.class);
+					startActivityForResult(intent, Const.LOGIN_REQUEST);
+					ChangePasswordActivity.this.overridePendingTransition(
+							R.anim.bottom_up, R.anim.fade_out);
+				} else {
+					return false;
+				}
 			}
-			
 			if (user == null)
 				return false;
 
 			try {
 				userDao.changePassword(params[0], params[1],
 						user.getJSessionId());
-			} catch (Exception e) {
+			} catch (UserException e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -136,8 +143,6 @@ public class ChangePasswordActivity extends Activity {
 				Toast.makeText(ChangePasswordActivity.this, "修改密码成功",
 						Toast.LENGTH_SHORT).show();
 				Intent intent = new Intent();
-				intent.putExtra(Const.PASSWORD, newPassword.getText()
-						.toString());
 				setResult(RESULT_OK, intent);
 				ChangePasswordActivity.this.finish();
 			} else {

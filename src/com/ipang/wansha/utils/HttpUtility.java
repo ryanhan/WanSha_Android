@@ -123,7 +123,6 @@ public class HttpUtility {
 		HttpURLConnection urlConn = null;
 		try {
 			urlConn = (HttpURLConnection) url.openConnection();
-			urlConn.setDoOutput(true);
 			urlConn.setRequestMethod("POST");
 			urlConn.setDoOutput(true);
 			urlConn.setDoInput(true);
@@ -134,14 +133,20 @@ public class HttpUtility {
 						+ JSessionId);
 
 			if (json != null) {
-				String data = URLEncoder.encode(json.toString(), "UTF-8");
-				urlConn.setRequestProperty("Content-Type", "application/json");
+				String data = json.toString();
+				urlConn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
 				urlConn.setRequestProperty("Content-Length",
 						String.valueOf(data.getBytes().length));
+				urlConn.setRequestProperty("Accept", "application/json");
 				OutputStream os = urlConn.getOutputStream();
-				os.write(data.getBytes());
+				os.write(data.getBytes("UTF-8"));
 				os.flush();
+				os.close();
 			}
+			System.out.println("PostJson Response Code: "
+					+ urlConn.getResponseCode());
+			System.out.println("PostJson Response Content: "
+					+ readInputStream(urlConn));
 
 			if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				return readInputStream(urlConn);
@@ -159,7 +164,8 @@ public class HttpUtility {
 		}
 	}
 
-	private static String readInputStream(HttpURLConnection urlConn) throws IOException {
+	private static String readInputStream(HttpURLConnection urlConn)
+			throws IOException {
 		Charset charset = Charset.forName("UTF-8");
 		InputStreamReader stream = new InputStreamReader(
 				urlConn.getInputStream(), charset);

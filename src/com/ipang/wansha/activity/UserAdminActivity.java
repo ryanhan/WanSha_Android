@@ -136,20 +136,29 @@ public class UserAdminActivity extends Activity {
 
 			User user = null;
 			try {
-				user = userDao.isAlive(pref.getString(Const.JSESSIONID, null));
+				user = userDao.checkLoginStatus(userName, params[0],
+						Const.JSESSIONID);
 			} catch (UserException e) {
 				e.printStackTrace();
-				try {
-					user = userDao.login(params[0], params[1]);
-				} catch (UserException e1) {
-					e1.printStackTrace();
-					return null;
+				if (e.getExceptionCause() == UserException.LOGIN_FAILED) {
+					Editor editor = pref.edit();
+					editor.clear();
+					editor.putBoolean(Const.HASLOGIN, false);
+					editor.commit();
+					Intent intent = new Intent();
+					intent.setClass(UserAdminActivity.this, LoginActivity.class);
+					startActivityForResult(intent, Const.LOGIN_REQUEST);
+					UserAdminActivity.this.overridePendingTransition(
+							R.anim.bottom_up, R.anim.fade_out);
 				}
+			}
+
+			if (user != null) {
 				Editor editor = pref.edit();
 				editor.putString(Const.JSESSIONID, user.getJSessionId());
 				editor.commit();
 			}
-			
+
 			return user;
 		}
 
@@ -166,12 +175,4 @@ public class UserAdminActivity extends Activity {
 		}
 	}
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == Const.CHANGE_PASSWORD
-				&& resultCode == Activity.RESULT_OK) {
-			// pref. change password
-		}
-	}
 }

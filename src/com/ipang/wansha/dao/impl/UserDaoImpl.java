@@ -8,6 +8,8 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.SharedPreferences.Editor;
+
 import com.ipang.wansha.dao.UserDao;
 import com.ipang.wansha.exception.HttpException;
 import com.ipang.wansha.exception.UserException;
@@ -52,7 +54,7 @@ public class UserDaoImpl implements UserDao {
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
-			throw new UserException(UserException.REGISTER_FAILED);
+			throw new UserException(UserException.UNKNOWN_ERROR);
 		}
 	}
 
@@ -232,5 +234,31 @@ public class UserDaoImpl implements UserDao {
 			throw new UserException(UserException.NETWORK_CONNECT_FAILED);
 		}
 		System.out.println("logout: " + response);
+	}
+
+	@Override
+	public User checkLoginStatus(String userName, String password,
+			String JSESSIONID) throws UserException {
+
+		User user = null;
+		try {
+			user = isAlive(JSESSIONID);
+			return user;
+		} catch (UserException e) {
+			e.printStackTrace();
+			if (e.getExceptionCause() == UserException.NOT_ALIVE) {
+				try {
+					user = login(userName, password);
+					return user;
+				} catch (UserException e1) {
+					e1.printStackTrace();
+					throw e1;
+				}
+			}
+			else{
+				throw e;
+			}
+		}
+
 	}
 }
