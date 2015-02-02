@@ -365,7 +365,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:paddingLeft="15dp"
-                android:text="@string/total_price"
+                android:text="@string/total_price:"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 

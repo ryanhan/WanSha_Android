@@ -43,7 +43,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="5dp"
-                            android:text="2"
                             android:textSize="@dimen/booking_contact_font_size"
                             android:textStyle="bold" />
 
@@ -67,7 +66,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="5dp"
-                            android:text="2"
                             android:textSize="@dimen/booking_contact_font_size"
                             android:textStyle="bold" />
 
@@ -90,7 +88,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="5dp"
-                            android:text="2015-1-2"
                             android:textSize="@dimen/booking_contact_font_size"
                             android:textStyle="bold" />
 
@@ -119,7 +116,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp"
-                        android:text="￥2000"
                         android:textColor="@color/orange"
                         android:textSize="@dimen/booking_contact_font_size"
                         android:textStyle="bold" />
@@ -187,6 +183,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingBottom="@dimen/booking_member_title_vertical_margin"
+                    android:paddingLeft="@dimen/booking_contact_title_left_margin"
                     android:paddingTop="@dimen/booking_member_title_vertical_margin" >
 
                     <TextView
@@ -217,6 +214,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingBottom="@dimen/booking_member_title_vertical_margin"
+                    android:paddingLeft="@dimen/booking_contact_title_left_margin"
                     android:paddingTop="@dimen/booking_member_title_vertical_margin" >
 
                     <TextView
@@ -247,6 +245,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingBottom="@dimen/booking_member_title_vertical_margin"
+                    android:paddingLeft="@dimen/booking_contact_title_left_margin"
                     android:paddingTop="@dimen/booking_member_title_vertical_margin" >
 
                     <TextView
@@ -311,8 +310,6 @@
                         android:text="@string/travel_member"
                         android:textSize="@dimen/booking_contact_font_size" />
                 </RelativeLayout>
-
-                
             </LinearLayout>
 
             <View
@@ -323,7 +320,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/book_now"
+        android:id="@+id/pay_now"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/orange"

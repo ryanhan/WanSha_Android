@@ -461,15 +461,50 @@ public class BookingActivity extends FragmentActivity implements
 
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent();
-				intent.setClass(BookingActivity.this,
-						BookingContactActivity.class);
-				intent.putExtra(Const.PRODUCTID, product.getProductId());
-				intent.putExtra(Const.ADULTNUMBER, Integer.parseInt(adultNumber.getText().toString()));
-				intent.putExtra(Const.CHILDNUMBER, Integer.parseInt(childNumber.getText().toString()));
-				intent.putExtra(Const.TRAVELDATE, Integer.parseInt(selectDate.getText().toString()));
-				intent.putExtra(Const.TOTALPRICE, totalPrice);
-				startActivity(intent);
+
+				int adultNumberSumbit;
+				int childNumberSumbit;
+				try {
+					adultNumberSumbit = Integer.parseInt(adultNumber.getText()
+							.toString());
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+					adultNumberSumbit = 0;
+				}
+				try {
+					childNumberSumbit = Integer.parseInt(childNumber.getText()
+							.toString());
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+					childNumberSumbit = 0;
+				}
+				if (selectDate.getText().toString() == null
+						|| selectDate.getText().toString().equals("")) {
+					Toast.makeText(
+							BookingActivity.this,
+							getResources().getString(
+									R.string.please_select_date),
+							Toast.LENGTH_SHORT).show();
+				} else if (adultNumberSumbit + childNumberSumbit == 0) {
+					Toast.makeText(
+							BookingActivity.this,
+							getResources().getString(
+									R.string.please_add_traveller),
+							Toast.LENGTH_SHORT).show();
+				} else {
+					Intent intent = new Intent();
+					intent.setClass(BookingActivity.this,
+							BookingContactActivity.class);
+					intent.putExtra(Const.PRODUCTID, product.getProductId());
+					intent.putExtra(Const.ADULTNUMBER, adultNumberSumbit);
+					intent.putExtra(Const.CHILDNUMBER, childNumberSumbit);
+					intent.putExtra(Const.TRAVELDATE, selectDate.getText()
+							.toString());
+					intent.putExtra(Const.TOTALPRICE, totalPrice);
+					intent.putExtra(Const.CURRENCY, product.getCurrency()
+							.getSymbol());
+					startActivity(intent);
+				}
 			}
 		});
 

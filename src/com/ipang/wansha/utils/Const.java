@@ -25,7 +25,13 @@ public class Const {
 	public static final String CHILDNUMBER = "childnumber";
 	public static final String TRAVELDATE = "traveldate";
 	public static final String TOTALPRICE = "totalprice";
+	public static final String TRAVELLERNAME = "contactname";
+	public static final String TRAVELLERPINYIN = "contactpinyin";
+	public static final String TRAVELLERPASSPORT = "contactPASSPORT";
+	public static final String TRAVELLERMOBILE = "contactmobile";
+	public static final String ISNULL = "isnull";
 
+	
 	public static final int LOGIN_REQUEST = 1;
 	public static final int CHANGE_PASSWORD = 2;
 

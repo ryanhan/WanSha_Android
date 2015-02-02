@@ -15,6 +15,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingBottom="@dimen/booking_member_title_vertical_margin"
+        android:paddingLeft="@dimen/booking_contact_title_left_margin"
         android:paddingTop="@dimen/booking_member_title_vertical_margin" >
 
         <TextView
@@ -23,7 +24,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:gravity="left"
-            android:text="@string/adult"
             android:textSize="@dimen/booking_contact_font_size" />
 
         <TextView
