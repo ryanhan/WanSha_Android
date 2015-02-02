@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,10 +85,6 @@ public class Utility {
 		return sp * scaledDensity;
 	}
 
-	/**
-	 * @param text
-	 * @return
-	 */
 	public static String formatText(String text) {
 		text = text.replaceAll("<img src=\"/", "<img src=\"" + Const.SERVERNAME
 				+ "/");
@@ -110,5 +108,16 @@ public class Utility {
 			res[1] = text.substring(index + 1);
 		}
 		return res;
+	}
+
+	public static boolean isWifiConnected(Context context) {
+		ConnectivityManager connectivityManager = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo wifiNetworkInfo = connectivityManager
+				.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		if (wifiNetworkInfo.isConnected()) {
+			return true;
+		}
+		return false;
 	}
 }

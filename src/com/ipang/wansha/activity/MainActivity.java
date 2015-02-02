@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.SectionsPagerAdapter;
 import com.ipang.wansha.customview.PagerSlidingTabStrip;
+import com.ipang.wansha.utils.Utility;
 
 public class MainActivity extends FragmentActivity {
 
@@ -50,7 +51,11 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private void setViews() {
-		
+
+		if (Utility.isWifiConnected(MainActivity.this)) {
+			System.out.println("Wifi已连接");
+		}
+
 		drawerOpen = false;
 
 		tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
@@ -119,7 +124,6 @@ public class MainActivity extends FragmentActivity {
 		super.onPostCreate(savedInstanceState);
 		toggle.syncState();
 	}
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -134,18 +138,21 @@ public class MainActivity extends FragmentActivity {
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
 			if (drawerOpen) {
 				drawerLayout.closeDrawers();
-			}
-			else{
-				Dialog alertDialog = new AlertDialog.Builder(MainActivity.this).setTitle("退出提示")
-						.setMessage("确定退出玩啥？").setNegativeButton("取消", null)
-						.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+			} else {
+				Dialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+						.setTitle("退出提示")
+						.setMessage("确定退出玩啥？")
+						.setNegativeButton("取消", null)
+						.setPositiveButton("确定",
+								new DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								MainActivity.this.finish();
-							}
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										MainActivity.this.finish();
+									}
 
-						}).create();
+								}).create();
 				alertDialog.show();
 			}
 			return true;
