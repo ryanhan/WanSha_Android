@@ -2,7 +2,9 @@ package com.ipang.wansha.dao.impl;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -129,11 +131,13 @@ public class BookingDaoImpl implements BookingDao {
 
 		String result = null;
 		try {
-			result = HttpUtility.GetJson(url);
+			result = HttpUtility.GetJson(url, JSessionId);
 		} catch (HttpException e) {
 			e.printStackTrace();
 			throw new BookingException(BookingException.NETWORK_CONNECT_FAILED);
 		}
+		
+		System.out.println("BookingList response: " + result);
 
 		JSONArray jsonArray = null;
 		try {
@@ -165,10 +169,18 @@ public class BookingDaoImpl implements BookingDao {
 
 		booking.setBookingId(bookingJson.getString("externalOrderId"));
 		booking.setProductName(bookingJson.getString("firstProductName"));
-		booking.setProductImage(bookingJson.getString("firstProductPath"));
+
+		String imageUrl = bookingJson.getString("firstProductPath");
+		if (imageUrl.charAt(0) == '/')
+			imageUrl = Const.SERVERNAME + imageUrl;
+
+		booking.setProductImage(imageUrl);
 		booking.setOrderStatus(bookingJson.getInt("orderStatus"));
 		booking.setOrderStatusText(bookingJson.getString("orderStatusTxt"));
-		booking.setOrderDate(bookingJson.getString("orderTime"));
+
+		Date date1 = new Date(bookingJson.getLong("orderTime"));
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		booking.setOrderDate(format.format(date1));
 		booking.setTotal(bookingJson.getInt("total"));
 
 		JSONArray contactsArray = bookingJson.getJSONArray("contacts");
@@ -210,7 +222,10 @@ public class BookingDaoImpl implements BookingDao {
 
 		JSONArray itemArray = bookingJson.getJSONArray("items");
 		JSONObject itemObject = itemArray.getJSONObject(0);
-		booking.setTravelDate(itemObject.getString("tripBegda"));
+
+		Date date2 = new Date(itemObject.getLong("tripBegda"));
+		booking.setTravelDate(format.format(date2));
+
 		booking.setProductId(itemObject.getInt("productId"));
 
 		JSONArray quantitySet = itemObject.getJSONArray("quantitySet");

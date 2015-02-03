@@ -30,6 +30,7 @@ public class Const {
 	public static final String TRAVELLERPASSPORT = "contactPASSPORT";
 	public static final String TRAVELLERMOBILE = "contactmobile";
 	public static final String ISNULL = "isnull";
+	public static final String LASTUPDATE = "lastupdate";
 
 	
 	public static final int LOGIN_REQUEST = 1;

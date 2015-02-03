@@ -1,12 +1,16 @@
 package com.ipang.wansha.activity;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -23,10 +27,13 @@ import android.widget.Toast;
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.SectionsPagerAdapter;
 import com.ipang.wansha.customview.PagerSlidingTabStrip;
+import com.ipang.wansha.utils.CheckUpdateAsyncTask;
+import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;
 
 public class MainActivity extends FragmentActivity {
 
+	private SharedPreferences pref;
 	private PagerSlidingTabStrip tabs;
 	private SectionsPagerAdapter mSectionsPagerAdapter;
 	private ViewPager mViewPager;
@@ -44,6 +51,7 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private void init() {
+		pref = this.getSharedPreferences(Const.APPINFO, Context.MODE_PRIVATE);
 		tabTitle = new ArrayList<String>();
 		tabTitle.add(getString(R.string.title_section1));
 		tabTitle.add(getString(R.string.title_section2));
@@ -53,7 +61,27 @@ public class MainActivity extends FragmentActivity {
 	private void setViews() {
 
 		if (Utility.isWifiConnected(MainActivity.this)) {
-			System.out.println("Wifi已连接");
+			Toast.makeText(this, "Wifi已连接", Toast.LENGTH_SHORT).show();
+			// String lastUpdate = pref.getString(Const.LASTUPDATE, null);
+			// if (lastUpdate == null) {
+			CheckUpdateAsyncTask checkUpdateAysncTask = new CheckUpdateAsyncTask(
+					MainActivity.this, false);
+			checkUpdateAysncTask.execute();
+			// }
+			// else{
+			// Date date = Calendar.getInstance().getTime();
+			// try {
+			// Date lastDate = Utility.ParseString(lastUpdate);
+			// if (date.getTime() - lastDate.getTime() > 24 * 60 * 60 * 1000){
+			// CheckUpdateAsyncTask checkUpdateAysncTask = new
+			// CheckUpdateAsyncTask(
+			// MainActivity.this, false);
+			// checkUpdateAysncTask.execute();
+			// }
+			// } catch (ParseException e) {
+			// e.printStackTrace();
+			// }
+			// }
 		}
 
 		drawerOpen = false;

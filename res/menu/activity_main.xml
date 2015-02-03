@@ -6,10 +6,6 @@
           android:icon="@drawable/ic_action_search"
           android:showAsAction="collapseActionView|ifRoom"
           android:actionViewClass="android.widget.SearchView" />
-    
-     <item android:id="@+id/camera"
-          android:title="@string/camera"
-          android:icon="@drawable/ic_action_camera"
-          android:showAsAction="collapseActionView|ifRoom"/>
+
     
 </menu>

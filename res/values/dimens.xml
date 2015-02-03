@@ -10,6 +10,7 @@
     <dimen name="wansha_recommend_text_size">20sp</dimen>
     <dimen name="recommend_name_margin">2dp</dimen>
     <dimen name="listview_gap_between_image_item">10dp</dimen>
+    <dimen name="listview_gap_between_booking_item">20dp</dimen>
     <dimen name="product_detail_horizontal_margin">20dp</dimen>
     <dimen name="product_detail_vertical_margin">10dp</dimen>
     <dimen name="actionBar_height">55dp</dimen>
@@ -36,7 +37,7 @@
     <dimen name="city_list_bottom_margin">10dp</dimen>
     <dimen name="drawer_list_padding_horizontal">15dp</dimen>
     <dimen name="drawer_list_padding_vertical">15dp</dimen>
-    <dimen name="drawer_list_font_size">18sp</dimen>
+    <dimen name="drawer_list_font_size">16sp</dimen>
     <dimen name="drawer_list_icon_word">20dp</dimen>
     <dimen name="drawer_width">280dp</dimen>
     <dimen name="button_padding_vertical">10dp</dimen>

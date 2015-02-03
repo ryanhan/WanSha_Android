@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ipang.wansha"
-    android:versionCode="1"
-    android:versionName="0.1" >
+    android:versionCode="2"
+    android:versionName="0.2" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:name=".application.UILApplication"
@@ -82,24 +84,6 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".activity.SearchActvity"
-            android:label="@string/app_name"
-            android:logo="@drawable/back"
-            android:screenOrientation="portrait" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
-        <activity
-            android:name=".activity.MyBookingListActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
             android:name=".activity.BookingActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
@@ -111,6 +95,11 @@
         </activity>
         <activity
             android:name=".activity.AddContactActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.MyBookingActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>

@@ -100,6 +100,7 @@
     <string name="booking_members">出行人数</string>
     <string name="adult">成人</string>
     <string name="child">儿童</string>
+    <string name="infant">婴儿</string>
     <string name="total_price:">订单总额：</string>
     <string name="total_price">订单总额</string>
     <string name="origin_price">门市价</string>
@@ -120,6 +121,9 @@
     <string name="please_input_contact_method">请留下至少一种联系方式</string>
     <string name="wrong_email_format">邮箱格式不正确</string>
     <string name="book_failed">预订错误</string>
+    <string name="order_number">订单号</string>
+    <string name="order_time">下单时间</string>
+    
     
     
     

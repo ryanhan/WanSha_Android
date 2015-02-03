@@ -31,6 +31,7 @@ import com.ipang.wansha.model.Contact;
 import com.ipang.wansha.model.Traveller;
 import com.ipang.wansha.model.User;
 import com.ipang.wansha.utils.Const;
+import com.ipang.wansha.utils.Utility;
 
 public class BookingContactActivity extends Activity {
 
@@ -262,31 +263,9 @@ public class BookingContactActivity extends Activity {
 		@Override
 		protected User doInBackground(String... params) {
 
-			try {
-				user = userDao.checkLoginStatus(params[0], params[1],
-						Const.JSESSIONID);
-			} catch (UserException e) {
-				e.printStackTrace();
-				if (e.getExceptionCause() == UserException.LOGIN_FAILED) {
-					Editor editor = pref.edit();
-					editor.clear();
-					editor.putBoolean(Const.HASLOGIN, false);
-					editor.commit();
-					Intent intent = new Intent();
-					intent.setClass(BookingContactActivity.this,
-							LoginActivity.class);
-					startActivityForResult(intent, Const.LOGIN_REQUEST);
-					BookingContactActivity.this.overridePendingTransition(
-							R.anim.bottom_up, R.anim.fade_out);
-				}
-			}
-
-			if (user != null) {
-				Editor editor = pref.edit();
-				editor.putString(Const.JSESSIONID, user.getJSessionId());
-				editor.commit();
-			}
-
+			user = Utility.getUserLoginStatus(params[0], params[1],
+					pref.getString(Const.JSESSIONID, null),
+					BookingContactActivity.this, pref);
 			return user;
 		}
 
@@ -326,7 +305,9 @@ public class BookingContactActivity extends Activity {
 						BookingSuccessActivity.class);
 				startActivity(intent);
 			} else {
-				Toast.makeText(BookingContactActivity.this, getResources().getString(R.string.book_failed), Toast.LENGTH_SHORT).show();
+				Toast.makeText(BookingContactActivity.this,
+						getResources().getString(R.string.book_failed),
+						Toast.LENGTH_SHORT).show();
 			}
 		}
 	}

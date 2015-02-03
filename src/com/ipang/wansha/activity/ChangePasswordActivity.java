@@ -22,6 +22,7 @@ import com.ipang.wansha.dao.impl.UserDaoImpl;
 import com.ipang.wansha.exception.UserException;
 import com.ipang.wansha.model.User;
 import com.ipang.wansha.utils.Const;
+import com.ipang.wansha.utils.Utility;
 
 public class ChangePasswordActivity extends Activity {
 
@@ -103,29 +104,9 @@ public class ChangePasswordActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(String... params) {
 
-			User user = null;
-			try {
-				user = userDao.checkLoginStatus(userName, params[0],
-						Const.JSESSIONID);
-			} catch (UserException e) {
-				e.printStackTrace();
-				if (e.getExceptionCause() == UserException.LOGIN_FAILED) {
-					Editor editor = pref.edit();
-					editor.clear();
-					editor.putBoolean(Const.HASLOGIN, false);
-					editor.commit();
-					Intent intent = new Intent();
-					intent.setClass(ChangePasswordActivity.this,
-							LoginActivity.class);
-					startActivityForResult(intent, Const.LOGIN_REQUEST);
-					ChangePasswordActivity.this.overridePendingTransition(
-							R.anim.bottom_up, R.anim.fade_out);
-				} else {
-					return false;
-				}
-			}
-			if (user == null)
-				return false;
+			User user = Utility.getUserLoginStatus(userName, params[0],
+					pref.getString(Const.JSESSIONID, null),
+					ChangePasswordActivity.this, pref);
 
 			try {
 				userDao.changePassword(params[0], params[1],

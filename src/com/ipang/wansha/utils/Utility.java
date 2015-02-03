@@ -5,7 +5,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.Html;
@@ -16,6 +20,12 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.ipang.wansha.R;
+import com.ipang.wansha.activity.BookingContactActivity;
+import com.ipang.wansha.activity.LoginActivity;
+import com.ipang.wansha.dao.UserDao;
+import com.ipang.wansha.dao.impl.UserDaoImpl;
+import com.ipang.wansha.exception.UserException;
+import com.ipang.wansha.model.User;
 
 public class Utility {
 
@@ -75,7 +85,7 @@ public class Utility {
 		return (int) (dpValue * scale + 0.5f);
 	}
 
-	public static Date FormatString(String dateStr) throws ParseException {
+	public static Date ParseString(String dateStr) throws ParseException {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return df.parse(dateStr);
 	}
@@ -119,5 +129,35 @@ public class Utility {
 			return true;
 		}
 		return false;
+	}
+
+	public static User getUserLoginStatus(String userName, String password,
+			String jSessionId, Activity activity, SharedPreferences pref) {
+		UserDao userDao = new UserDaoImpl();
+		User user = null;
+		try {
+			user = userDao.checkLoginStatus(userName, password, jSessionId);
+		} catch (UserException e) {
+			e.printStackTrace();
+			if (e.getExceptionCause() == UserException.LOGIN_FAILED) {
+				Editor editor = pref.edit();
+				editor.clear();
+				editor.putBoolean(Const.HASLOGIN, false);
+				editor.commit();
+				Intent intent = new Intent();
+				intent.setClass(activity, LoginActivity.class);
+				activity.startActivityForResult(intent, Const.LOGIN_REQUEST);
+				activity.overridePendingTransition(R.anim.bottom_up,
+						R.anim.fade_out);
+			}
+		}
+
+		if (user != null) {
+			Editor editor = pref.edit();
+			editor.putString(Const.JSESSIONID, user.getJSessionId());
+			editor.commit();
+		}
+		
+		return user;
 	}
 }

@@ -20,13 +20,13 @@ import com.ipang.wansha.dao.impl.UserDaoImpl;
 import com.ipang.wansha.exception.UserException;
 import com.ipang.wansha.model.User;
 import com.ipang.wansha.utils.Const;
+import com.ipang.wansha.utils.Utility;
 
 public class UserAdminActivity extends Activity {
 
 	private ActionBar actionBar;
 	private SharedPreferences pref;
 	private UserDao userDao;
-	private int userId;
 	private String userName;
 	private String password;
 	private TextView email;
@@ -45,7 +45,6 @@ public class UserAdminActivity extends Activity {
 	}
 
 	private void getUserInfo() {
-		userId = pref.getInt(Const.USERID, 0);
 		userName = pref.getString(Const.USERNAME, null);
 		password = pref.getString(Const.PASSWORD, null);
 		UserInfoAsyncTask userInfoAsyncTask = new UserInfoAsyncTask();
@@ -134,30 +133,9 @@ public class UserAdminActivity extends Activity {
 		@Override
 		protected User doInBackground(String... params) {
 
-			User user = null;
-			try {
-				user = userDao.checkLoginStatus(userName, params[0],
-						Const.JSESSIONID);
-			} catch (UserException e) {
-				e.printStackTrace();
-				if (e.getExceptionCause() == UserException.LOGIN_FAILED) {
-					Editor editor = pref.edit();
-					editor.clear();
-					editor.putBoolean(Const.HASLOGIN, false);
-					editor.commit();
-					Intent intent = new Intent();
-					intent.setClass(UserAdminActivity.this, LoginActivity.class);
-					startActivityForResult(intent, Const.LOGIN_REQUEST);
-					UserAdminActivity.this.overridePendingTransition(
-							R.anim.bottom_up, R.anim.fade_out);
-				}
-			}
-
-			if (user != null) {
-				Editor editor = pref.edit();
-				editor.putString(Const.JSESSIONID, user.getJSessionId());
-				editor.commit();
-			}
+			User user = Utility.getUserLoginStatus(params[0], params[1],
+					pref.getString(Const.JSESSIONID, null),
+					UserAdminActivity.this, pref);
 
 			return user;
 		}
