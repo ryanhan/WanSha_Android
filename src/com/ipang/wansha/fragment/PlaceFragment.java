@@ -97,13 +97,13 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-
+				int index = (int) id;
 				Intent intent = new Intent();
 				intent.setClass(PlaceFragment.this.getActivity(),
 						CityListActivity.class);
-				intent.putExtra(Const.COUNTRYID, countries.get(position - 1)
+				intent.putExtra(Const.COUNTRYID, countries.get(index)
 						.getCountryId());
-				intent.putExtra(Const.COUNTRYNAME, countries.get(position - 1)
+				intent.putExtra(Const.COUNTRYNAME, countries.get(index)
 						.getCountryName());
 				startActivity(intent);
 			}

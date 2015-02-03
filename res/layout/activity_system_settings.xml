@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
             android:text="@string/without_wifi"
             android:textSize="@dimen/user_admin_title_size" />
 
@@ -35,12 +35,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
             android:checked="true"
             android:textOff="OFF"
             android:textOn="ON"
             android:textSize="@dimen/user_admin_title_size" />
-
     </RelativeLayout>
 
     <View

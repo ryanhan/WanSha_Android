@@ -58,10 +58,11 @@ public class BookingActivity extends FragmentActivity implements
 	private int totalPrice;
 	private int adultPrice;
 	private int childPrice;
+	private String travelDate;
 	private EditText adultNumber;
 	private EditText childNumber;
 	private TextView priceText;
-	private TextView selectDate;
+	private TextView selectDateText;
 	private List<Integer> adultCount;
 	private List<Float> perAdult;
 	private List<Integer> childCount;
@@ -180,6 +181,8 @@ public class BookingActivity extends FragmentActivity implements
 		}
 
 		productTitle.setText(Utility.splitChnEng(product.getProductName())[0]);
+
+		selectDateText = (TextView) findViewById(R.id.select_date);
 
 		LinearLayout selectDateLayout = (LinearLayout) findViewById(R.id.layout_select_date);
 		selectDateLayout.setOnClickListener(new OnClickListener() {
@@ -467,19 +470,18 @@ public class BookingActivity extends FragmentActivity implements
 				try {
 					adultNumberSumbit = Integer.parseInt(adultNumber.getText()
 							.toString());
-				} catch (NumberFormatException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 					adultNumberSumbit = 0;
 				}
 				try {
 					childNumberSumbit = Integer.parseInt(childNumber.getText()
 							.toString());
-				} catch (NumberFormatException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 					childNumberSumbit = 0;
 				}
-				if (selectDate.getText().toString() == null
-						|| selectDate.getText().toString().equals("")) {
+				if (travelDate == null) {
 					Toast.makeText(
 							BookingActivity.this,
 							getResources().getString(
@@ -498,8 +500,7 @@ public class BookingActivity extends FragmentActivity implements
 					intent.putExtra(Const.PRODUCTID, product.getProductId());
 					intent.putExtra(Const.ADULTNUMBER, adultNumberSumbit);
 					intent.putExtra(Const.CHILDNUMBER, childNumberSumbit);
-					intent.putExtra(Const.TRAVELDATE, selectDate.getText()
-							.toString());
+					intent.putExtra(Const.TRAVELDATE, travelDate);
 					intent.putExtra(Const.TOTALPRICE, totalPrice);
 					intent.putExtra(Const.CURRENCY, product.getCurrency()
 							.getSymbol());
@@ -586,10 +587,10 @@ public class BookingActivity extends FragmentActivity implements
 	public void onDateSet(DatePickerDialog datePickerDialog, int year,
 			int month, int day) {
 		month++;
-		selectDate = (TextView) findViewById(R.id.select_date);
-		selectDate.setTextColor(getResources().getColor(R.color.black));
-		selectDate.setText(year + "-" + (month < 10 ? "0" + month : month)
-				+ "-" + (day < 10 ? "0" + day : day));
+		travelDate = year + "-" + (month < 10 ? "0" + month : month) + "-"
+				+ (day < 10 ? "0" + day : day);
+		selectDateText.setTextColor(getResources().getColor(R.color.black));
+		selectDateText.setText(travelDate);
 	}
 
 }

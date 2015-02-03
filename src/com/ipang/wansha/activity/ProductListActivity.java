@@ -116,12 +116,13 @@ public class ProductListActivity extends FragmentActivity implements
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				int index = (int) id;
 				Intent intent = new Intent();
 				intent.setClass(ProductListActivity.this,
 						ProductDetailActivity.class);
-				intent.putExtra(Const.PRODUCTID, products.get(position - 1)
+				intent.putExtra(Const.PRODUCTID, products.get(index)
 						.getProductId());
-				intent.putExtra(Const.PRODUCTNAME, products.get(position - 1)
+				intent.putExtra(Const.PRODUCTNAME, products.get(index)
 						.getProductName());
 				intent.putExtra(Const.CITYNAME, cityName);
 				intent.putExtra(Const.COUNTRYNAME, countryName);

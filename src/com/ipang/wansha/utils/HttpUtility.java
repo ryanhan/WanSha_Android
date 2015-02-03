@@ -134,7 +134,8 @@ public class HttpUtility {
 
 			if (json != null) {
 				String data = json.toString();
-				urlConn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+				urlConn.setRequestProperty("Content-Type",
+						"application/json;charset=UTF-8");
 				urlConn.setRequestProperty("Content-Length",
 						String.valueOf(data.getBytes().length));
 				urlConn.setRequestProperty("Accept", "application/json");
@@ -143,10 +144,6 @@ public class HttpUtility {
 				os.flush();
 				os.close();
 			}
-			System.out.println("PostJson Response Code: "
-					+ urlConn.getResponseCode());
-			System.out.println("PostJson Response Content: "
-					+ readInputStream(urlConn));
 
 			if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				return readInputStream(urlConn);

@@ -49,10 +49,9 @@ public class UserDaoImpl implements UserDao {
 
 		try {
 			JSONObject responseJson = new JSONObject(response);
-			if (responseJson.getInt("code" == 99){
+			if (responseJson.getInt("code") == 99) {
 				throw new UserException(UserException.DUPLICATE_USERNAME);
-			}
-			else if (responseJson.getInt("code") != 0) {
+			} else if (responseJson.getInt("code") != 0) {
 				throw new UserException(UserException.REGISTER_FAILED);
 			}
 		} catch (JSONException e) {
@@ -257,8 +256,7 @@ public class UserDaoImpl implements UserDao {
 					e1.printStackTrace();
 					throw e1;
 				}
-			}
-			else{
+			} else {
 				throw e;
 			}
 		}
