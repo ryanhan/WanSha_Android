@@ -1,16 +1,12 @@
 package com.ipang.wansha.activity;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -62,26 +58,9 @@ public class MainActivity extends FragmentActivity {
 
 		if (Utility.isWifiConnected(MainActivity.this)) {
 			Toast.makeText(this, "Wifi已连接", Toast.LENGTH_SHORT).show();
-			// String lastUpdate = pref.getString(Const.LASTUPDATE, null);
-			// if (lastUpdate == null) {
 			CheckUpdateAsyncTask checkUpdateAysncTask = new CheckUpdateAsyncTask(
 					MainActivity.this, false);
 			checkUpdateAysncTask.execute();
-			// }
-			// else{
-			// Date date = Calendar.getInstance().getTime();
-			// try {
-			// Date lastDate = Utility.ParseString(lastUpdate);
-			// if (date.getTime() - lastDate.getTime() > 24 * 60 * 60 * 1000){
-			// CheckUpdateAsyncTask checkUpdateAysncTask = new
-			// CheckUpdateAsyncTask(
-			// MainActivity.this, false);
-			// checkUpdateAysncTask.execute();
-			// }
-			// } catch (ParseException e) {
-			// e.printStackTrace();
-			// }
-			// }
 		}
 
 		drawerOpen = false;

@@ -9,6 +9,8 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -109,6 +111,13 @@ public class CityListActivity extends Activity implements IXListViewListener {
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.activity_city_list, menu);
+		return true;
 	}
 
 	private class CityListAsyncTask extends

@@ -4,7 +4,12 @@
         android:id="@+id/action_sort"
         android:orderInCategory="100"
         android:showAsAction="always|withText"
-        android:title="@string/action_sort"
-        />
+        android:title="@string/action_sort"/>
+    <item
+        android:id="@+id/download"
+        android:icon="@drawable/download"
+        android:orderInCategory="101"
+        android:showAsAction="always"
+        android:title="@string/download"/>
 
 </menu>
