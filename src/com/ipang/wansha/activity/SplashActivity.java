@@ -17,6 +17,8 @@ import android.widget.LinearLayout;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.LaunchImagePagerAdapter;
+import com.ipang.wansha.dao.OfflineDao;
+import com.ipang.wansha.dao.impl.OfflineDaoImpl;
 import com.ipang.wansha.utils.Const;
 
 public class SplashActivity extends Activity {
@@ -25,6 +27,7 @@ public class SplashActivity extends Activity {
 	private SharedPreferences pref;
 	private ImageView[] dots;
 	private Button startButton;
+	private OfflineDao offlineDao;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +46,7 @@ public class SplashActivity extends Activity {
 					Editor editor = pref.edit();
 					editor.putBoolean(Const.FIRST, false);
 					editor.commit();
-					
+
 					Intent intent = new Intent(SplashActivity.this,
 							MainActivity.class);
 					startActivity(intent);
@@ -93,6 +96,9 @@ public class SplashActivity extends Activity {
 
 			}, SPLASH_DISPLAY_LENGHT);
 		}
+
+		offlineDao = new OfflineDaoImpl();
+		offlineDao.createDatabase(this);
 	}
 
 	private void setDotBar(int number) {

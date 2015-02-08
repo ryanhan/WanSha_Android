@@ -9,9 +9,9 @@ import android.widget.Toast;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private static final int VERSION = 1;
-	
+
 	public static final String DATABASENAME = "wansha_db";
-	public static final String TABLENAME = "offline_guide";
+	public static final String OFFLINEGUIDE = "offline_guide";
 	public static final String ID = "id";
 	public static final String PRODUCTID = "product_id";
 	public static final String PRODUCTNAME = "product_name";
@@ -20,14 +20,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String COUNTRYID = "country_id";
 	public static final String COUNTRYNAME = "city_name";
 	public static final String PRODUCTTYPE = "product_type";
-	public static final String IMAGENUMBER = "image_number";
 	public static final String DETAIL = "detail";
 	public static final String EXPENSEDESCR = "expense_descr";
 	public static final String INSTRUCTION = "instruction";
 	public static final String ORDERDESCR = "order_descr";
 	public static final String BRIEF = "brief";
 	public static final String LASTMODIFIED = "last_modified";
-	
+
+	public static final String LOCALIMAGE = "local_image";
+	public static final String FILENAME = "file_name";
+	public static final String IMAGEURL = "image_url";
+	public static final String SEQ = "seq";
+
 	private Context context;
 
 	public DatabaseHelper(Context context, String name, CursorFactory factory,
@@ -47,7 +51,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		Toast.makeText(context, "create a database", Toast.LENGTH_SHORT).show();
-		db.execSQL("create table if not exists " + TABLENAME + " (id integer primary key, product_id integer, product_name varchar)");
+		// create offline guide table
+		db.execSQL("create table if not exists " + OFFLINEGUIDE + " (" + ID
+				+ " integer primary key, " + PRODUCTID + " integer, "
+				+ PRODUCTNAME + " text, " + CITYID + " integer, " + CITYNAME
+				+ " text, " + PRODUCTTYPE + " integer, " + DETAIL + " text, "
+				+ EXPENSEDESCR + " text, " + INSTRUCTION + " text, "
+				+ ORDERDESCR + " text, " + BRIEF + " text, " + LASTMODIFIED
+				+ " integer)");
+		// create local image table
+		db.execSQL("create table if not exists " + LOCALIMAGE + " (" + ID
+				+ " integer primary key, " + PRODUCTID + " integer, "
+				+ FILENAME + " text, " + IMAGEURL + " text, " + SEQ
+				+ " integer)");
 	}
 
 	@Override

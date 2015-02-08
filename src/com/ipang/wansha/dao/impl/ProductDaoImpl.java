@@ -29,7 +29,7 @@ public class ProductDaoImpl implements ProductDao {
 	@Override
 	public List<Product> getProductList(int cityId, int offset, int number)
 			throws ProductException {
-		
+
 		List<Product> products = new ArrayList<Product>();
 
 		URL url = null;
@@ -104,10 +104,10 @@ public class ProductDaoImpl implements ProductDao {
 			throw new ProductException(ProductException.JSON_FORMAT_NOT_MATCH);
 		}
 	}
-	
+
 	@Override
 	public List<Product> getRecommendProductList() throws ProductException {
-		
+
 		List<Product> products = new ArrayList<Product>();
 
 		URL url = null;
@@ -145,7 +145,6 @@ public class ProductDaoImpl implements ProductDao {
 
 		return products;
 	}
-
 
 	private Product createProduct(JSONObject json) throws JSONException {
 
@@ -191,7 +190,7 @@ public class ProductDaoImpl implements ProductDao {
 					product.setLowestPrice(0);
 				}
 				List<Combo> combos = new ArrayList<Combo>();
-				
+
 				if (comboList != null && comboList.length() > 0) {
 					float lowest = -1;
 					for (int i = 0; i < comboList.length(); i++) {
@@ -273,7 +272,30 @@ public class ProductDaoImpl implements ProductDao {
 			e.printStackTrace();
 		}
 
+		try {
+			if (!json.isNull("LASTMODIFIED")) {
+				product.setLastModified(json.getLong("lastModify"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			if (!json.isNull("cityId")) {
+				product.setCityId(json.getInt("cityId"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			if (!json.isNull("countryId")) {
+				product.setCountryId(json.getInt("countryId"));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
 		return product;
 	}
-
 }

@@ -24,6 +24,9 @@ public class Product implements Serializable {
 	private List<String> productImages;
 	private String brief;
 	private List<Combo> combos;
+	private int cityId;
+	private int countryId;
+	private long lastModified;
 
 	public int getProductId() {
 		return productId;
@@ -143,6 +146,30 @@ public class Product implements Serializable {
 
 	public void setCombos(List<Combo> combos) {
 		this.combos = combos;
+	}
+
+	public int getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(int cityId) {
+		this.cityId = cityId;
+	}
+
+	public int getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(int countryId) {
+		this.countryId = countryId;
+	}
+
+	public long getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(long lastModified) {
+		this.lastModified = lastModified;
 	}
 
 }
