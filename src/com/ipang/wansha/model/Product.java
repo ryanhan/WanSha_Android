@@ -25,7 +25,9 @@ public class Product implements Serializable {
 	private String brief;
 	private List<Combo> combos;
 	private int cityId;
+	private String cityName;
 	private int countryId;
+	private String countryName;
 	private long lastModified;
 
 	public int getProductId() {
@@ -170,6 +172,22 @@ public class Product implements Serializable {
 
 	public void setLastModified(long lastModified) {
 		this.lastModified = lastModified;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+
+	public String getCountryName() {
+		return countryName;
+	}
+
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
 	}
 
 }

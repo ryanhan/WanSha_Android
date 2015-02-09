@@ -31,6 +31,7 @@ import com.ipang.wansha.dao.impl.ProductDaoImpl;
 import com.ipang.wansha.exception.ProductException;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
+import com.ipang.wansha.utils.Utility;
 
 public class RecommendFragment extends Fragment implements IXListViewListener {
 
@@ -103,8 +104,8 @@ public class RecommendFragment extends Fragment implements IXListViewListener {
 						ProductDetailActivity.class);
 				intent.putExtra(Const.PRODUCTID, products.get(index)
 						.getProductId());
-				intent.putExtra(Const.PRODUCTNAME, products.get(index)
-						.getProductName());
+				intent.putExtra(Const.ACTIONBARTITLE, Utility
+						.splitChnEng(products.get(index).getProductName())[0]);
 
 				startActivity(intent);
 			}
@@ -130,8 +131,9 @@ public class RecommendFragment extends Fragment implements IXListViewListener {
 				R.dimen.activity_horizontal_margin);
 		titleText.setLayoutParams(textParams);
 		titleText.setText(getResources().getString(R.string.wansha_recommend));
-		titleText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.wansha_recommend_text_size));
-		
+		titleText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources()
+				.getDimension(R.dimen.wansha_recommend_text_size));
+
 		layout.addView(titleText);
 		recommendListView.addHeaderView(layout);
 	}

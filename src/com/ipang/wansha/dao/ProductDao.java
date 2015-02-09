@@ -13,7 +13,7 @@ public interface ProductDao {
 			throws ProductException;
 
 	public Product getProductDetail(int productId) throws ProductException;
-	
+
 	public List<Product> getRecommendProductList() throws ProductException;
 
 }

@@ -18,7 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String CITYID = "city_id";
 	public static final String CITYNAME = "city_name";
 	public static final String COUNTRYID = "country_id";
-	public static final String COUNTRYNAME = "city_name";
+	public static final String COUNTRYNAME = "country_name";
 	public static final String PRODUCTTYPE = "product_type";
 	public static final String DETAIL = "detail";
 	public static final String EXPENSEDESCR = "expense_descr";
@@ -55,7 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL("create table if not exists " + OFFLINEGUIDE + " (" + ID
 				+ " integer primary key, " + PRODUCTID + " integer, "
 				+ PRODUCTNAME + " text, " + CITYID + " integer, " + CITYNAME
-				+ " text, " + PRODUCTTYPE + " integer, " + DETAIL + " text, "
+				+ " text, " + COUNTRYID + " integer, " + COUNTRYNAME + " text, "+ PRODUCTTYPE + " integer, " + DETAIL + " text, "
 				+ EXPENSEDESCR + " text, " + INSTRUCTION + " text, "
 				+ ORDERDESCR + " text, " + BRIEF + " text, " + LASTMODIFIED
 				+ " integer)");

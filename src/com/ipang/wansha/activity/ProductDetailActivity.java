@@ -28,24 +28,31 @@ import android.widget.TextView;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductDetailImagePagerAdapter;
+import com.ipang.wansha.dao.CityDao;
+import com.ipang.wansha.dao.OfflineDao;
 import com.ipang.wansha.dao.ProductDao;
+import com.ipang.wansha.dao.impl.CityDaoImpl;
+import com.ipang.wansha.dao.impl.OfflineDaoImpl;
 import com.ipang.wansha.dao.impl.ProductDaoImpl;
+import com.ipang.wansha.exception.CityException;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
+import com.ipang.wansha.utils.SaveProductAsyncTask;
 import com.ipang.wansha.utils.Utility;
 
 public class ProductDetailActivity extends Activity {
 
 	private ActionBar actionBar;
+	private String actionBarTitle;
 	private Product product;
 	private ImageView[] dots;
 	private ProductDao productDao;
-	// private ReviewDao reviewDao;
+	private OfflineDao offlineDao;
+	private CityDao cityDao;
 	private float avgScore;
 	private SharedPreferences pref;
 	private boolean hasLogin;
 	private int productId;
-	private String productName;
 	private String cityName;
 	private String countryName;
 	private ImageView loadingImage;
@@ -65,15 +72,15 @@ public class ProductDetailActivity extends Activity {
 	private void getBundle() {
 		Bundle bundle = getIntent().getExtras();
 		productId = bundle.getInt(Const.PRODUCTID);
-		productName = bundle.getString(Const.PRODUCTNAME);
-		cityName = bundle.getString(Const.CITYNAME);
-		countryName = bundle.getString(Const.COUNTRYNAME);
+		actionBarTitle = bundle.getString(Const.ACTIONBARTITLE);
 		pref = getSharedPreferences(Const.USERINFO, Context.MODE_PRIVATE);
 		hasLogin = pref.getBoolean(Const.HASLOGIN, false);
 	}
 
 	private void getProduct() {
 		productDao = new ProductDaoImpl();
+		cityDao = new CityDaoImpl();
+		offlineDao = new OfflineDaoImpl();
 
 		loadingImage = (ImageView) findViewById(R.id.image_loading);
 		loadingImage.setBackgroundResource(R.anim.progress_animation);
@@ -133,7 +140,7 @@ public class ProductDetailActivity extends Activity {
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(false);
 		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle(productName);
+		actionBar.setTitle(actionBarTitle);
 		actionBar.setDisplayUseLogoEnabled(false);
 	}
 
@@ -212,7 +219,8 @@ public class ProductDetailActivity extends Activity {
 		rankImages[4] = (ImageView) findViewById(R.id.product_detail_rank5);
 
 		title.setText(product.getProductName());
-		location.setText(cityName + ", " + countryName);
+		location.setText(Utility.splitChnEng(cityName)[0] + ", "
+				+ Utility.splitChnEng(countryName)[0]);
 
 		// int resID = getResources().getIdentifier(
 		// product.getTimeUnit().toString(), "string", Const.PACKAGENAME);
@@ -330,6 +338,12 @@ public class ProductDetailActivity extends Activity {
 		case android.R.id.home:
 			ProductDetailActivity.this.finish();
 			break;
+		case R.id.download:
+			product.setCountryName(countryName);
+			product.setCityName(cityName);
+			SaveProductAsyncTask asyncTask = new SaveProductAsyncTask(product, ProductDetailActivity.this);
+			asyncTask.execute();
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -342,26 +356,46 @@ public class ProductDetailActivity extends Activity {
 		}
 	}
 
-	private class ProductAsyncTask extends AsyncTask<Integer, Integer, Product> {
+	private class ProductAsyncTask extends AsyncTask<Integer, Integer, Boolean> {
 
 		@Override
-		protected Product doInBackground(Integer... params) {
+		protected Boolean doInBackground(Integer... params) {
 			try {
 				product = productDao.getProductDetail(params[0]);
 			} catch (Exception e) {
 				e.printStackTrace();
+				return false;
 			}
-			return product;
+			if (product == null) {
+				return false;
+			} else {
+				try {
+					String names[] = cityDao.getCountryAndCity(
+							product.getCountryId(), product.getCityId());
+					if (names == null) {
+						return false;
+					} else {
+						countryName = names[0];
+						cityName = names[1];
+						return true;
+					}
+				} catch (CityException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
 		}
 
 		@Override
-		protected void onPostExecute(Product result) {
-			if (result != null) {
+		protected void onPostExecute(Boolean result) {
+			if (result) {
 				avgScore = 0;
 				setProductView();
+				productLayout.setVisibility(View.VISIBLE);
+			} else {
+				productLayout.setVisibility(View.INVISIBLE);
 			}
 			loadingLayout.setVisibility(View.INVISIBLE);
-			productLayout.setVisibility(View.VISIBLE);
 			animationDrawable.stop();
 		}
 	}

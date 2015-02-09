@@ -187,6 +187,62 @@ public class CityDaoImpl implements CityDao {
 		return map;
 	}
 
+	@Override
+	public String[] getCountryAndCity(int countryId, int cityId)
+			throws CityException {
+
+		String[] res = new String[2];
+
+		URL url = null;
+		try {
+			url = new URL(Const.SERVERNAME + "/genericdb/country/" + countryId
+					+ ".json");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			throw new CityException(CityException.UNKNOWN_ERROR);
+		}
+
+		String result = null;
+		try {
+			result = HttpUtility.GetJson(url);
+		} catch (HttpException e) {
+			e.printStackTrace();
+			throw new CityException(CityException.NETWORK_CONNECT_FAILED);
+		}
+
+		JSONObject jsonObject = null;
+		try {
+			jsonObject = new JSONObject(result);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new CityException(CityException.JSON_FORMAT_NOT_MATCH);
+		}
+
+		try {
+			res[0] = jsonObject.getString("countryName");
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new CityException(CityException.JSON_FORMAT_NOT_MATCH);
+		}
+
+		try {
+			JSONArray cityArray = jsonObject.getJSONArray("cities");
+			for (int i = 0; i < cityArray.length(); i++) {
+				JSONObject cityJson = cityArray.getJSONObject(i);
+				int id = cityJson.getInt("id");
+				if (id == cityId) {
+					res[1] = cityJson.getString("cityName");
+					break;
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw new CityException(CityException.JSON_FORMAT_NOT_MATCH);
+		}
+
+		return res;
+	}
+
 	private City createCity(JSONObject json) throws JSONException {
 
 		City city = new City();

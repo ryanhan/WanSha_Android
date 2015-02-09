@@ -31,6 +31,7 @@ import com.ipang.wansha.dao.CityDao;
 import com.ipang.wansha.dao.impl.CityDaoImpl;
 import com.ipang.wansha.model.Country;
 import com.ipang.wansha.utils.Const;
+import com.ipang.wansha.utils.Utility;
 
 public class PlaceFragment extends Fragment implements IXListViewListener {
 
@@ -103,8 +104,8 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 						CityListActivity.class);
 				intent.putExtra(Const.COUNTRYID, countries.get(index)
 						.getCountryId());
-				intent.putExtra(Const.COUNTRYNAME, countries.get(index)
-						.getCountryName());
+				intent.putExtra(Const.ACTIONBARTITLE, Utility
+						.splitChnEng(countries.get(index).getCountryName())[0]);
 				startActivity(intent);
 			}
 		});
@@ -180,7 +181,7 @@ public class PlaceFragment extends Fragment implements IXListViewListener {
 				if (!hasRefreshed) {
 					addFooterButton();
 				}
-			} 
+			}
 			stopRefresh();
 		}
 

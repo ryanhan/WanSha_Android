@@ -49,9 +49,9 @@ public class MainActivity extends FragmentActivity {
 	private void init() {
 		pref = this.getSharedPreferences(Const.APPINFO, Context.MODE_PRIVATE);
 		tabTitle = new ArrayList<String>();
-		tabTitle.add(getString(R.string.title_section1));
-		tabTitle.add(getString(R.string.title_section2));
-		tabTitle.add(getString(R.string.title_section3));
+		tabTitle.add(getString(R.string.recommend));
+		tabTitle.add(getString(R.string.place));
+		// tabTitle.add(getString(R.string.together));
 	}
 
 	private void setViews() {

@@ -633,6 +633,7 @@ int string password_hint 0x7f080043
 int string person 0x7f080057
 int string pick_up_location 0x7f080035
 int string pinyin 0x7f080087
+int string place 0x7f08001d
 int string please_add_traveller 0x7f08008d
 int string please_input_contact_method 0x7f08008f
 int string please_input_contact_name 0x7f08008e
@@ -641,6 +642,7 @@ int string please_select_date 0x7f08008c
 int string price 0x7f080034
 int string products_number 0x7f08004a
 int string radial_numbers_typeface 0x7f080017
+int string recommend 0x7f08001c
 int string register 0x7f080038
 int string register_confirm_password_hint 0x7f08003c
 int string register_password_hint 0x7f08003b
@@ -673,9 +675,7 @@ int string three_star 0x7f08002b
 int string time_not_found 0x7f080032
 int string time_placeholder 0x7f080012
 int string time_separator 0x7f080013
-int string title_section1 0x7f08001c
-int string title_section2 0x7f08001d
-int string title_section3 0x7f08001e
+int string together 0x7f08001e
 int string total_price 0x7f08007f
 int string total_price_ 0x7f08007e
 int string travel_member 0x7f080085

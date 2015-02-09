@@ -28,8 +28,8 @@ import com.ipang.wansha.utils.Const;
 public class CityListActivity extends Activity implements IXListViewListener {
 
 	private ActionBar actionBar;
+	private String actionBarTitle;
 	private int countryId;
-	private String countryName;
 	private CityDao cityDao;
 	private List<City> cities;
 	private CityListAdapter adapter;
@@ -44,17 +44,15 @@ public class CityListActivity extends Activity implements IXListViewListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_city_list);
-
 		getBundle();
 		setActionBar();
 		setListView();
-
 	}
 
 	private void getBundle() {
 		Bundle bundle = getIntent().getExtras();
 		countryId = bundle.getInt(Const.COUNTRYID);
-		countryName = bundle.getString(Const.COUNTRYNAME);
+		actionBarTitle = bundle.getString(Const.ACTIONBARTITLE);
 	}
 
 	private void setActionBar() {
@@ -62,7 +60,7 @@ public class CityListActivity extends Activity implements IXListViewListener {
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(false);
 		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle(countryName);
+		actionBar.setTitle(actionBarTitle);
 		actionBar.setDisplayUseLogoEnabled(false);
 	}
 
@@ -91,7 +89,7 @@ public class CityListActivity extends Activity implements IXListViewListener {
 						R.dimen.activity_horizontal_margin) - getResources()
 				.getDimension(R.dimen.city_list_horizontal_space)) / 2;
 
-		adapter = new CityListAdapter(this, cities, height, countryName);
+		adapter = new CityListAdapter(this, cities, height);
 
 		cityListView = (XListView) findViewById(R.id.city_list_view);
 		cityListView.setAdapter(adapter);

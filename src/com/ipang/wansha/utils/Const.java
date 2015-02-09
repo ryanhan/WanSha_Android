@@ -31,7 +31,7 @@ public class Const {
 	public static final String TRAVELLERMOBILE = "contactmobile";
 	public static final String ISNULL = "isnull";
 	public static final String LASTUPDATE = "lastupdate";
-
+	public static final String ACTIONBARTITLE = "actionbartitle";
 	
 	public static final int LOGIN_REQUEST = 1;
 	public static final int CHANGE_PASSWORD = 2;

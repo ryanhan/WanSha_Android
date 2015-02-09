@@ -10,6 +10,8 @@ public interface OfflineDao {
 
 	public void createDatabase(Context context);
 
+	public void insertProduct(Product products, Context context);
+
 	public void insertProducts(List<Product> products, Context context);
-	
+
 }

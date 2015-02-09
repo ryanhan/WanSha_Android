@@ -31,14 +31,14 @@ import com.ipang.wansha.fragment.SortListFragment;
 import com.ipang.wansha.fragment.SortListFragment.OnSortTypeChangedListener;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
+import com.ipang.wansha.utils.Utility;
 
 public class ProductListActivity extends FragmentActivity implements
 		OnSortTypeChangedListener, IXListViewListener {
 
 	private int cityId;
-	private String cityName;
-	private String countryName;
 	private ActionBar actionBar;
+	private String actionBarTitle;
 	private ProductDao productDao;
 	private ProductListAdapter adapter;
 	private List<Product> products;
@@ -66,8 +66,7 @@ public class ProductListActivity extends FragmentActivity implements
 	private void getBundle() {
 		Bundle bundle = getIntent().getExtras();
 		cityId = bundle.getInt(Const.CITYID);
-		cityName = bundle.getString(Const.CITYNAME);
-		countryName = bundle.getString(Const.COUNTRYNAME);
+		actionBarTitle = bundle.getString(Const.ACTIONBARTITLE);
 		sortType = SortType.DEFAULT;
 	}
 
@@ -76,7 +75,7 @@ public class ProductListActivity extends FragmentActivity implements
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(false);
 		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle(cityName);
+		actionBar.setTitle(actionBarTitle);
 		actionBar.setDisplayUseLogoEnabled(false);
 	}
 
@@ -124,8 +123,8 @@ public class ProductListActivity extends FragmentActivity implements
 						.getProductId());
 				intent.putExtra(Const.PRODUCTNAME, products.get(index)
 						.getProductName());
-				intent.putExtra(Const.CITYNAME, cityName);
-				intent.putExtra(Const.COUNTRYNAME, countryName);
+				intent.putExtra(Const.ACTIONBARTITLE, Utility
+						.splitChnEng(products.get(index).getProductName())[0]);
 				startActivity(intent);
 			}
 		});
@@ -199,7 +198,7 @@ public class ProductListActivity extends FragmentActivity implements
 			if (isRefresh) {
 				products.clear();
 			}
-			if (result != null){
+			if (result != null) {
 				products.addAll(result);
 			}
 			offset = products.size();

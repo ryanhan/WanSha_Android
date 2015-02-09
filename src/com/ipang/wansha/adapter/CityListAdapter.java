@@ -33,7 +33,6 @@ public class CityListAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private List<City> cities;
 	private int height;
-	private String countryName;
 
 	public final class ViewHolder {
 		public ImageView cityImageLeft;
@@ -49,12 +48,10 @@ public class CityListAdapter extends BaseAdapter {
 		public FrameLayout layoutRight;
 	}
 
-	public CityListAdapter(Context context, List<City> cities, int height,
-			String countryName) {
+	public CityListAdapter(Context context, List<City> cities, int height) {
 		this.cities = cities;
 		this.context = context;
 		this.height = height;
-		this.countryName = countryName;
 		mInflater = LayoutInflater.from(context);
 	}
 
@@ -149,9 +146,8 @@ public class CityListAdapter extends BaseAdapter {
 				intent.setClass(context, ProductListActivity.class);
 				intent.putExtra(Const.CITYID, cities.get(position * 2)
 						.getCityId());
-				intent.putExtra(Const.CITYNAME, cities.get(position * 2)
-						.getCityName());
-				intent.putExtra(Const.COUNTRYNAME, countryName);
+				intent.putExtra(Const.ACTIONBARTITLE, Utility
+						.splitChnEng(cities.get(position * 2).getCityName())[0]);
 				context.startActivity(intent);
 			}
 		});
@@ -211,9 +207,9 @@ public class CityListAdapter extends BaseAdapter {
 					intent.setClass(context, ProductListActivity.class);
 					intent.putExtra(Const.CITYID, cities.get(position * 2 + 1)
 							.getCityId());
-					intent.putExtra(Const.CITYNAME, cities
-							.get(position * 2 + 1).getCityName());
-					intent.putExtra(Const.COUNTRYNAME, countryName);
+					intent.putExtra(Const.ACTIONBARTITLE, Utility
+							.splitChnEng(cities.get(position * 2 + 1)
+									.getCityName())[0]);
 					context.startActivity(intent);
 				}
 			});

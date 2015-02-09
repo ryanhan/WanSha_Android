@@ -24,6 +24,7 @@ import com.ipang.wansha.dao.CityDao;
 import com.ipang.wansha.dao.impl.CityDaoImpl;
 import com.ipang.wansha.model.City;
 import com.ipang.wansha.utils.Const;
+import com.ipang.wansha.utils.Utility;
 
 public class CountryCityListActivity extends Activity {
 
@@ -57,17 +58,16 @@ public class CountryCityListActivity extends Activity {
 	private void setListView() {
 		cityDao = new CityDaoImpl();
 		countryCityList = (ExpandableListView) findViewById(R.id.country_expandable_list);
-		
+
 		loadingImage = (ImageView) findViewById(R.id.image_loading);
 		loadingImage.setBackgroundResource(R.anim.progress_animation);
-        animationDrawable = (AnimationDrawable) loadingImage.getBackground();
-        
-        loadingLayout = (LinearLayout) findViewById(R.id.layout_loading);
-        countryCityList.setVisibility(View.INVISIBLE);
+		animationDrawable = (AnimationDrawable) loadingImage.getBackground();
+
+		loadingLayout = (LinearLayout) findViewById(R.id.layout_loading);
+		countryCityList.setVisibility(View.INVISIBLE);
 		loadingLayout.setVisibility(View.VISIBLE);
-        animationDrawable.start();
-		
-		
+		animationDrawable.start();
+
 		countries = new ArrayList<String>();
 		cities = new ArrayList<ArrayList<City>>();
 		adapter = new CountryCityListAdapter(countries, cities, this);
@@ -85,10 +85,10 @@ public class CountryCityListActivity extends Activity {
 				intent.putExtra(Const.CITYID,
 						cities.get(groupPosition).get(childPosition)
 								.getCityId());
-				intent.putExtra(Const.CITYNAME,
-						cities.get(groupPosition).get(childPosition)
-								.getCityName());
-				intent.putExtra(Const.COUNTRYNAME, countries.get(groupPosition));
+				intent.putExtra(
+						Const.ACTIONBARTITLE,
+						Utility.splitChnEng(cities.get(groupPosition)
+								.get(childPosition).getCityName())[0]);
 				startActivity(intent);
 				return true;
 			}
@@ -142,7 +142,7 @@ public class CountryCityListActivity extends Activity {
 			}
 			loadingLayout.setVisibility(View.INVISIBLE);
 			countryCityList.setVisibility(View.VISIBLE);
-	        animationDrawable.stop();
+			animationDrawable.stop();
 		}
 	}
 

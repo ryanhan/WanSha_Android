@@ -1,7 +1,11 @@
 package com.ipang.wansha.utils;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.CookieHandler;
@@ -18,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONObject;
+
+import android.content.Context;
 
 import com.ipang.wansha.exception.HttpException;
 
@@ -189,5 +195,37 @@ public class HttpUtility {
 			}
 		}
 		return null;
+	}
+
+	public static void downloadImage(URL url, File filePath, Context context)
+			throws HttpException {
+		HttpURLConnection urlConn = null;
+		try {
+			urlConn = (HttpURLConnection) url.openConnection();
+			urlConn.setConnectTimeout(Const.CONNECT_TIMEOUT);
+			urlConn.setReadTimeout(Const.READ_TIMEOUT);
+			urlConn.connect();
+
+			InputStream is = new BufferedInputStream(url.openStream());
+			
+			System.out.println(filePath.toString());
+
+			FileOutputStream fos = new FileOutputStream(filePath);
+
+			byte data[] = new byte[1024];
+			int count = 0;
+			while ((count = is.read(data)) != -1) {
+				fos.write(data, 0, count);
+			}
+			fos.flush();
+			fos.close();
+			is.close();
+		} catch (Exception e) {
+			throw new HttpException(HttpException.HOST_CONNECT_FAILED);
+		} finally {
+			if (urlConn != null) {
+				urlConn.disconnect();
+			}
+		}
 	}
 }

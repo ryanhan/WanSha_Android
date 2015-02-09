@@ -3,9 +3,9 @@
 
     <string name="app_name">玩啥</string>
     <string name="action_settings">Settings</string>
-    <string name="title_section1">推荐</string>
-    <string name="title_section2">目的地</string>
-    <string name="title_section3">一起</string>
+    <string name="recommend">推荐</string>
+    <string name="place">目的地</string>
+    <string name="together">一起</string>
     <string name="nearby">附近</string>
     <string name="from">起</string>
     <string name="action_sort">排序</string>
