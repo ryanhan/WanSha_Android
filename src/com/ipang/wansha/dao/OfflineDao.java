@@ -4,14 +4,15 @@ import java.util.List;
 
 import android.content.Context;
 
+import com.ipang.wansha.exception.OfflineException;
 import com.ipang.wansha.model.Product;
 
 public interface OfflineDao {
 
 	public void createDatabase(Context context);
 
-	public void insertProduct(Product products, Context context);
+	public boolean addProduct(Product products, Context context);
 
-	public void insertProducts(List<Product> products, Context context);
+	public int addProducts(List<Product> products, Context context);
 
 }

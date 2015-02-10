@@ -1,16 +1,19 @@
 package com.ipang.wansha.dao.impl;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.ipang.wansha.dao.OfflineDao;
+import com.ipang.wansha.exception.OfflineException;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.DatabaseHelper;
+import com.ipang.wansha.utils.HttpUtility;
 
 public class OfflineDaoImpl implements OfflineDao {
 
@@ -23,28 +26,55 @@ public class OfflineDaoImpl implements OfflineDao {
 	}
 
 	@Override
-	public void insertProduct(Product product, Context context) {
+	public boolean addProduct(Product product, Context context) {
 
 		DatabaseHelper dbHelper = new DatabaseHelper(context,
 				DatabaseHelper.DATABASENAME);
 		SQLiteDatabase sqliteDatabase = dbHelper.getWritableDatabase();
-		addProduct(sqliteDatabase, product, context);
-		dbHelper.close();
+		sqliteDatabase.beginTransaction();
+		try {
+			insertProduct(sqliteDatabase, product, context);
+			downloadImages(product, context);
+			sqliteDatabase.setTransactionSuccessful();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			deleteDir(product.getProductId(), context);
+			return false;
+		} finally {
+			sqliteDatabase.endTransaction();
+			dbHelper.close();
+		}
 	}
 
 	@Override
-	public void insertProducts(List<Product> products, Context context) {
+	public int addProducts(List<Product> products, Context context) {
+		int success = 0;
 
 		DatabaseHelper dbHelper = new DatabaseHelper(context,
 				DatabaseHelper.DATABASENAME);
 		SQLiteDatabase sqliteDatabase = dbHelper.getWritableDatabase();
+
 		for (Product product : products) {
-			addProduct(sqliteDatabase, product, context);
+			sqliteDatabase.beginTransaction();
+			try {
+				insertProduct(sqliteDatabase, product, context);
+				downloadImages(product, context);
+				sqliteDatabase.setTransactionSuccessful();
+				success++;
+			} catch (Exception e) {
+				e.printStackTrace();
+				deleteDir(product.getProductId(), context);
+			} finally {
+				sqliteDatabase.endTransaction();
+			}
 		}
 		dbHelper.close();
+		return success;
 	}
 
-	private void addProduct(SQLiteDatabase sqliteDatabase, Product product, Context context) {
+	private void insertProduct(SQLiteDatabase sqliteDatabase, Product product,
+			Context context) {
 
 		sqliteDatabase.delete(DatabaseHelper.OFFLINEGUIDE,
 				DatabaseHelper.PRODUCTID + "=?",
@@ -70,15 +100,56 @@ public class OfflineDaoImpl implements OfflineDao {
 		sqliteDatabase.insert(DatabaseHelper.OFFLINEGUIDE, null, values);
 
 		List<String> imageList = product.getProductImages();
-		String path = context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES).getPath();
+		String path = context.getExternalFilesDir(
+				android.os.Environment.DIRECTORY_PICTURES).getPath();
 		for (int i = 0; i < imageList.size(); i++) {
 			ContentValues imageValues = new ContentValues();
 			imageValues.put(DatabaseHelper.PRODUCTID, product.getProductId());
-			imageValues.put(DatabaseHelper.FILENAME, path + "/" + product.getProductId()
-					+ "/" + i);
+			imageValues.put(DatabaseHelper.FILENAME,
+					path + "/" + product.getProductId() + "/" + i);
 			imageValues.put(DatabaseHelper.IMAGEURL, imageList.get(i));
 			imageValues.put(DatabaseHelper.SEQ, i);
 			sqliteDatabase.insert(DatabaseHelper.LOCALIMAGE, null, imageValues);
+		}
+	}
+
+	private File prepareDir(int productId, Context context) {
+		File path = new File(
+				context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES),
+				productId + "");
+		if (!path.exists()) {
+			path.mkdir();
+		} else if (path.isDirectory()) {
+			File[] files = path.listFiles();
+			for (File file : files) {
+				file.delete();
+				System.out.println("delete: " + file.getPath());
+			}
+		}
+		return path;
+	}
+
+	private void deleteDir(int productId, Context context) {
+		File path = new File(
+				context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES),
+				productId + "");
+		if (path.exists() && path.isDirectory()) {
+			File[] files = path.listFiles();
+			for (File file : files) {
+				file.delete();
+				System.out.println("delete: " + file.getPath());
+			}
+			path.delete();
+		}
+	}
+
+	private void downloadImages(Product product, Context context)
+			throws Exception {
+		File path = prepareDir(product.getProductId(), context);
+		List<String> imageUrls = product.getProductImages();
+		for (int i = 0; i < imageUrls.size(); i++) {
+			URL url = new URL(imageUrls.get(i));
+			HttpUtility.downloadImage(url, new File(path, i + ""), context);
 		}
 	}
 }
