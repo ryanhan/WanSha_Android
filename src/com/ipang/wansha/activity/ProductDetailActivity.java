@@ -1,6 +1,5 @@
 package com.ipang.wansha.activity;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 import android.app.ActionBar;
@@ -23,16 +22,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductDetailImagePagerAdapter;
 import com.ipang.wansha.dao.CityDao;
-import com.ipang.wansha.dao.OfflineDao;
 import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.dao.impl.CityDaoImpl;
-import com.ipang.wansha.dao.impl.OfflineDaoImpl;
 import com.ipang.wansha.dao.impl.ProductDaoImpl;
 import com.ipang.wansha.exception.CityException;
 import com.ipang.wansha.model.Product;
@@ -47,9 +43,7 @@ public class ProductDetailActivity extends Activity {
 	private Product product;
 	private ImageView[] dots;
 	private ProductDao productDao;
-	private OfflineDao offlineDao;
 	private CityDao cityDao;
-	private float avgScore;
 	private SharedPreferences pref;
 	private boolean hasLogin;
 	private int productId;
@@ -80,8 +74,6 @@ public class ProductDetailActivity extends Activity {
 	private void getProduct() {
 		productDao = new ProductDaoImpl();
 		cityDao = new CityDaoImpl();
-		offlineDao = new OfflineDaoImpl();
-
 		loadingImage = (ImageView) findViewById(R.id.image_loading);
 		loadingImage.setBackgroundResource(R.anim.progress_animation);
 		animationDrawable = (AnimationDrawable) loadingImage.getBackground();
@@ -104,7 +96,6 @@ public class ProductDetailActivity extends Activity {
 		initViewPager(product.getProductImages());
 		setMainInfo();
 		setDetailContent();
-		setReviews();
 		Button bookButton = (Button) findViewById(R.id.book_now);
 		if (product.getProductType() == 1) {
 			bookButton.setVisibility(View.VISIBLE);
@@ -206,36 +197,19 @@ public class ProductDetailActivity extends Activity {
 
 	private void setMainInfo() {
 		TextView title = (TextView) findViewById(R.id.product_detail_title);
+		TextView english = (TextView) findViewById(R.id.product_detail_english);
 		TextView location = (TextView) findViewById(R.id.location);
-		TextView rankcount = (TextView) findViewById(R.id.product_detail_ranking_count);
-		TextView from = (TextView) findViewById(R.id.product_detail_from);
-		TextView price = (TextView) findViewById(R.id.product_detail_from_price);
 
-		ImageView[] rankImages = new ImageView[5];
-		rankImages[0] = (ImageView) findViewById(R.id.product_detail_rank1);
-		rankImages[1] = (ImageView) findViewById(R.id.product_detail_rank2);
-		rankImages[2] = (ImageView) findViewById(R.id.product_detail_rank3);
-		rankImages[3] = (ImageView) findViewById(R.id.product_detail_rank4);
-		rankImages[4] = (ImageView) findViewById(R.id.product_detail_rank5);
-
-		title.setText(product.getProductName());
+		String names[] = Utility.splitChnEng(product.getProductName());
+		title.setText(names[0]);
+		if (names[1].equals("")) {
+			english.setVisibility(View.GONE);
+		} else {
+			english.setText(names[1]);
+		}
 		location.setText(Utility.splitChnEng(cityName)[0] + ", "
 				+ Utility.splitChnEng(countryName)[0]);
 
-		// int resID = getResources().getIdentifier(
-		// product.getTimeUnit().toString(), "string", Const.PACKAGENAME);
-		// String timeUnit = getResources().getString(resID);
-		// duration.setText(product.getDuration() + timeUnit);
-		Utility.drawRankingStar(rankImages, avgScore);
-		rankcount.setText("(0)");
-
-		if (product.getLowestPrice() == 0) {
-			from.setVisibility(View.INVISIBLE);
-			price.setText(getResources().getString(R.string.free));
-		} else {
-			price.setText(product.getCurrency().getSymbol() + " "
-					+ new DecimalFormat(".00").format(product.getLowestPrice()));
-		}
 	}
 
 	private void setDetailContent() {
@@ -274,57 +248,6 @@ public class ProductDetailActivity extends Activity {
 
 	}
 
-	private void setReviews() {
-		setRankingDistribution();
-		// setReviewList();
-	}
-
-	private void setRankingDistribution() {
-		TextView reviewRankCount = (TextView) findViewById(R.id.product_detail_reivew_ranking_count);
-		TextView rankingScore = (TextView) findViewById(R.id.product_detail_ranking_score);
-
-		ImageView[] reviewRankImages = new ImageView[5];
-		reviewRankImages[0] = (ImageView) findViewById(R.id.product_detail_review_rank1);
-		reviewRankImages[1] = (ImageView) findViewById(R.id.product_detail_review_rank2);
-		reviewRankImages[2] = (ImageView) findViewById(R.id.product_detail_review_rank3);
-		reviewRankImages[3] = (ImageView) findViewById(R.id.product_detail_review_rank4);
-		reviewRankImages[4] = (ImageView) findViewById(R.id.product_detail_review_rank5);
-
-		ProgressBar[] bars = new ProgressBar[5];
-		bars[0] = (ProgressBar) findViewById(R.id.five_star_bar);
-		bars[1] = (ProgressBar) findViewById(R.id.four_star_bar);
-		bars[2] = (ProgressBar) findViewById(R.id.three_star_bar);
-		bars[3] = (ProgressBar) findViewById(R.id.two_star_bar);
-		bars[4] = (ProgressBar) findViewById(R.id.one_star_bar);
-
-		TextView[] starCounts = new TextView[5];
-		starCounts[0] = (TextView) findViewById(R.id.five_star_count);
-		starCounts[1] = (TextView) findViewById(R.id.four_star_count);
-		starCounts[2] = (TextView) findViewById(R.id.three_star_count);
-		starCounts[3] = (TextView) findViewById(R.id.two_star_count);
-		starCounts[4] = (TextView) findViewById(R.id.one_star_count);
-
-		reviewRankCount.setText("(0)");
-		Utility.drawRankingStar(reviewRankImages, avgScore);
-
-		rankingScore
-				.setText(new DecimalFormat(".00").format(avgScore) + " / 5");
-
-		for (int i = 0; i < 5; i++) {
-			bars[i].setMax(0);
-			bars[i].setProgress(0);
-			// if (product.getStarCount(i) > 0)
-			// bars[i].setProgressDrawable(getResources().getDrawable(
-			// R.drawable.progress_bg));
-			// else
-			bars[i].setProgressDrawable(getResources().getDrawable(
-					R.drawable.progress_empty_bg));
-
-			starCounts[i].setText("0");
-		}
-
-	}
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -341,7 +264,8 @@ public class ProductDetailActivity extends Activity {
 		case R.id.download:
 			product.setCountryName(countryName);
 			product.setCityName(cityName);
-			SaveProductAsyncTask asyncTask = new SaveProductAsyncTask(product, ProductDetailActivity.this);
+			SaveProductAsyncTask asyncTask = new SaveProductAsyncTask(product,
+					ProductDetailActivity.this);
 			asyncTask.execute();
 			break;
 		}
@@ -389,7 +313,6 @@ public class ProductDetailActivity extends Activity {
 		@Override
 		protected void onPostExecute(Boolean result) {
 			if (result) {
-				avgScore = 0;
 				setProductView();
 				productLayout.setVisibility(View.VISIBLE);
 			} else {

@@ -12,7 +12,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -20,7 +19,6 @@ import com.ipang.wansha.R;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
@@ -34,9 +32,8 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 	public final class ViewHolder {
 		public ImageView productPreviewImage;
 		public TextView productNameTextView;
-		public TextView rankingCountTextView;
-		public TextView fromPriceTextView;
-		public ImageView[] rankingImage;
+		public TextView productEnglishTextView;
+		public TextView priceTextView;
 		public ProgressBar imageLoadingProgress;
 	}
 
@@ -65,21 +62,11 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 
 			holder.productNameTextView = (TextView) convertView
 					.findViewById(R.id.product_name_text);
-			holder.rankingCountTextView = (TextView) convertView
-					.findViewById(R.id.ranking_count);
-			holder.fromPriceTextView = (TextView) convertView
-					.findViewById(R.id.from_price);
-			holder.rankingImage = new ImageView[5];
-			holder.rankingImage[0] = (ImageView) convertView
-					.findViewById(R.id.product_list_rank1);
-			holder.rankingImage[1] = (ImageView) convertView
-					.findViewById(R.id.product_list_rank2);
-			holder.rankingImage[2] = (ImageView) convertView
-					.findViewById(R.id.product_list_rank3);
-			holder.rankingImage[3] = (ImageView) convertView
-					.findViewById(R.id.product_list_rank4);
-			holder.rankingImage[4] = (ImageView) convertView
-					.findViewById(R.id.product_list_rank5);
+			holder.productEnglishTextView = (TextView) convertView
+					.findViewById(R.id.product_english_text);
+			
+			holder.priceTextView = (TextView) convertView
+					.findViewById(R.id.product_price);
 
 			holder.imageLoadingProgress = (ProgressBar) convertView
 					.findViewById(R.id.progress_product_image_loading);
@@ -91,22 +78,18 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 
 		final ViewHolder viewHolder = holder;
 
-		viewHolder.productNameTextView.setText(getItem(position)
-				.getProductName());
-		viewHolder.rankingCountTextView.setText("没有评分");
+		String[] names = Utility.splitChnEng(getItem(position).getProductName());
 
-		View from = convertView.findViewById(R.id.from);
-		if (getItem(position).getLowestPrice() == 0) {
-			from.setVisibility(View.INVISIBLE);
-			viewHolder.fromPriceTextView.setText(context.getResources()
-					.getString(R.string.free));
+		viewHolder.productNameTextView.setText(names[0]);
+		viewHolder.productEnglishTextView.setText(names[1]);
 
-		} else {
-			from.setVisibility(View.VISIBLE);
-			viewHolder.fromPriceTextView.setText(getItem(position)
-					.getCurrency().getSymbol()
-					+ " "
-					+ getItem(position).getLowestPrice());
+		if (getItem(position).getProductType() == 1){
+			viewHolder.priceTextView.setTextColor(context.getResources().getColor(R.color.orange));;
+			viewHolder.priceTextView.setText(getItem(position).getCurrency().getSymbol() + getItem(position).getLowestPrice() + context.getResources().getString(R.string.from));
+		}
+		else if (getItem(position).getProductType() == 2){
+			viewHolder.priceTextView.setTextColor(context.getResources().getColor(R.color.green));;
+			viewHolder.priceTextView.setText(context.getResources().getString(R.string.sight));
 		}
 
 		if (getItem(position).getProductImages() == null
@@ -152,10 +135,6 @@ public class ProductListAdapter extends ArrayAdapter<Product> {
 					});
 
 		}
-
-		float ranking = 0;
-
-		Utility.drawRankingStar(viewHolder.rankingImage, ranking);
 
 		return convertView;
 	}

@@ -9,8 +9,8 @@
     <FrameLayout
         android:id="@+id/layout_city_list_left"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" 
-        android:layout_marginRight="@dimen/city_list_horizontal_space">
+        android:layout_height="match_parent"
+        android:layout_marginRight="@dimen/city_list_horizontal_space" >
 
         <ImageView
             android:id="@+id/city_list_image_left"
@@ -26,48 +26,59 @@
             android:layout_gravity="center"
             android:visibility="gone" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <TextView
-                android:id="@+id/city_list_product_number_left"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_marginBottom="@dimen/city_list_bottom_margin"
-                android:layout_marginLeft="@dimen/city_list_left_margin"
-                android:background="@color/wansha_blue_transparent"
-                android:paddingBottom="@dimen/city_list_textview_vertical_padding"
-                android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
-                android:paddingRight="@dimen/city_list_textview_horizontal_padding"
-                android:paddingTop="@dimen/city_list_textview_vertical_padding"
-                android:textColor="@color/white"
-                android:textSize="14sp" />
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/city_list_name_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@id/city_list_product_number_left"
-                android:layout_alignParentLeft="true"
-                android:layout_marginBottom="@dimen/city_list_bottom_margin"
-                android:layout_marginLeft="@dimen/city_list_left_margin"
-                android:background="@color/white_transparent"
+                android:layout_marginBottom="3dp"
+                android:shadowColor="@color/black"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="5"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/city_list_english_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:shadowColor="@color/black"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="5"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/city_list_product_number_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/black_transparent"
                 android:paddingBottom="@dimen/city_list_textview_vertical_padding"
                 android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
                 android:paddingRight="@dimen/city_list_textview_horizontal_padding"
                 android:paddingTop="@dimen/city_list_textview_vertical_padding"
+                android:shadowColor="@color/black"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="5"
+                android:textColor="@color/white"
                 android:textSize="16sp" />
-        </RelativeLayout>
+        </LinearLayout>
     </FrameLayout>
-    
+
     <FrameLayout
         android:id="@+id/layout_city_list_right"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" 
-        android:visibility="gone">
+        android:layout_height="match_parent"
+        android:visibility="gone" >
 
         <ImageView
             android:id="@+id/city_list_image_right"
@@ -83,41 +94,52 @@
             android:layout_gravity="center"
             android:visibility="gone" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+             <TextView
+                android:id="@+id/city_list_name_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:shadowColor="@color/black"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="5"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/city_list_english_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:shadowColor="@color/black"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="5"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/city_list_product_number_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_marginBottom="@dimen/city_list_bottom_margin"
-                android:layout_marginLeft="@dimen/city_list_left_margin"
-                android:background="@color/wansha_blue_transparent"
+                android:background="@color/black_transparent"
                 android:paddingBottom="@dimen/city_list_textview_vertical_padding"
                 android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
                 android:paddingRight="@dimen/city_list_textview_horizontal_padding"
                 android:paddingTop="@dimen/city_list_textview_vertical_padding"
+                android:shadowColor="@color/black"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="5"
                 android:textColor="@color/white"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/city_list_name_right"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/city_list_product_number_right"
-                android:layout_alignParentLeft="true"
-                android:layout_marginBottom="@dimen/city_list_bottom_margin"
-                android:layout_marginLeft="@dimen/city_list_left_margin"
-                android:background="@color/white_transparent"
-                android:paddingBottom="@dimen/city_list_textview_vertical_padding"
-                android:paddingLeft="@dimen/city_list_textview_horizontal_padding"
-                android:paddingRight="@dimen/city_list_textview_horizontal_padding"
-                android:paddingTop="@dimen/city_list_textview_vertical_padding"
                 android:textSize="16sp" />
-        </RelativeLayout>
+        </LinearLayout>
     </FrameLayout>
 
 </LinearLayout>

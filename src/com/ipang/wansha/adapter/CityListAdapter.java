@@ -18,7 +18,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ipang.wansha.R;
-import com.ipang.wansha.activity.CityListActivity;
 import com.ipang.wansha.activity.ProductListActivity;
 import com.ipang.wansha.model.City;
 import com.ipang.wansha.utils.Const;
@@ -37,12 +36,14 @@ public class CityListAdapter extends BaseAdapter {
 	public final class ViewHolder {
 		public ImageView cityImageLeft;
 		public TextView cityNameTextViewLeft;
+		public TextView cityEnglishTextViewLeft;
 		public TextView productNumberTextViewLeft;
 		public ProgressBar imageLoadingProgressLeft;
 		public FrameLayout layoutLeft;
 
 		public ImageView cityImageRight;
 		public TextView cityNameTextViewRight;
+		public TextView cityEnglishTextViewRight;
 		public TextView productNumberTextViewRight;
 		public ProgressBar imageLoadingProgressRight;
 		public FrameLayout layoutRight;
@@ -71,6 +72,8 @@ public class CityListAdapter extends BaseAdapter {
 			holder.cityImageLeft.setLayoutParams(paramLeft);
 			holder.cityNameTextViewLeft = (TextView) convertView
 					.findViewById(R.id.city_list_name_left);
+			holder.cityEnglishTextViewLeft = (TextView) convertView
+					.findViewById(R.id.city_list_english_left);
 			holder.productNumberTextViewLeft = (TextView) convertView
 					.findViewById(R.id.city_list_product_number_left);
 			holder.imageLoadingProgressLeft = (ProgressBar) convertView
@@ -85,6 +88,8 @@ public class CityListAdapter extends BaseAdapter {
 			holder.cityImageRight.setLayoutParams(paramRight);
 			holder.cityNameTextViewRight = (TextView) convertView
 					.findViewById(R.id.city_list_name_right);
+			holder.cityEnglishTextViewRight = (TextView) convertView
+					.findViewById(R.id.city_list_english_right);
 			holder.productNumberTextViewRight = (TextView) convertView
 					.findViewById(R.id.city_list_product_number_right);
 			holder.imageLoadingProgressRight = (ProgressBar) convertView
@@ -100,6 +105,8 @@ public class CityListAdapter extends BaseAdapter {
 		final ViewHolder viewHolder = holder;
 		viewHolder.cityNameTextViewLeft.setText(Utility.splitChnEng(getItem(
 				position * 2).getCityName())[0]);
+		viewHolder.cityEnglishTextViewLeft.setText(Utility.splitChnEng(getItem(
+				position * 2).getCityName())[1]);
 		viewHolder.productNumberTextViewLeft.setText(getItem(position * 2)
 				.getProductCount()
 				+ context.getResources().getString(R.string.products_number));
@@ -158,6 +165,8 @@ public class CityListAdapter extends BaseAdapter {
 
 			viewHolder.cityNameTextViewRight.setText(Utility
 					.splitChnEng(getItem(position * 2 + 1).getCityName())[0]);
+			viewHolder.cityEnglishTextViewRight.setText(Utility
+					.splitChnEng(getItem(position * 2 + 1).getCityName())[1]);
 			viewHolder.productNumberTextViewRight.setText(getItem(
 					position * 2 + 1).getProductCount()
 					+ context.getResources()

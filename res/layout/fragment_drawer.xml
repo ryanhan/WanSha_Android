@@ -97,7 +97,7 @@
         android:background="?android:attr/listDivider" />
 
     <LinearLayout
-        android:id="@+id/layout_want_to_go"
+        android:id="@+id/layout_guide_book"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -111,7 +111,7 @@
             android:layout_height="@dimen/my_status_icon_size"
             android:layout_gravity="center_vertical"
             android:scaleType="centerCrop"
-            android:src="@drawable/my_view" />
+            android:src="@drawable/guidebook" />
 
         <TextView
             android:id="@+id/text_want_to_go"
@@ -119,7 +119,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:paddingLeft="@dimen/drawer_list_icon_word"
-            android:text="@string/want_to_go"
+            android:text="@string/guide_book"
             android:textColor="@color/drawer_list_text"
             android:textSize="@dimen/drawer_list_font_size" />
     </LinearLayout>

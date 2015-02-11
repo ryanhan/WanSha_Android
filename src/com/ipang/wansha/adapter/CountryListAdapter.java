@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.ipang.wansha.R;
 import com.ipang.wansha.model.Country;
 import com.ipang.wansha.utils.Const;
+import com.ipang.wansha.utils.Utility;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
@@ -31,6 +32,7 @@ public class CountryListAdapter extends ArrayAdapter<Country> {
 	public final class ViewHolder {
 		public ImageView countryImage;
 		public TextView countryNameTextView;
+		public TextView countryEnglishTextView;
 		public TextView productNumberTextView;
 		public ProgressBar imageLoadingProgress;
 	}
@@ -61,6 +63,8 @@ public class CountryListAdapter extends ArrayAdapter<Country> {
 
 			holder.countryNameTextView = (TextView) convertView
 					.findViewById(R.id.country_list_name);
+			holder.countryEnglishTextView = (TextView) convertView
+					.findViewById(R.id.country_list_english);
 			holder.productNumberTextView = (TextView) convertView
 					.findViewById(R.id.country_list_product_number);
 			holder.imageLoadingProgress = (ProgressBar) convertView
@@ -73,8 +77,12 @@ public class CountryListAdapter extends ArrayAdapter<Country> {
 
 		final ViewHolder viewHolder = holder;
 
-		viewHolder.countryNameTextView.setText(getItem(position)
-				.getCountryName());
+		String names[] = Utility
+				.splitChnEng(getItem(position).getCountryName());
+
+		viewHolder.countryNameTextView.setText(names[0]);
+		viewHolder.countryEnglishTextView.setText(names[1]);
+		
 		viewHolder.productNumberTextView.setText(getItem(position)
 				.getCountryProductCount()
 				+ context.getResources().getString(R.string.products_number));

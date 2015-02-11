@@ -47,8 +47,8 @@ public class DrawerFragment extends Fragment {
 		userLayout = (LinearLayout) view.findViewById(R.id.layout_user);
 		LinearLayout orderLayout = (LinearLayout) view
 				.findViewById(R.id.layout_all_order);
-		LinearLayout wantLayout = (LinearLayout) view
-				.findViewById(R.id.layout_want_to_go);
+		LinearLayout guideBook = (LinearLayout) view
+				.findViewById(R.id.layout_guide_book);
 		LinearLayout discountLayout = (LinearLayout) view
 				.findViewById(R.id.layout_discout);
 		LinearLayout messageLayout = (LinearLayout) view
@@ -101,7 +101,7 @@ public class DrawerFragment extends Fragment {
 			}
 		});
 
-		wantLayout.setOnClickListener(new OnClickListener() {
+		guideBook.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
