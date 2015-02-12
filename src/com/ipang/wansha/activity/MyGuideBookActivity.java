@@ -33,9 +33,8 @@ public class MyGuideBookActivity extends Activity{
 
 		DisplayMetrics metric = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(metric);
-
 		int height = metric.widthPixels / 5;
-
+		
 	}
 
 	@Override

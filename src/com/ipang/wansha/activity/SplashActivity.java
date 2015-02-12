@@ -69,7 +69,7 @@ public class SplashActivity extends Activity {
 						public void onPageSelected(int position) {
 							for (int i = 0; i < launchImages.length; i++) {
 								dots[i].setBackgroundResource(i == position ? R.drawable.dot
-										: R.drawable.dot_selected_2);
+										: R.drawable.dot_selected);
 							}
 							startButton
 									.setVisibility(position == launchImages.length - 1 ? View.VISIBLE
@@ -116,7 +116,7 @@ public class SplashActivity extends Activity {
 
 			dots[i] = imageView;
 			dots[i].setBackgroundResource(i == 0 ? R.drawable.dot
-					: R.drawable.dot_selected_2);
+					: R.drawable.dot_selected);
 
 			group.addView(dots[i]);
 		}

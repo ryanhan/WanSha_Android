@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal"
-            android:background="@color/black_transparent" 
+            android:background="@drawable/black_transparent_bar" 
             android:paddingTop="5dp"
             android:paddingBottom="5dp">
             

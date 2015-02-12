@@ -9,6 +9,9 @@ public class Product implements Serializable {
 
 	private static final long serialVersionUID = 8205438106558942992L;
 
+	public static final int PAYSIGHT = 1;
+	public static final int FREESIGHT = 2;
+	
 	private int productId;
 	private String productName;
 	private int productType;

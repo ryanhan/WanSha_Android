@@ -58,5 +58,7 @@
     <dimen name="booking_member_button_size">40dp</dimen>
     <dimen name="booking_contact_font_size">16sp</dimen>
     <dimen name="booking_contact_title_left_margin">34sp</dimen>
+    <dimen name="viewpager_dot_size">6dp</dimen>
+    <dimen name="product_detail_price_small_font">14sp</dimen>
 
 </resources>

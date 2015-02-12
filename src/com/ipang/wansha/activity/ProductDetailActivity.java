@@ -7,10 +7,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -180,11 +186,14 @@ public class ProductDetailActivity extends Activity {
 
 		ViewGroup group = (ViewGroup) findViewById(R.id.product_detail_viewGroup);
 		dots = new ImageView[imageNumber];
+		int size = (int) getResources()
+				.getDimension(R.dimen.viewpager_dot_size);
 
 		for (int i = 0; i < imageNumber; i++) {
 			ImageView imageView = new ImageView(this);
-			LayoutParams param = new LayoutParams(10, 10);
-			param.rightMargin = 15;
+
+			LayoutParams param = new LayoutParams(size, size);
+			param.rightMargin = size;
 			imageView.setLayoutParams(param);
 
 			dots[i] = imageView;
@@ -199,6 +208,7 @@ public class ProductDetailActivity extends Activity {
 		TextView title = (TextView) findViewById(R.id.product_detail_title);
 		TextView english = (TextView) findViewById(R.id.product_detail_english);
 		TextView location = (TextView) findViewById(R.id.location);
+		TextView price = (TextView) findViewById(R.id.product_price);
 
 		String names[] = Utility.splitChnEng(product.getProductName());
 		title.setText(names[0]);
@@ -209,6 +219,30 @@ public class ProductDetailActivity extends Activity {
 		}
 		location.setText(Utility.splitChnEng(cityName)[0] + ", "
 				+ Utility.splitChnEng(countryName)[0]);
+
+		if (product.getProductType() == Product.FREESIGHT) {
+			price.setVisibility(View.GONE);
+		} else {
+			String priceText = product.getCurrency().getSymbol()
+					+ (int) product.getLowestPrice() + " "
+					+ getResources().getString(R.string.from);
+			SpannableString span = new SpannableString(priceText);
+			span.setSpan(new AbsoluteSizeSpan((int) getResources()
+					.getDimension(R.dimen.product_detail_price_small_font)), 0,
+					1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			span.setSpan(new AbsoluteSizeSpan((int) getResources()
+					.getDimension(R.dimen.product_detail_price_small_font)),
+					priceText.length() - 1, priceText.length(),
+					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			span.setSpan(
+					new ForegroundColorSpan(getResources().getColor(
+							R.color.dark_grey)), priceText.length() - 1,
+					priceText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			span.setSpan(new StyleSpan(Typeface.NORMAL),
+					priceText.length() - 1, priceText.length(),
+					Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+			price.setText(span);
+		}
 
 	}
 
