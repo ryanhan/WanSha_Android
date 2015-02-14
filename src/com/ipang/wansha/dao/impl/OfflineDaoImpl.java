@@ -8,8 +8,10 @@ import java.util.List;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
 import com.ipang.wansha.dao.OfflineDao;
+import com.ipang.wansha.exception.HttpException;
 import com.ipang.wansha.exception.OfflineException;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.DatabaseHelper;
@@ -151,5 +153,20 @@ public class OfflineDaoImpl implements OfflineDao {
 			URL url = new URL(imageUrls.get(i));
 			HttpUtility.downloadImage(url, new File(path, i + ""), context);
 		}
+	}
+
+	@Override
+	public int getDownloadSize(Product product) {
+
+		int sizeCount = 0;
+		for (String imageUrl : product.getProductImages()) {
+			try {
+				sizeCount += HttpUtility.getFileSize(new URL(imageUrl));
+			} catch (Exception e) {
+				e.printStackTrace();
+				return -1;
+			}
+		}
+		return sizeCount;
 	}
 }

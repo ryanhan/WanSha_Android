@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.content.Context;
 
-import com.ipang.wansha.exception.OfflineException;
 import com.ipang.wansha.model.Product;
 
 public interface OfflineDao {
@@ -14,5 +13,7 @@ public interface OfflineDao {
 	public boolean addProduct(Product products, Context context);
 
 	public int addProducts(List<Product> products, Context context);
+
+	public int getDownloadSize(Product product);
 
 }

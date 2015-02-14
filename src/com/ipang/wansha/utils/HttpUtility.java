@@ -207,7 +207,7 @@ public class HttpUtility {
 			urlConn.connect();
 
 			InputStream is = new BufferedInputStream(url.openStream());
-			
+
 			System.out.println(filePath.toString());
 
 			FileOutputStream fos = new FileOutputStream(filePath);
@@ -220,6 +220,23 @@ public class HttpUtility {
 			fos.flush();
 			fos.close();
 			is.close();
+		} catch (Exception e) {
+			throw new HttpException(HttpException.HOST_CONNECT_FAILED);
+		} finally {
+			if (urlConn != null) {
+				urlConn.disconnect();
+			}
+		}
+	}
+
+	public static int getFileSize(URL url) throws HttpException {
+		HttpURLConnection urlConn = null;
+		try {
+			urlConn = (HttpURLConnection) url.openConnection();
+			urlConn.setConnectTimeout(Const.CONNECT_TIMEOUT);
+			urlConn.setReadTimeout(Const.READ_TIMEOUT);
+			urlConn.connect();
+			return urlConn.getContentLength();
 		} catch (Exception e) {
 			throw new HttpException(HttpException.HOST_CONNECT_FAILED);
 		} finally {
