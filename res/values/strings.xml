@@ -125,6 +125,12 @@
     <string name="order_number">订单号</string>
     <string name="order_time">下单时间</string>
     <string name="download">下载</string>
+    <string name="is_downloading">正在下载</string>
+    <string name="wait_download">等待下载</string>
+    <string name="stop_download">停止下载</string>
+    <string name="interupt_download">下载中止</string>
+    <string name="complete_download">下载完成</string>
+    
     <string name="xlistview_header_hint_normal">下拉刷新</string>
     <string name="xlistview_header_hint_ready">松开刷新数据</string>
     <string name="xlistview_header_hint_loading">正在加载&#8230;</string>

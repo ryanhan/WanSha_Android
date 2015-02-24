@@ -20,7 +20,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.ipang.wansha.R;
-import com.ipang.wansha.activity.BookingContactActivity;
 import com.ipang.wansha.activity.LoginActivity;
 import com.ipang.wansha.dao.UserDao;
 import com.ipang.wansha.dao.impl.UserDaoImpl;

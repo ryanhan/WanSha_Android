@@ -208,8 +208,6 @@ public class HttpUtility {
 
 			InputStream is = new BufferedInputStream(url.openStream());
 
-			System.out.println(filePath.toString());
-
 			FileOutputStream fos = new FileOutputStream(filePath);
 
 			byte data[] = new byte[1024];

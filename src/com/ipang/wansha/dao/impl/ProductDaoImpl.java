@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.ipang.wansha.dao.CityDao;
 import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.enums.Currency;
 import com.ipang.wansha.exception.HttpException;
@@ -98,10 +99,15 @@ public class ProductDaoImpl implements ProductDao {
 		}
 
 		try {
-			return createProduct(jsonObject);
-		} catch (JSONException e) {
+			Product product = createProduct(jsonObject);
+			CityDao cityDao = new CityDaoImpl();
+			String names[] = cityDao.getCountryAndCity(product.getCountryId(), product.getCityId());
+			product.setCountryName(names[0]);
+			product.setCityName(names[1]);
+			return product;
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ProductException(ProductException.JSON_FORMAT_NOT_MATCH);
+			throw new ProductException(ProductException.UNKNOWN_ERROR);
 		}
 	}
 

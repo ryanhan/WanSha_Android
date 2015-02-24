@@ -61,7 +61,7 @@ public class BookingListAdapter extends ArrayAdapter<Booking> {
 					.findViewById(R.id.product_image);
 
 			FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(
-					height, height);
+					height, height * 6 / 5);
 			holder.productImage.setLayoutParams(param);
 
 			holder.productNameTextView = (TextView) convertView

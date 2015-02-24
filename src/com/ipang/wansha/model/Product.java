@@ -1,23 +1,17 @@
 package com.ipang.wansha.model;
 
-import java.io.Serializable;
 import java.util.List;
 
 import com.ipang.wansha.enums.Currency;
 
-public class Product implements Serializable {
-
-	private static final long serialVersionUID = 8205438106558942992L;
+public class Product{
 
 	public static final int PAYSIGHT = 1;
 	public static final int FREESIGHT = 2;
-	
+
 	private int productId;
 	private String productName;
 	private int productType;
-	private int reviewTotalRanking;
-	private int reviewCount;
-	private int[] starCount;
 	private float lowestPrice;
 	private Currency currency;
 	private String detail;
@@ -57,14 +51,6 @@ public class Product implements Serializable {
 		this.productType = productType;
 	}
 
-	public int getStarCount(int i) {
-		return starCount[i];
-	}
-
-	public void setStarCount(int[] starCount) {
-		this.starCount = starCount;
-	}
-
 	public float getLowestPrice() {
 		return lowestPrice;
 	}
@@ -74,6 +60,9 @@ public class Product implements Serializable {
 	}
 
 	public Currency getCurrency() {
+		if (currency == null) {
+			currency = Currency.CHINESEYUAN;
+		}
 		return currency;
 	}
 
@@ -87,22 +76,6 @@ public class Product implements Serializable {
 
 	public void setProductImages(List<String> productImages) {
 		this.productImages = productImages;
-	}
-
-	public int getReviewTotalRanking() {
-		return reviewTotalRanking;
-	}
-
-	public void setReviewTotalRanking(int reviewTotalRanking) {
-		this.reviewTotalRanking = reviewTotalRanking;
-	}
-
-	public int getReviewCount() {
-		return reviewCount;
-	}
-
-	public void setReviewCount(int reviewCount) {
-		this.reviewCount = reviewCount;
 	}
 
 	public String getDetail() {

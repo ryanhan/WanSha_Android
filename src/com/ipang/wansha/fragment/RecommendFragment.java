@@ -104,6 +104,7 @@ public class RecommendFragment extends Fragment implements IXListViewListener {
 						ProductDetailActivity.class);
 				intent.putExtra(Const.PRODUCTID, products.get(index)
 						.getProductId());
+				intent.putExtra(Const.GETMETHOD, Const.ONLINE);
 				intent.putExtra(Const.ACTIONBARTITLE, Utility
 						.splitChnEng(products.get(index).getProductName())[0]);
 

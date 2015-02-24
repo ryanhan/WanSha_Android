@@ -4,8 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -156,11 +156,12 @@ public class CheckUpdateAsyncTask extends AsyncTask<Void, Integer, AppInfo> {
 
 		@Override
 		protected File doInBackground(String... params) {
+			HttpURLConnection connection = null;
 			try {
 				int count;
 
 				URL url = new URL(params[0]);
-				URLConnection connection = url.openConnection();
+				connection = (HttpURLConnection) url.openConnection();
 				connection.connect();
 
 				int lenghtOfFile = connection.getContentLength();
@@ -191,6 +192,10 @@ public class CheckUpdateAsyncTask extends AsyncTask<Void, Integer, AppInfo> {
 			} catch (Exception e) {
 				e.printStackTrace();
 				return null;
+			} finally {
+				if (connection != null) {
+					connection.disconnect();
+				}
 			}
 
 		}

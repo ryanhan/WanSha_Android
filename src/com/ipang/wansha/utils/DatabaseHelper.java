@@ -32,6 +32,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String IMAGEURL = "image_url";
 	public static final String SEQ = "seq";
 
+	public static final String DOWNLOADLIST = "download_list";
+	public static final String PREVIEW = "preview";
+	public static final String STATUS = "status";
+	public static final String FILESIZE = "file_size";
+	
 	private Context context;
 
 	public DatabaseHelper(Context context, String name, CursorFactory factory,
@@ -55,7 +60,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		db.execSQL("create table if not exists " + OFFLINEGUIDE + " (" + ID
 				+ " integer primary key, " + PRODUCTID + " integer, "
 				+ PRODUCTNAME + " text, " + CITYID + " integer, " + CITYNAME
-				+ " text, " + COUNTRYID + " integer, " + COUNTRYNAME + " text, "+ PRODUCTTYPE + " integer, " + DETAIL + " text, "
+				+ " text, " + COUNTRYID + " integer, " + COUNTRYNAME
+				+ " text, " + PRODUCTTYPE + " integer, " + DETAIL + " text, "
 				+ EXPENSEDESCR + " text, " + INSTRUCTION + " text, "
 				+ ORDERDESCR + " text, " + BRIEF + " text, " + LASTMODIFIED
 				+ " integer)");
@@ -64,6 +70,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ " integer primary key, " + PRODUCTID + " integer, "
 				+ FILENAME + " text, " + IMAGEURL + " text, " + SEQ
 				+ " integer)");
+
+		// create download list table
+		db.execSQL("create table if not exists " + DOWNLOADLIST + " (" + ID
+				+ " integer primary key, " + PRODUCTID + " integer, "
+				+ PRODUCTNAME + " text, " + PREVIEW + " text, " +  FILESIZE + " integer, " + STATUS + " integer)");
 	}
 
 	@Override

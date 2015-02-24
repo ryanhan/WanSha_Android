@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.ipang.wansha.R;
 import com.ipang.wansha.activity.LoginActivity;
 import com.ipang.wansha.activity.MyBookingActivity;
+import com.ipang.wansha.activity.MyGuideCountryActivity;
 import com.ipang.wansha.activity.SystemSettingActivity;
 import com.ipang.wansha.activity.UserAdminActivity;
 import com.ipang.wansha.utils.Const;
@@ -105,8 +106,10 @@ public class DrawerFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
+				Intent intent = new Intent();
+				intent.setClass(DrawerFragment.this.getActivity(),
+						MyGuideCountryActivity.class);
+				startActivity(intent);
 			}
 		});
 

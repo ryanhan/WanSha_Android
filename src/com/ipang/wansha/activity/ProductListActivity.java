@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductListAdapter;
@@ -29,8 +30,10 @@ import com.ipang.wansha.dao.impl.ProductDaoImpl;
 import com.ipang.wansha.enums.SortType;
 import com.ipang.wansha.fragment.SortListFragment;
 import com.ipang.wansha.fragment.SortListFragment.OnSortTypeChangedListener;
+import com.ipang.wansha.model.Download;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
+import com.ipang.wansha.utils.DatabaseUtility;
 import com.ipang.wansha.utils.Utility;
 
 public class ProductListActivity extends FragmentActivity implements
@@ -121,8 +124,7 @@ public class ProductListActivity extends FragmentActivity implements
 						ProductDetailActivity.class);
 				intent.putExtra(Const.PRODUCTID, products.get(index)
 						.getProductId());
-				intent.putExtra(Const.PRODUCTNAME, products.get(index)
-						.getProductName());
+				intent.putExtra(Const.GETMETHOD, Const.ONLINE);
 				intent.putExtra(Const.ACTIONBARTITLE, Utility
 						.splitChnEng(products.get(index).getProductName())[0]);
 				startActivity(intent);
@@ -158,6 +160,9 @@ public class ProductListActivity extends FragmentActivity implements
 				transaction.remove(fragment).commit();
 				fragment = null;
 			}
+		case R.id.download:
+			DownloadProductsAsyncTask asyncTask = new DownloadProductsAsyncTask();
+			asyncTask.execute();
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -210,6 +215,41 @@ public class ProductListActivity extends FragmentActivity implements
 				stopRefresh();
 			} else {
 				stopLoadMore();
+			}
+		}
+	}
+
+	private class DownloadProductsAsyncTask extends
+			AsyncTask<Void, Integer, List<Download>> {
+
+		@Override
+		protected List<Download> doInBackground(Void... params) {
+			try {
+				List<Download> downloads = new ArrayList<Download>();
+				List<Product> products = productDao.getProductList(cityId);
+				for (Product product: products){
+					Download download = new Download();
+					download.setProductId(product.getProductId());
+					download.setProductName(product.getProductName());
+					if (product.getProductImages() != null && product.getProductImages().size() > 0){
+						download.setProductImage(product.getProductImages().get(0));
+					}
+					downloads.add(download);
+				}
+				return downloads;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(List<Download> result) {
+			if (result != null){
+				DatabaseUtility.StartDownloadProducts(ProductListActivity.this, result);
+			}
+			else {
+				Toast.makeText(ProductListActivity.this, "下载失败", Toast.LENGTH_SHORT).show();
 			}
 		}
 	}

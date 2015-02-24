@@ -23,7 +23,7 @@ public class SaveProductAsyncTask extends AsyncTask<Void, Integer, Boolean> {
 
 	@Override
 	protected Boolean doInBackground(Void... params) {
-		return offlineDao.addProduct(product, context);
+		return offlineDao.addProduct(context, product);
 	}
 
 	@Override

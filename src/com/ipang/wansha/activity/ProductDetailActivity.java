@@ -1,5 +1,6 @@
 package com.ipang.wansha.activity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActionBar;
@@ -33,12 +34,16 @@ import android.widget.TextView;
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductDetailImagePagerAdapter;
 import com.ipang.wansha.dao.CityDao;
+import com.ipang.wansha.dao.OfflineDao;
 import com.ipang.wansha.dao.ProductDao;
 import com.ipang.wansha.dao.impl.CityDaoImpl;
+import com.ipang.wansha.dao.impl.OfflineDaoImpl;
 import com.ipang.wansha.dao.impl.ProductDaoImpl;
 import com.ipang.wansha.exception.CityException;
+import com.ipang.wansha.model.Download;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
+import com.ipang.wansha.utils.DatabaseUtility;
 import com.ipang.wansha.utils.SaveProductAsyncTask;
 import com.ipang.wansha.utils.Utility;
 
@@ -49,12 +54,14 @@ public class ProductDetailActivity extends Activity {
 	private Product product;
 	private ImageView[] dots;
 	private ProductDao productDao;
+	private OfflineDao offlineDao;
 	private CityDao cityDao;
 	private SharedPreferences pref;
 	private boolean hasLogin;
 	private int productId;
-	private String cityName;
-	private String countryName;
+	private int method;
+	// private String cityName;
+	// private String countryName;
 	private ImageView loadingImage;
 	private AnimationDrawable animationDrawable;
 	private LinearLayout loadingLayout;
@@ -71,6 +78,7 @@ public class ProductDetailActivity extends Activity {
 
 	private void getBundle() {
 		Bundle bundle = getIntent().getExtras();
+		method = bundle.getInt(Const.GETMETHOD);
 		productId = bundle.getInt(Const.PRODUCTID);
 		actionBarTitle = bundle.getString(Const.ACTIONBARTITLE);
 		pref = getSharedPreferences(Const.USERINFO, Context.MODE_PRIVATE);
@@ -79,6 +87,7 @@ public class ProductDetailActivity extends Activity {
 
 	private void getProduct() {
 		productDao = new ProductDaoImpl();
+		offlineDao = new OfflineDaoImpl();
 		cityDao = new CityDaoImpl();
 		loadingImage = (ImageView) findViewById(R.id.image_loading);
 		loadingImage.setBackgroundResource(R.anim.progress_animation);
@@ -104,9 +113,12 @@ public class ProductDetailActivity extends Activity {
 		setDetailContent();
 		Button bookButton = (Button) findViewById(R.id.book_now);
 		if (product.getProductType() == 1) {
-			bookButton.setVisibility(View.VISIBLE);
-		}
-		if (product.getProductType() == 2) {
+			if (method == Const.ONLINE) {
+				bookButton.setVisibility(View.VISIBLE);
+			} else {
+				bookButton.setVisibility(View.GONE);
+			}
+		} else if (product.getProductType() == 2) {
 			bookButton.setVisibility(View.GONE);
 		}
 
@@ -143,6 +155,8 @@ public class ProductDetailActivity extends Activity {
 
 	private void initViewPager(List<String> productImages) {
 
+		List<String> images = new ArrayList<String>(productImages);
+
 		FrameLayout layout = (FrameLayout) findViewById(R.id.product_detail_image_layout);
 
 		DisplayMetrics metric = new DisplayMetrics();
@@ -157,17 +171,16 @@ public class ProductDetailActivity extends Activity {
 
 		final int imageCount;
 
-		if (productImages == null || productImages.size() == 0) {
+		if (images == null || images.size() == 0) {
 			imageCount = 1;
 		} else {
-			productImages.remove(0);
-			imageCount = productImages.size();
+			images.remove(0);
+			imageCount = images.size();
 		}
 
 		setDotBar(imageCount);
 
-		viewPager.setAdapter(new ProductDetailImagePagerAdapter(this,
-				productImages));
+		viewPager.setAdapter(new ProductDetailImagePagerAdapter(this, images));
 		viewPager
 				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
@@ -217,10 +230,11 @@ public class ProductDetailActivity extends Activity {
 		} else {
 			english.setText(names[1]);
 		}
-		location.setText(Utility.splitChnEng(cityName)[0] + ", "
-				+ Utility.splitChnEng(countryName)[0]);
+		location.setText(Utility.splitChnEng(product.getCityName())[0] + ", "
+				+ Utility.splitChnEng(product.getCountryName())[0]);
 
-		if (product.getProductType() == Product.FREESIGHT) {
+		if (product.getProductType() == Product.FREESIGHT
+				|| method == Const.OFFLINE) {
 			price.setVisibility(View.GONE);
 		} else {
 			String priceText = product.getCurrency().getSymbol()
@@ -270,8 +284,9 @@ public class ProductDetailActivity extends Activity {
 					R.string.detail_product));
 			instructionTitle.setText(getResources().getString(
 					R.string.instruction_product));
-			if (product.getOrderDescr() != null)
+			if (product.getOrderDescr() != null) {
 				orderContent.setText(product.getOrderDescr());
+			}
 		} else if (product.getProductType() == 2) { // 免费
 			detailTitle
 					.setText(getResources().getString(R.string.detail_sight));
@@ -296,11 +311,15 @@ public class ProductDetailActivity extends Activity {
 			ProductDetailActivity.this.finish();
 			break;
 		case R.id.download:
-			product.setCountryName(countryName);
-			product.setCityName(cityName);
-			SaveProductAsyncTask asyncTask = new SaveProductAsyncTask(product,
-					ProductDetailActivity.this);
-			asyncTask.execute();
+			List<Download> downloads = new ArrayList<Download>();
+			Download download = new Download();
+			download.setProductId(product.getProductId());
+			download.setProductName(product.getProductName());
+			if (product.getProductImages() != null && product.getProductImages().size() > 0){
+				download.setProductImage(product.getProductImages().get(0));
+			}
+			downloads.add(download);
+			DatabaseUtility.StartDownloadProducts(ProductDetailActivity.this, downloads);
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -318,30 +337,20 @@ public class ProductDetailActivity extends Activity {
 
 		@Override
 		protected Boolean doInBackground(Integer... params) {
-			try {
-				product = productDao.getProductDetail(params[0]);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
-			}
-			if (product == null) {
-				return false;
-			} else {
+			if (method == Const.ONLINE) {
 				try {
-					String names[] = cityDao.getCountryAndCity(
-							product.getCountryId(), product.getCityId());
-					if (names == null) {
-						return false;
-					} else {
-						countryName = names[0];
-						cityName = names[1];
-						return true;
-					}
-				} catch (CityException e) {
+					product = productDao.getProductDetail(params[0]);
+					return true;
+				} catch (Exception e) {
 					e.printStackTrace();
 					return false;
 				}
+			} else if (method == Const.OFFLINE) {
+				product = offlineDao.getProduct(ProductDetailActivity.this,
+						params[0]);
+				return true;
 			}
+			return false;
 		}
 
 		@Override
