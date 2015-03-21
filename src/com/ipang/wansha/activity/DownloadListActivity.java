@@ -4,23 +4,30 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.DownloadListAdapter;
+import com.ipang.wansha.adapter.OptionMenuAdapter;
 import com.ipang.wansha.dao.OfflineDao;
 import com.ipang.wansha.dao.impl.OfflineDaoImpl;
 import com.ipang.wansha.model.Download;
@@ -36,6 +43,7 @@ public class DownloadListActivity extends Activity {
 	private OfflineDao offlineDao;
 	private DownloadProgressReceiver receiver;
 	private OfflineGuideDownloadService downloadService;
+	private OptionMenuAdapter optionAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -95,8 +103,6 @@ public class DownloadListActivity extends Activity {
 			if (download.getStatus() == Download.STARTED) {
 				download.setFileSize(downloadService.getFileSize(download
 						.getProductId()));
-				System.out.println("Service get file size = "
-						+ download.getFileSize());
 				download.setDownloadedSize(downloadService
 						.getDownloadedSize(download.getProductId()));
 			}
@@ -108,21 +114,80 @@ public class DownloadListActivity extends Activity {
 
 		adapter = new DownloadListAdapter(this, downloads, height);
 		downloadList.setAdapter(adapter);
-		
+
 		downloadList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				int status = downloads.get((int)id).getStatus();
-				if (status == Download.NOTSTARTED || status == Download.STARTED){
-					downloadService.stopDownload(downloads.get((int)id).getProductId());
-					downloads.get((int)id).setStatus(Download.STOPPED);
-				}
-				else if (status == Download.STOPPED || status == Download.ERROR){
-					
+				int status = downloads.get((int) id).getStatus();
+				Log.v(Const.DOWNLOAD, "Click on Download List ID: " + id
+						+ ", Product ID: "
+						+ downloads.get((int) id).getProductId()
+						+ ", Status is" + status);
+
+				if (status == Download.STARTED) {
+					downloadService.stopDownload(downloads.get((int) id)
+							.getProductId());
+					downloads.get((int) id).setStatus(Download.ISSTOPPING);
+					Log.v(Const.DOWNLOAD,
+							"Project ID "
+									+ downloads.get((int) id).getProductId()
+									+ " has send stopping request. --> ACTIVITY STATUS: ISSTOPPING");
+				} else if (status == Download.NOTSTARTED) {
+					downloadService.stopDownload(downloads.get((int) id)
+							.getProductId());
+					downloads.get((int) id).setStatus(Download.STOPPED);
+					Log.v(Const.DOWNLOAD,
+							"Project ID "
+									+ downloads.get((int) id).getProductId()
+									+ " has not started. --> ACTIVITY STATUS: STOPPED");
+				} else if (status == Download.STOPPED
+						|| status == Download.ERROR) {
+					offlineDao.startDownloadService(DownloadListActivity.this,
+							downloads.get((int) id).getProductId());
+					downloads.get((int) id).setStatus(Download.NOTSTARTED);
+					Log.v(Const.DOWNLOAD,
+							"Project ID "
+									+ downloads.get((int) id).getProductId()
+									+ " restart downloading. --> ACTIVITY STATUS: NOTSTARTED");
 				}
 				adapter.notifyDataSetChanged();
+			}
+		});
+
+		downloadList.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
+				final String[] options = new String[] { getResources()
+						.getString(R.string.delete_item) };
+				optionAdapter = new OptionMenuAdapter(
+						DownloadListActivity.this, options);
+
+				if (id != 0) {
+					final int index = (int) id;
+					Dialog alertDialog = new AlertDialog.Builder(
+							DownloadListActivity.this)
+							.setTitle(
+									getResources().getString(
+											R.string.select_option))
+							.setAdapter(optionAdapter, new OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+
+								}
+							}).create();
+					alertDialog.show();
+
+					return true;
+				}
+
+				return false;
 			}
 		});
 	}
@@ -178,6 +243,10 @@ public class DownloadListActivity extends Activity {
 					download = downloads.get(i);
 					if (download.getProductId() == productId) {
 						download.setStatus(Download.STARTED);
+						Log.v(Const.DOWNLOAD,
+								"Project ID "
+										+ productId
+										+ " start downloading. --> ACTIVITY STATUS: STARTED");
 						break;
 					}
 				}
@@ -187,6 +256,36 @@ public class DownloadListActivity extends Activity {
 					download = downloads.get(i);
 					if (download.getProductId() == productId) {
 						downloads.remove(i);
+						Log.v(Const.DOWNLOAD,
+								"Project ID "
+										+ productId
+										+ " complete downloading. --> ACTIVITY STATUS: REMOVED");
+						break;
+					}
+				}
+			} else if (command.equals(Const.DOWNLOADCANCELLED)) {
+				Download download = null;
+				for (int i = 0; i < downloads.size(); i++) {
+					download = downloads.get(i);
+					if (download.getProductId() == productId) {
+						download.setStatus(Download.STOPPED);
+						Log.v(Const.DOWNLOAD,
+								"Project ID "
+										+ productId
+										+ " cancelled downloading. --> ACTIVITY STATUS: STOPPED");
+						break;
+					}
+				}
+			} else if (command.equals(Const.DOWNLOADERROR)) {
+				Download download = null;
+				for (int i = 0; i < downloads.size(); i++) {
+					download = downloads.get(i);
+					if (download.getProductId() == productId) {
+						download.setStatus(Download.ERROR);
+						Log.v(Const.DOWNLOAD,
+								"Project ID "
+										+ productId
+										+ " has error in downloading. --> ACTIVITY STATUS: ERROR");
 						break;
 					}
 				}

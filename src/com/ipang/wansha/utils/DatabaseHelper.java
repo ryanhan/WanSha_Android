@@ -64,7 +64,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ " text, " + PRODUCTTYPE + " integer, " + DETAIL + " text, "
 				+ EXPENSEDESCR + " text, " + INSTRUCTION + " text, "
 				+ ORDERDESCR + " text, " + BRIEF + " text, " + LASTMODIFIED
-				+ " integer)");
+				+ " integer, " + STATUS + " integer)");
 		// create local image table
 		db.execSQL("create table if not exists " + LOCALIMAGE + " (" + ID
 				+ " integer primary key, " + PRODUCTID + " integer, "

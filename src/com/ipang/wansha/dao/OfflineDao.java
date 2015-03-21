@@ -13,7 +13,7 @@ public interface OfflineDao {
 
 	public void createDatabase(Context context);
 
-	public boolean addProduct(Context context, Product products);
+	public void insertProduct(Context context, Product product);
 
 	public void rollback(Context context, int productId);
 
@@ -39,4 +39,19 @@ public interface OfflineDao {
 	public void removeDownload(Context context, int productId);
 
 	public void updateDownloadStatus(Context context, int productId, int status);
+
+	public void updateDownloadStatus(Context context, int status);
+
+	public void updateGuideStatus(Context context, int productId, int status);
+
+	public void startDownloadProducts(Context context, List<Download> downloads);
+
+	public void startDownloadService(Context context, int productId);
+
+	public void deleteOfflineCountry(Context context, int countryId);
+
+	public void deleteOfflineCity(Context context, int cityId);
+
+	public void deleteOfflineProduct(Context context, int productId);
+
 }

@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,6 @@ import com.ipang.wansha.model.Download;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 public class DownloadListAdapter extends ArrayAdapter<Download> {
 
@@ -44,7 +42,7 @@ public class DownloadListAdapter extends ArrayAdapter<Download> {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 
 		ViewHolder holder = null;
 		if (convertView == null) {
@@ -58,7 +56,6 @@ public class DownloadListAdapter extends ArrayAdapter<Download> {
 			LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
 					height, height * 6 / 5);
 			holder.productImage.setLayoutParams(param);
-			holder.productImage.setTag(getItem(position).getProductImage());
 			holder.productNameText = (TextView) convertView
 					.findViewById(R.id.text_download_product_name);
 			holder.productEnglishText = (TextView) convertView
@@ -73,46 +70,60 @@ public class DownloadListAdapter extends ArrayAdapter<Download> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		final ViewHolder viewHolder = holder;
+		if (holder.productImage.getTag() == null
+				|| !holder.productImage.getTag().equals(
+						getItem(position).getProductImage())) {
+			ImageLoader.getInstance().displayImage(
+					getItem(position).getProductImage(), holder.productImage,
+					Const.options);
+			holder.productImage.setTag(getItem(position).getProductImage());
+		}
 
 		String[] names = Utility
 				.splitChnEng(getItem(position).getProductName());
-
-		ImageLoader.getInstance().loadImage(
-				getItem(position).getProductImage(), Const.options,
-				new SimpleImageLoadingListener() {
-					@Override
-					public void onLoadingComplete(String imageUri, View view,
-							Bitmap loadedImage) {
-						if (imageUri.equals(viewHolder.productImage.getTag())) {
-							viewHolder.productImage.setImageBitmap(loadedImage);
-						}
-					}
-				});
-
-		viewHolder.productNameText.setText(names[0]);
-		viewHolder.productEnglishText.setText(names[1]);
+		holder.productNameText.setText(names[0]);
+		holder.productEnglishText.setText(names[1]);
 
 		int size = getItem(position).getDownloadedSize();
 		int totalSize = getItem(position).getFileSize();
+		holder.downloadedText.setTextColor(context.getResources().getColor(
+				R.color.black));
 		if (getItem(position).getStatus() == Download.NOTSTARTED) {
-			viewHolder.downloadedText.setText(context.getResources().getString(
+			holder.downloadedText.setText(context.getResources().getString(
 					R.string.wait_download));
-			viewHolder.downloadProgress.setProgress(0);
+			holder.downloadProgress.setProgress(0);
 		} else if (getItem(position).getStatus() == Download.STARTED) {
 			if (totalSize == 0) {
-				viewHolder.downloadedText.setText(context.getResources().getString(
+				holder.downloadedText.setText(context.getResources().getString(
 						R.string.is_downloading));
-				viewHolder.downloadProgress.setProgress(0);
+				holder.downloadProgress.setProgress(0);
 			} else {
 				DecimalFormat format = new DecimalFormat("0.00");
 				String sizeToM = format.format((float) size / 1000 / 1000);
 				String totalToM = format
 						.format((float) totalSize / 1000 / 1000);
-				viewHolder.downloadedText.setText(sizeToM + "M / " + totalToM
-						+ "M");
-				viewHolder.downloadProgress.setProgress(size * 100 / totalSize);
+				holder.downloadedText
+						.setText(sizeToM + "M / " + totalToM + "M");
+				holder.downloadProgress.setProgress(size * 100 / totalSize);
 			}
+		} else if (getItem(position).getStatus() == Download.ISSTOPPING) {
+			holder.downloadedText.setText(context.getResources().getString(
+					R.string.is_stopping));
+			holder.downloadedText.setTextColor(context.getResources().getColor(
+					R.color.red));
+			holder.downloadProgress.setProgress(0);
+		} else if (getItem(position).getStatus() == Download.STOPPED) {
+			holder.downloadedText.setText(context.getResources().getString(
+					R.string.stop_download));
+			holder.downloadedText.setTextColor(context.getResources().getColor(
+					R.color.red));
+			holder.downloadProgress.setProgress(0);
+		} else if (getItem(position).getStatus() == Download.ERROR) {
+			holder.downloadedText.setText(context.getResources().getString(
+					R.string.download_error));
+			holder.downloadedText.setTextColor(context.getResources().getColor(
+					R.color.red));
+			holder.downloadProgress.setProgress(0);
 		}
 		return convertView;
 	}

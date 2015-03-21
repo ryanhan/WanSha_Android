@@ -4,15 +4,24 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.GuideCityListAdapter;
+import com.ipang.wansha.adapter.OptionMenuAdapter;
 import com.ipang.wansha.customview.XListView;
 import com.ipang.wansha.customview.XListView.IXListViewListener;
 import com.ipang.wansha.dao.OfflineDao;
@@ -30,6 +39,9 @@ public class MyGuideCityActivity extends Activity implements IXListViewListener 
 	private XListView guideCityList;
 	private OfflineDao offlineDao;
 	private GuideCityListAdapter adapter;
+	private DownloadProgressReceiver receiver;
+	private OptionMenuAdapter optionAdapter;
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,6 +50,14 @@ public class MyGuideCityActivity extends Activity implements IXListViewListener 
 		getBundle();
 		setActionBar();
 		setViews();
+		registerReceiver();
+	}
+
+	private void registerReceiver() {
+		receiver = new DownloadProgressReceiver();
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(Const.DOWNLOADRECEIVER);
+		registerReceiver(receiver, intentFilter);
 	}
 
 	private void getBundle() {
@@ -96,6 +116,37 @@ public class MyGuideCityActivity extends Activity implements IXListViewListener 
 				}
 			}
 		});
+		
+		guideCityList
+		.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent,
+					View view, int position, long id) {
+				
+				final String[] options = new String[] { getResources().getString(R.string.delete_item)};
+				optionAdapter = new OptionMenuAdapter(MyGuideCityActivity.this, options);
+				
+				
+				if (id != 0) {
+					final int index = (int) id;
+					Dialog alertDialog = new AlertDialog.Builder(
+							MyGuideCityActivity.this).setTitle(getResources().getString(R.string.select_option)).setAdapter(optionAdapter, new OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									offlineDao.deleteOfflineCity(MyGuideCityActivity.this, guideCities.get(index).getCityId());
+									loadCityList();
+								}
+							}).create();
+					alertDialog.show();
+					
+					return true;
+				}
+
+				return false;
+			}
+		});
 	}
 
 	@Override
@@ -109,15 +160,39 @@ public class MyGuideCityActivity extends Activity implements IXListViewListener 
 	}
 
 	@Override
+	protected void onDestroy() {
+		unregisterReceiver(receiver);
+		super.onDestroy();
+	}
+	
+	@Override
 	public void onRefresh() {
-		// TODO Auto-generated method stub
-
+		loadCityList();
+		guideCityList.stopRefresh();
+		guideCityList.setRefreshTime("刚刚");
 	}
 
 	@Override
 	public void onLoadMore() {
-		// TODO Auto-generated method stub
-
 	}
 
+	private class DownloadProgressReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String command = intent.getStringExtra(Const.COMMAND);
+			if (command.equals(Const.DOWNLOADCOMPLETE)) {
+				loadCityList();
+			}
+		}
+	}
+
+	private void loadCityList(){
+		guideCities.clear();
+		guideCities.addAll(offlineDao.getCitiesByCountry(MyGuideCityActivity.this, countryId));
+		City allCities = new City();
+		allCities.setCityName("所有城市 ALL CITIES");
+		guideCities.add(0, allCities);
+		adapter.notifyDataSetChanged();
+	}
+	
 }

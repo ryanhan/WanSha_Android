@@ -5,14 +5,16 @@ import java.io.Serializable;
 public class Download implements Serializable {
 
 	private static final long serialVersionUID = -928802265406019594L;
-	
+
 	public static final int NOTSTARTED = 0;
 	public static final int STARTED = 1;
 	public static final int STOPPED = 2;
 	public static final int COMPLETED = 3;
 	public static final int ERROR = 4;
-	
-	
+	public static final int ISSTOPPING = 5;
+	public static final int INCOMPLETED = 6;
+
+
 	private int downloadId;
 	private int productId;
 	private String productName;

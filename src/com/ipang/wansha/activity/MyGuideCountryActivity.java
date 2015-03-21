@@ -4,16 +4,28 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AbsListView.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.GuideCountryListAdapter;
+import com.ipang.wansha.adapter.OptionMenuAdapter;
 import com.ipang.wansha.customview.XListView;
 import com.ipang.wansha.customview.XListView.IXListViewListener;
 import com.ipang.wansha.dao.OfflineDao;
@@ -30,6 +42,8 @@ public class MyGuideCountryActivity extends Activity implements
 	private XListView guideCountryList;
 	private OfflineDao offlineDao;
 	private GuideCountryListAdapter adapter;
+	private DownloadProgressReceiver receiver;
+	private OptionMenuAdapter optionAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -37,6 +51,14 @@ public class MyGuideCountryActivity extends Activity implements
 		setContentView(R.layout.activity_my_guide_country);
 		setActionBar();
 		setViews();
+		registerReceiver();
+	}
+
+	private void registerReceiver() {
+		receiver = new DownloadProgressReceiver();
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(Const.DOWNLOADRECEIVER);
+		registerReceiver(receiver, intentFilter);
 	}
 
 	private void setActionBar() {
@@ -52,9 +74,11 @@ public class MyGuideCountryActivity extends Activity implements
 		offlineDao = new OfflineDaoImpl();
 		guideCountries = offlineDao.getAllCountries(this);
 
-		Country allCountries = new Country();
-		allCountries.setCountryName("所有国家 ALL COUNTRIES");
-		guideCountries.add(0, allCountries);
+		if (guideCountries.size() > 0) {
+			Country allCountries = new Country();
+			allCountries.setCountryName("所有国家 ALL COUNTRIES");
+			guideCountries.add(0, allCountries);
+		}
 
 		guideCountryList = (XListView) findViewById(R.id.list_my_guide_country);
 		adapter = new GuideCountryListAdapter(this, guideCountries);
@@ -88,6 +112,37 @@ public class MyGuideCountryActivity extends Activity implements
 				}
 			}
 		});
+
+		guideCountryList
+				.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+					@Override
+					public boolean onItemLongClick(AdapterView<?> parent,
+							View view, int position, long id) {
+						
+						final String[] options = new String[] { getResources().getString(R.string.delete_item)};
+						optionAdapter = new OptionMenuAdapter(MyGuideCountryActivity.this, options);
+						
+						
+						if (id != 0) {
+							final int index = (int) id;
+							Dialog alertDialog = new AlertDialog.Builder(
+									MyGuideCountryActivity.this).setTitle(getResources().getString(R.string.select_option)).setAdapter(optionAdapter, new OnClickListener() {
+										
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											offlineDao.deleteOfflineCountry(MyGuideCountryActivity.this, guideCountries.get(index).getCountryId());
+											loadCountryList();
+										}
+									}).create();
+							alertDialog.show();
+							
+							return true;
+						}
+
+						return false;
+					}
+				});
 	}
 
 	@Override
@@ -113,15 +168,40 @@ public class MyGuideCountryActivity extends Activity implements
 	}
 
 	@Override
-	public void onRefresh() {
-		// TODO Auto-generated method stub
+	protected void onDestroy() {
+		unregisterReceiver(receiver);
+		super.onDestroy();
+	}
 
+	@Override
+	public void onRefresh() {
+		loadCountryList();
+		guideCountryList.stopRefresh();
+		guideCountryList.setRefreshTime("刚刚");
 	}
 
 	@Override
 	public void onLoadMore() {
-		// TODO Auto-generated method stub
-
 	}
 
+	private class DownloadProgressReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String command = intent.getStringExtra(Const.COMMAND);
+			if (command.equals(Const.DOWNLOADCOMPLETE)) {
+				loadCountryList();
+			}
+		}
+	}
+	
+	private void loadCountryList(){
+		guideCountries.clear();
+		guideCountries.addAll(offlineDao.getAllCountries(MyGuideCountryActivity.this));
+		if (guideCountries.size() > 0) {
+			Country allCountries = new Country();
+			allCountries.setCountryName("所有国家 ALL COUNTRIES");
+			guideCountries.add(0, allCountries);
+		}
+		adapter.notifyDataSetChanged();
+	}
 }

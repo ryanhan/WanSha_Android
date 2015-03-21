@@ -60,5 +60,5 @@
     <dimen name="booking_contact_title_left_margin">34sp</dimen>
     <dimen name="viewpager_dot_size">6dp</dimen>
     <dimen name="product_detail_price_small_font">14sp</dimen>
-
+    
 </resources>

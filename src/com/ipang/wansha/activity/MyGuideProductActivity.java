@@ -4,16 +4,25 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.GuideProductListAdapter;
+import com.ipang.wansha.adapter.OptionMenuAdapter;
 import com.ipang.wansha.customview.XListView;
 import com.ipang.wansha.customview.XListView.IXListViewListener;
 import com.ipang.wansha.dao.OfflineDao;
@@ -33,6 +42,8 @@ public class MyGuideProductActivity extends Activity implements
 	private XListView guideProductList;
 	private OfflineDao offlineDao;
 	private GuideProductListAdapter adapter;
+	private DownloadProgressReceiver receiver;
+	private OptionMenuAdapter optionAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +52,14 @@ public class MyGuideProductActivity extends Activity implements
 		getBundle();
 		setActionBar();
 		setViews();
+		registerReceiver();
+	}
+
+	private void registerReceiver() {
+		receiver = new DownloadProgressReceiver();
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(Const.DOWNLOADRECEIVER);
+		registerReceiver(receiver, intentFilter);
 	}
 
 	private void getBundle() {
@@ -55,7 +74,7 @@ public class MyGuideProductActivity extends Activity implements
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(false);
 		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle(getResources().getString(R.string.guide_book));
+		actionBar.setTitle(actionBarTitle);
 		actionBar.setDisplayUseLogoEnabled(false);
 	}
 
@@ -98,6 +117,37 @@ public class MyGuideProductActivity extends Activity implements
 				startActivity(intent);
 			}
 		});
+		
+		guideProductList
+		.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent,
+					View view, int position, long id) {
+				
+				final String[] options = new String[] { getResources().getString(R.string.delete_item)};
+				optionAdapter = new OptionMenuAdapter(MyGuideProductActivity.this, options);
+				
+				
+				if (id != 0) {
+					final int index = (int) id;
+					Dialog alertDialog = new AlertDialog.Builder(
+							MyGuideProductActivity.this).setTitle(getResources().getString(R.string.select_option)).setAdapter(optionAdapter, new OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									offlineDao.deleteOfflineCity(MyGuideProductActivity.this, guideProducts.get(index).getProductId());
+									loadProductList();
+								}
+							}).create();
+					alertDialog.show();
+					
+					return true;
+				}
+
+				return false;
+			}
+		});
 	}
 
 	@Override
@@ -112,14 +162,35 @@ public class MyGuideProductActivity extends Activity implements
 
 	@Override
 	public void onRefresh() {
-		// TODO Auto-generated method stub
-
+		loadProductList();
+		guideProductList.stopRefresh();
+		guideProductList.setRefreshTime("刚刚");
 	}
 
 	@Override
 	public void onLoadMore() {
-		// TODO Auto-generated method stub
+	}
 
+	private class DownloadProgressReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String command = intent.getStringExtra(Const.COMMAND);
+			if (command.equals(Const.DOWNLOADCOMPLETE)) {
+				loadProductList();
+			}
+		}
+	}
+	
+	private void loadProductList(){
+		guideProducts.clear();
+		if (type.equals(Const.ALL)) {
+			guideProducts.addAll(offlineDao.getAllProducts(this));
+		} else if (type.equals(Const.COUNTRYID)) {
+			guideProducts.addAll(offlineDao.getProductsByCountry(this, id));
+		} else if (type.equals(Const.CITYID)) {
+			guideProducts.addAll(offlineDao.getProductsByCity(this, id));
+		}
+		adapter.notifyDataSetChanged();
 	}
 
 }

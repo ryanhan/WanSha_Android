@@ -25,7 +25,9 @@ import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductListAdapter;
 import com.ipang.wansha.customview.XListView;
 import com.ipang.wansha.customview.XListView.IXListViewListener;
+import com.ipang.wansha.dao.OfflineDao;
 import com.ipang.wansha.dao.ProductDao;
+import com.ipang.wansha.dao.impl.OfflineDaoImpl;
 import com.ipang.wansha.dao.impl.ProductDaoImpl;
 import com.ipang.wansha.enums.SortType;
 import com.ipang.wansha.fragment.SortListFragment;
@@ -33,8 +35,8 @@ import com.ipang.wansha.fragment.SortListFragment.OnSortTypeChangedListener;
 import com.ipang.wansha.model.Download;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
-import com.ipang.wansha.utils.DatabaseUtility;
 import com.ipang.wansha.utils.Utility;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class ProductListActivity extends FragmentActivity implements
 		OnSortTypeChangedListener, IXListViewListener {
@@ -43,6 +45,7 @@ public class ProductListActivity extends FragmentActivity implements
 	private ActionBar actionBar;
 	private String actionBarTitle;
 	private ProductDao productDao;
+	private OfflineDao offlineDao;
 	private ProductListAdapter adapter;
 	private List<Product> products;
 	private XListView productListView;
@@ -84,6 +87,7 @@ public class ProductListActivity extends FragmentActivity implements
 
 	private void setListView() {
 		productDao = new ProductDaoImpl();
+		offlineDao = new OfflineDaoImpl();
 		products = new ArrayList<Product>();
 
 		loadingImage = (ImageView) findViewById(R.id.image_loading);
@@ -246,7 +250,7 @@ public class ProductListActivity extends FragmentActivity implements
 		@Override
 		protected void onPostExecute(List<Download> result) {
 			if (result != null){
-				DatabaseUtility.StartDownloadProducts(ProductListActivity.this, result);
+				offlineDao.startDownloadProducts(ProductListActivity.this, result);
 			}
 			else {
 				Toast.makeText(ProductListActivity.this, "下载失败", Toast.LENGTH_SHORT).show();
@@ -318,4 +322,5 @@ public class ProductListActivity extends FragmentActivity implements
 		isLoadingMore = false;
 		productListView.stopLoadMore();
 	}
+
 }

@@ -1,7 +1,14 @@
 package com.ipang.wansha.utils;
 
+import android.graphics.Bitmap;
+import android.widget.ImageView;
+
 import com.ipang.wansha.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 
 public class Const {
 
@@ -43,8 +50,9 @@ public class Const {
 	public static final String FILESIZE = "filesize";
 	public static final String DOWNLOADPROGRESS = "downloadprogress";
 	public static final String DOWNLOADCOMPLETE = "downloadcomplete";
+	public static final String DOWNLOADCANCELLED = "downloadcancelled";
+	public static final String DOWNLOADERROR = "downloaderror";
 	public static final String DOWNLOADRECEIVER = "com.ipang.wansha.DownloadProgressReceiver";
-
 
 	public static final int ONLINE = 1;
 	public static final int OFFLINE = 2;

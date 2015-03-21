@@ -7,14 +7,18 @@ import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
 import com.ipang.wansha.dao.OfflineDao;
 import com.ipang.wansha.model.City;
 import com.ipang.wansha.model.Country;
 import com.ipang.wansha.model.Download;
 import com.ipang.wansha.model.Product;
+import com.ipang.wansha.service.OfflineGuideDownloadService;
+import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.DatabaseHelper;
 import com.ipang.wansha.utils.HttpUtility;
 
@@ -31,28 +35,6 @@ public class OfflineDaoImpl implements OfflineDao {
 				DatabaseHelper.DATABASENAME);
 		SQLiteDatabase sqliteDatabase = dbHelper.getReadableDatabase();
 		dbHelper.close();
-	}
-
-	@Override
-	public boolean addProduct(Context context, Product product) {
-
-		DatabaseHelper dbHelper = new DatabaseHelper(context,
-				DatabaseHelper.DATABASENAME);
-		SQLiteDatabase sqliteDatabase = dbHelper.getWritableDatabase();
-		sqliteDatabase.beginTransaction();
-		try {
-			insertProduct(sqliteDatabase, product, context);
-			downloadImages(product, context);
-			sqliteDatabase.setTransactionSuccessful();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			deleteDir(product.getProductId(), context);
-			return false;
-		} finally {
-			sqliteDatabase.endTransaction();
-			dbHelper.close();
-		}
 	}
 
 	@Override
@@ -80,8 +62,10 @@ public class OfflineDaoImpl implements OfflineDao {
 		SQLiteDatabase sqliteDatabase = dbHelper.getReadableDatabase();
 		Cursor cursor = sqliteDatabase.query(true, DatabaseHelper.OFFLINEGUIDE,
 				new String[] { DatabaseHelper.COUNTRYID,
-						DatabaseHelper.COUNTRYNAME }, null, null, null, null,
-				DatabaseHelper.COUNTRYID, null);
+						DatabaseHelper.COUNTRYNAME }, DatabaseHelper.STATUS
+						+ "=?",
+				new String[] { String.valueOf(Download.COMPLETED) }, null,
+				null, DatabaseHelper.COUNTRYID, null);
 		while (cursor.moveToNext()) {
 			Country country = new Country();
 			country.setCountryId(cursor.getInt(cursor
@@ -102,11 +86,15 @@ public class OfflineDaoImpl implements OfflineDao {
 				DatabaseHelper.DATABASENAME);
 		SQLiteDatabase sqliteDatabase = dbHelper.getReadableDatabase();
 		Cursor cursor = sqliteDatabase
-				.query(true, DatabaseHelper.OFFLINEGUIDE, new String[] {
-						DatabaseHelper.CITYID, DatabaseHelper.CITYNAME },
-						DatabaseHelper.COUNTRYID + "=?",
-						new String[] { countryId + "" }, null, null,
-						DatabaseHelper.CITYID, null);
+				.query(true,
+						DatabaseHelper.OFFLINEGUIDE,
+						new String[] { DatabaseHelper.CITYID,
+								DatabaseHelper.CITYNAME },
+						DatabaseHelper.COUNTRYID + "=? AND "
+								+ DatabaseHelper.STATUS + "=?",
+						new String[] { String.valueOf(countryId),
+								String.valueOf(Download.COMPLETED) }, null,
+						null, DatabaseHelper.CITYID, null);
 		while (cursor.moveToNext()) {
 			City city = new City();
 			city.setCityId(cursor.getInt(cursor
@@ -205,13 +193,38 @@ public class OfflineDaoImpl implements OfflineDao {
 	}
 
 	@Override
-	public void updateDownloadStatus(Context context, int productId, int status){
+	public void updateDownloadStatus(Context context, int productId, int status) {
 		DatabaseHelper dbHelper = new DatabaseHelper(context,
 				DatabaseHelper.DATABASENAME);
 		SQLiteDatabase sqliteDatabase = dbHelper.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.STATUS, status);
-		sqliteDatabase.update(DatabaseHelper.DOWNLOADLIST, values, DatabaseHelper.PRODUCTID + "=?",
+		sqliteDatabase.update(DatabaseHelper.DOWNLOADLIST, values,
+				DatabaseHelper.PRODUCTID + "=?",
+				new String[] { productId + "" });
+		dbHelper.close();
+	}
+
+	@Override
+	public void updateDownloadStatus(Context context, int status) {
+		DatabaseHelper dbHelper = new DatabaseHelper(context,
+				DatabaseHelper.DATABASENAME);
+		SQLiteDatabase sqliteDatabase = dbHelper.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(DatabaseHelper.STATUS, status);
+		sqliteDatabase.update(DatabaseHelper.DOWNLOADLIST, values, null, null);
+		dbHelper.close();
+	}
+
+	@Override
+	public void updateGuideStatus(Context context, int productId, int status) {
+		DatabaseHelper dbHelper = new DatabaseHelper(context,
+				DatabaseHelper.DATABASENAME);
+		SQLiteDatabase sqliteDatabase = dbHelper.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(DatabaseHelper.STATUS, status);
+		sqliteDatabase.update(DatabaseHelper.OFFLINEGUIDE, values,
+				DatabaseHelper.PRODUCTID + "=?",
 				new String[] { productId + "" });
 		dbHelper.close();
 	}
@@ -224,21 +237,37 @@ public class OfflineDaoImpl implements OfflineDao {
 		SQLiteDatabase sqliteDatabase = dbHelper.getReadableDatabase();
 		Cursor cursor = null;
 		if (type == BYCOUNTRY) {
-			cursor = sqliteDatabase.query(DatabaseHelper.OFFLINEGUIDE, null,
-					DatabaseHelper.COUNTRYID + "=?", new String[] { id + "" },
-					null, null, DatabaseHelper.CITYID + ", "
-							+ DatabaseHelper.PRODUCTID);
+			cursor = sqliteDatabase.query(
+					DatabaseHelper.OFFLINEGUIDE,
+					null,
+					DatabaseHelper.COUNTRYID + "=? AND "
+							+ DatabaseHelper.STATUS + "=?",
+					new String[] { String.valueOf(id),
+							String.valueOf(Download.COMPLETED) }, null, null,
+					DatabaseHelper.CITYID + ", " + DatabaseHelper.PRODUCTID);
 		} else if (type == BYCITY) {
-			cursor = sqliteDatabase.query(DatabaseHelper.OFFLINEGUIDE, null,
-					DatabaseHelper.CITYID + "=?", new String[] { id + "" },
-					null, null, DatabaseHelper.PRODUCTID);
+			cursor = sqliteDatabase.query(
+					DatabaseHelper.OFFLINEGUIDE,
+					null,
+					DatabaseHelper.CITYID + "=? AND " + DatabaseHelper.STATUS
+							+ "=?",
+					new String[] { String.valueOf(id),
+							String.valueOf(Download.COMPLETED) }, null, null,
+					DatabaseHelper.PRODUCTID);
 		} else if (type == BYPRODUCT) {
-			cursor = sqliteDatabase.query(DatabaseHelper.OFFLINEGUIDE, null,
-					DatabaseHelper.PRODUCTID + "=?", new String[] { id + "" },
-					null, null, null);
+			cursor = sqliteDatabase.query(
+					DatabaseHelper.OFFLINEGUIDE,
+					null,
+					DatabaseHelper.PRODUCTID + "=? AND "
+							+ DatabaseHelper.STATUS + "=?",
+					new String[] { String.valueOf(id),
+							String.valueOf(Download.COMPLETED) }, null, null,
+					null);
 		} else if (type == ALL) {
 			cursor = sqliteDatabase.query(DatabaseHelper.OFFLINEGUIDE, null,
-					null, null, null, null, DatabaseHelper.COUNTRYID + ", "
+					DatabaseHelper.STATUS + "=?",
+					new String[] { String.valueOf(Download.COMPLETED) }, null,
+					null, DatabaseHelper.COUNTRYID + ", "
 							+ DatabaseHelper.CITYID + ", "
 							+ DatabaseHelper.PRODUCTID);
 		}
@@ -291,8 +320,12 @@ public class OfflineDaoImpl implements OfflineDao {
 		return products;
 	}
 
-	private void insertProduct(SQLiteDatabase sqliteDatabase, Product product,
-			Context context) {
+	@Override
+	public void insertProduct(Context context, Product product) {
+
+		DatabaseHelper dbHelper = new DatabaseHelper(context,
+				DatabaseHelper.DATABASENAME);
+		SQLiteDatabase sqliteDatabase = dbHelper.getWritableDatabase();
 
 		sqliteDatabase.delete(DatabaseHelper.OFFLINEGUIDE,
 				DatabaseHelper.PRODUCTID + "=?",
@@ -315,6 +348,7 @@ public class OfflineDaoImpl implements OfflineDao {
 		values.put(DatabaseHelper.ORDERDESCR, product.getOrderDescr());
 		values.put(DatabaseHelper.BRIEF, product.getBrief());
 		values.put(DatabaseHelper.LASTMODIFIED, product.getLastModified());
+		values.put(DatabaseHelper.STATUS, Download.INCOMPLETED);
 		sqliteDatabase.insert(DatabaseHelper.OFFLINEGUIDE, null, values);
 
 		List<String> imageList = product.getProductImages();
@@ -330,22 +364,7 @@ public class OfflineDaoImpl implements OfflineDao {
 			imageValues.put(DatabaseHelper.SEQ, i);
 			sqliteDatabase.insert(DatabaseHelper.LOCALIMAGE, null, imageValues);
 		}
-	}
-
-	private File prepareDir(int productId, Context context) {
-		File path = new File(
-				context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES),
-				productId + "");
-		if (!path.exists()) {
-			path.mkdir();
-		} else if (path.isDirectory()) {
-			File[] files = path.listFiles();
-			for (File file : files) {
-				file.delete();
-				System.out.println("delete: " + file.getPath());
-			}
-		}
-		return path;
+		dbHelper.close();
 	}
 
 	private void deleteDir(int productId, Context context) {
@@ -362,16 +381,6 @@ public class OfflineDaoImpl implements OfflineDao {
 		}
 	}
 
-	private void downloadImages(Product product, Context context)
-			throws Exception {
-		File path = prepareDir(product.getProductId(), context);
-		List<String> imageUrls = product.getProductImages();
-		for (int i = 0; i < imageUrls.size(); i++) {
-			URL url = new URL(imageUrls.get(i));
-			HttpUtility.downloadImage(url, new File(path, i + ""), context);
-		}
-	}
-
 	@Override
 	public int getDownloadSize(Product product) {
 
@@ -385,6 +394,86 @@ public class OfflineDaoImpl implements OfflineDao {
 			}
 		}
 		return sizeCount;
+	}
+
+	@Override
+	public void startDownloadProducts(Context context, List<Download> downloads) {
+		addProductToDownloadList(context, downloads);
+		Toast.makeText(context, "开始下载", Toast.LENGTH_SHORT).show();
+		for (Download download : downloads) {
+			startDownloadService(context, download.getProductId());
+		}
+	}
+
+	@Override
+	public void startDownloadService(Context context, int productId) {
+		Intent intent = new Intent(context, OfflineGuideDownloadService.class);
+		intent.putExtra(Const.DOWNLOAD, productId);
+		context.startService(intent);
+	}
+
+	@Override
+	public void deleteOfflineCountry(Context context, int countryId) {
+		DatabaseHelper dbHelper = new DatabaseHelper(context,
+				DatabaseHelper.DATABASENAME);
+		SQLiteDatabase sqliteDatabase = dbHelper.getWritableDatabase();
+		Cursor cursor = sqliteDatabase.query(DatabaseHelper.OFFLINEGUIDE, null,
+				DatabaseHelper.COUNTRYID + "=?",
+				new String[] { String.valueOf(countryId) }, null, null, null);
+
+		int productId;
+		while (cursor.moveToNext()) {
+			productId = cursor.getInt(cursor
+					.getColumnIndex(DatabaseHelper.PRODUCTID));
+			sqliteDatabase.delete(DatabaseHelper.LOCALIMAGE,
+					DatabaseHelper.PRODUCTID + "=?",
+					new String[] { String.valueOf(productId) });
+			deleteDir(productId, context);
+		}
+		sqliteDatabase.delete(DatabaseHelper.OFFLINEGUIDE,
+				DatabaseHelper.COUNTRYID + "=?",
+				new String[] { String.valueOf(countryId) });
+		dbHelper.close();
+	}
+
+	@Override
+	public void deleteOfflineCity(Context context, int cityId) {
+		DatabaseHelper dbHelper = new DatabaseHelper(context,
+				DatabaseHelper.DATABASENAME);
+		SQLiteDatabase sqliteDatabase = dbHelper.getWritableDatabase();
+		Cursor cursor = sqliteDatabase.query(DatabaseHelper.OFFLINEGUIDE, null,
+				DatabaseHelper.CITYID + "=?",
+				new String[] { String.valueOf(cityId) }, null, null, null);
+
+		int productId;
+		while (cursor.moveToNext()) {
+			productId = cursor.getInt(cursor
+					.getColumnIndex(DatabaseHelper.PRODUCTID));
+			sqliteDatabase.delete(DatabaseHelper.LOCALIMAGE,
+					DatabaseHelper.PRODUCTID + "=?",
+					new String[] { String.valueOf(productId) });
+			deleteDir(productId, context);
+		}
+		sqliteDatabase.delete(DatabaseHelper.OFFLINEGUIDE,
+				DatabaseHelper.CITYID + "=?",
+				new String[] { String.valueOf(cityId) });
+		dbHelper.close();
+
+	}
+
+	@Override
+	public void deleteOfflineProduct(Context context, int productId) {
+		DatabaseHelper dbHelper = new DatabaseHelper(context,
+				DatabaseHelper.DATABASENAME);
+		SQLiteDatabase sqliteDatabase = dbHelper.getWritableDatabase();
+		sqliteDatabase.delete(DatabaseHelper.LOCALIMAGE,
+				DatabaseHelper.PRODUCTID + "=?",
+				new String[] { String.valueOf(productId) });
+		deleteDir(productId, context);
+		sqliteDatabase.delete(DatabaseHelper.OFFLINEGUIDE,
+				DatabaseHelper.PRODUCTID + "=?",
+				new String[] { String.valueOf(productId) });
+		dbHelper.close();
 	}
 
 }

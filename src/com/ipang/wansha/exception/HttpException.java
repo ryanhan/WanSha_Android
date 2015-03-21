@@ -7,6 +7,7 @@ public class HttpException extends Exception {
 	public static final int UNKNOWN_ERROR = 0;
 	public static final int HOST_CONNECT_FAILED = 1;
 	public static final int HTTP_RESPONSE_ERROR = 2;
+	public static final int REQUEST_CANCELLED = 3;
 
 	private int exceptionCause;
 

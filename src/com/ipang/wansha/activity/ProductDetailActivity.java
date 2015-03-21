@@ -33,18 +33,13 @@ import android.widget.TextView;
 
 import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.ProductDetailImagePagerAdapter;
-import com.ipang.wansha.dao.CityDao;
 import com.ipang.wansha.dao.OfflineDao;
 import com.ipang.wansha.dao.ProductDao;
-import com.ipang.wansha.dao.impl.CityDaoImpl;
 import com.ipang.wansha.dao.impl.OfflineDaoImpl;
 import com.ipang.wansha.dao.impl.ProductDaoImpl;
-import com.ipang.wansha.exception.CityException;
 import com.ipang.wansha.model.Download;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
-import com.ipang.wansha.utils.DatabaseUtility;
-import com.ipang.wansha.utils.SaveProductAsyncTask;
 import com.ipang.wansha.utils.Utility;
 
 public class ProductDetailActivity extends Activity {
@@ -55,13 +50,10 @@ public class ProductDetailActivity extends Activity {
 	private ImageView[] dots;
 	private ProductDao productDao;
 	private OfflineDao offlineDao;
-	private CityDao cityDao;
 	private SharedPreferences pref;
 	private boolean hasLogin;
 	private int productId;
 	private int method;
-	// private String cityName;
-	// private String countryName;
 	private ImageView loadingImage;
 	private AnimationDrawable animationDrawable;
 	private LinearLayout loadingLayout;
@@ -88,7 +80,6 @@ public class ProductDetailActivity extends Activity {
 	private void getProduct() {
 		productDao = new ProductDaoImpl();
 		offlineDao = new OfflineDaoImpl();
-		cityDao = new CityDaoImpl();
 		loadingImage = (ImageView) findViewById(R.id.image_loading);
 		loadingImage.setBackgroundResource(R.anim.progress_animation);
 		animationDrawable = (AnimationDrawable) loadingImage.getBackground();
@@ -299,8 +290,8 @@ public class ProductDetailActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
-		getMenuInflater().inflate(R.menu.activity_product_detail, menu);
+		if (method == Const.ONLINE)
+			getMenuInflater().inflate(R.menu.activity_product_detail, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -319,7 +310,7 @@ public class ProductDetailActivity extends Activity {
 				download.setProductImage(product.getProductImages().get(0));
 			}
 			downloads.add(download);
-			DatabaseUtility.StartDownloadProducts(ProductDetailActivity.this, downloads);
+			offlineDao.startDownloadProducts(ProductDetailActivity.this, downloads);
 			break;
 		}
 		return super.onOptionsItemSelected(item);

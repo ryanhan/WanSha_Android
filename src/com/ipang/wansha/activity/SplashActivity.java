@@ -1,12 +1,15 @@
 package com.ipang.wansha.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,6 +22,8 @@ import com.ipang.wansha.R;
 import com.ipang.wansha.adapter.LaunchImagePagerAdapter;
 import com.ipang.wansha.dao.OfflineDao;
 import com.ipang.wansha.dao.impl.OfflineDaoImpl;
+import com.ipang.wansha.model.Download;
+import com.ipang.wansha.service.OfflineGuideDownloadService;
 import com.ipang.wansha.utils.Const;
 
 public class SplashActivity extends Activity {
@@ -28,6 +33,7 @@ public class SplashActivity extends Activity {
 	private ImageView[] dots;
 	private Button startButton;
 	private OfflineDao offlineDao;
+	private OfflineGuideDownloadService downloadService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +105,7 @@ public class SplashActivity extends Activity {
 
 		offlineDao = new OfflineDaoImpl();
 		offlineDao.createDatabase(this);
+		bindService();
 	}
 
 	private void setDotBar(int number) {
@@ -122,4 +129,32 @@ public class SplashActivity extends Activity {
 		}
 	}
 
+	private void bindService() {
+		Intent intent = new Intent(SplashActivity.this,
+				OfflineGuideDownloadService.class);
+		bindService(intent, conn, Context.BIND_AUTO_CREATE);
+	}
+
+	private ServiceConnection conn = new ServiceConnection() {
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+
+		}
+
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			downloadService = ((OfflineGuideDownloadService.DownloadBinder) service)
+					.getService();
+			if (!downloadService.isRunning()){
+				offlineDao.updateDownloadStatus(SplashActivity.this, Download.STOPPED);
+			}
+		}
+	};
+
+	@Override
+	protected void onDestroy() {
+		unbindService(conn);
+		super.onDestroy();
+	}
+	
 }
