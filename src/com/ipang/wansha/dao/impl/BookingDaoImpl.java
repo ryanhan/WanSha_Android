@@ -13,10 +13,8 @@ import org.json.JSONObject;
 
 import com.ipang.wansha.dao.BookingDao;
 import com.ipang.wansha.exception.BookingException;
-import com.ipang.wansha.exception.CityException;
 import com.ipang.wansha.exception.HttpException;
 import com.ipang.wansha.model.Booking;
-import com.ipang.wansha.model.City;
 import com.ipang.wansha.model.Contact;
 import com.ipang.wansha.model.Traveller;
 import com.ipang.wansha.utils.Const;

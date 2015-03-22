@@ -9,9 +9,9 @@ import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,7 +41,6 @@ public class MyGuideCityActivity extends Activity implements IXListViewListener 
 	private GuideCityListAdapter adapter;
 	private DownloadProgressReceiver receiver;
 	private OptionMenuAdapter optionAdapter;
-
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,7 +79,8 @@ public class MyGuideCityActivity extends Activity implements IXListViewListener 
 		guideCities = offlineDao.getCitiesByCountry(this, countryId);
 
 		City allCities = new City();
-		allCities.setCityName("所有城市 ALL CITIES");
+		allCities.setCityName(actionBarTitle
+				+ getResources().getString(R.string.all_city_products));
 		guideCities.add(0, allCities);
 
 		guideCityList = (XListView) findViewById(R.id.list_my_guide_country);
@@ -100,7 +100,12 @@ public class MyGuideCityActivity extends Activity implements IXListViewListener 
 							MyGuideProductActivity.class);
 					intent.putExtra(Const.GUIDELISTTYPE, Const.COUNTRYID);
 					intent.putExtra(Const.COUNTRYID, countryId);
-					intent.putExtra(Const.ACTIONBARTITLE, "所有城市");
+
+					String title = Utility.splitChnEng(actionBarTitle
+							+ getResources().getString(
+									R.string.all_city_products))[0];
+
+					intent.putExtra(Const.ACTIONBARTITLE, title);
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent();
@@ -116,31 +121,38 @@ public class MyGuideCityActivity extends Activity implements IXListViewListener 
 				}
 			}
 		});
-		
-		guideCityList
-		.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+		guideCityList.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
-			public boolean onItemLongClick(AdapterView<?> parent,
-					View view, int position, long id) {
-				
-				final String[] options = new String[] { getResources().getString(R.string.delete_item)};
-				optionAdapter = new OptionMenuAdapter(MyGuideCityActivity.this, options);
-				
-				
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
+				final String[] options = new String[] { getResources()
+						.getString(R.string.delete_item) };
+				optionAdapter = new OptionMenuAdapter(MyGuideCityActivity.this,
+						options);
+
 				if (id != 0) {
 					final int index = (int) id;
 					Dialog alertDialog = new AlertDialog.Builder(
-							MyGuideCityActivity.this).setTitle(getResources().getString(R.string.select_option)).setAdapter(optionAdapter, new OnClickListener() {
-								
+							MyGuideCityActivity.this)
+							.setTitle(
+									getResources().getString(
+											R.string.select_option))
+							.setAdapter(optionAdapter, new OnClickListener() {
+
 								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									offlineDao.deleteOfflineCity(MyGuideCityActivity.this, guideCities.get(index).getCityId());
+								public void onClick(DialogInterface dialog,
+										int which) {
+									offlineDao.deleteOfflineCity(
+											MyGuideCityActivity.this,
+											guideCities.get(index).getCityId());
 									loadCityList();
 								}
 							}).create();
 					alertDialog.show();
-					
+
 					return true;
 				}
 
@@ -164,7 +176,7 @@ public class MyGuideCityActivity extends Activity implements IXListViewListener 
 		unregisterReceiver(receiver);
 		super.onDestroy();
 	}
-	
+
 	@Override
 	public void onRefresh() {
 		loadCityList();
@@ -186,13 +198,15 @@ public class MyGuideCityActivity extends Activity implements IXListViewListener 
 		}
 	}
 
-	private void loadCityList(){
+	private void loadCityList() {
 		guideCities.clear();
-		guideCities.addAll(offlineDao.getCitiesByCountry(MyGuideCityActivity.this, countryId));
+		guideCities.addAll(offlineDao.getCitiesByCountry(
+				MyGuideCityActivity.this, countryId));
 		City allCities = new City();
-		allCities.setCityName("所有城市 ALL CITIES");
+		allCities.setCityName(actionBarTitle
+				+ getResources().getString(R.string.all_city_products));
 		guideCities.add(0, allCities);
 		adapter.notifyDataSetChanged();
 	}
-	
+
 }

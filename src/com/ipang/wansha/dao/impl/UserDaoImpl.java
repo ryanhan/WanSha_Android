@@ -8,8 +8,6 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.SharedPreferences.Editor;
-
 import com.ipang.wansha.dao.UserDao;
 import com.ipang.wansha.exception.HttpException;
 import com.ipang.wansha.exception.UserException;

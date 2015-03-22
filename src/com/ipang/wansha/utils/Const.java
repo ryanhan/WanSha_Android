@@ -1,14 +1,7 @@
 package com.ipang.wansha.utils;
 
-import android.graphics.Bitmap;
-import android.widget.ImageView;
-
 import com.ipang.wansha.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.LoadedFrom;
-import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 
 public class Const {
 

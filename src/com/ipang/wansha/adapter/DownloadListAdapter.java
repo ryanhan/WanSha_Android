@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -31,6 +32,17 @@ public class DownloadListAdapter extends ArrayAdapter<Download> {
 		public TextView productEnglishText;
 		public TextView downloadedText;
 		public NumberProgressBar downloadProgress;
+		public ImageView deleteImage;
+	}
+
+	public interface DownloadListListener {
+		public void delete(int position);
+	}
+
+	private DownloadListListener listener;
+
+	public void setDownloadListListener(DownloadListListener listener) {
+		this.listener = listener;
 	}
 
 	public DownloadListAdapter(Context context, List<Download> objects,
@@ -64,6 +76,8 @@ public class DownloadListAdapter extends ArrayAdapter<Download> {
 					.findViewById(R.id.text_downloaded);
 			holder.downloadProgress = (NumberProgressBar) convertView
 					.findViewById(R.id.progress_download_product);
+			holder.deleteImage = (ImageView) convertView
+					.findViewById(R.id.delete_download);
 
 			convertView.setTag(holder);
 		} else {
@@ -88,11 +102,14 @@ public class DownloadListAdapter extends ArrayAdapter<Download> {
 		int totalSize = getItem(position).getFileSize();
 		holder.downloadedText.setTextColor(context.getResources().getColor(
 				R.color.black));
-		if (getItem(position).getStatus() == Download.NOTSTARTED) {
+
+		final int status = getItem(position).getStatus();
+
+		if (status == Download.NOTSTARTED) {
 			holder.downloadedText.setText(context.getResources().getString(
 					R.string.wait_download));
 			holder.downloadProgress.setProgress(0);
-		} else if (getItem(position).getStatus() == Download.STARTED) {
+		} else if (status == Download.STARTED) {
 			if (totalSize == 0) {
 				holder.downloadedText.setText(context.getResources().getString(
 						R.string.is_downloading));
@@ -106,25 +123,34 @@ public class DownloadListAdapter extends ArrayAdapter<Download> {
 						.setText(sizeToM + "M / " + totalToM + "M");
 				holder.downloadProgress.setProgress(size * 100 / totalSize);
 			}
-		} else if (getItem(position).getStatus() == Download.ISSTOPPING) {
+		} else if (status == Download.ISSTOPPING) {
 			holder.downloadedText.setText(context.getResources().getString(
 					R.string.is_stopping));
 			holder.downloadedText.setTextColor(context.getResources().getColor(
 					R.color.red));
 			holder.downloadProgress.setProgress(0);
-		} else if (getItem(position).getStatus() == Download.STOPPED) {
+		} else if (status == Download.STOPPED) {
 			holder.downloadedText.setText(context.getResources().getString(
 					R.string.stop_download));
 			holder.downloadedText.setTextColor(context.getResources().getColor(
 					R.color.red));
 			holder.downloadProgress.setProgress(0);
-		} else if (getItem(position).getStatus() == Download.ERROR) {
+		} else if (status == Download.ERROR) {
 			holder.downloadedText.setText(context.getResources().getString(
 					R.string.download_error));
 			holder.downloadedText.setTextColor(context.getResources().getColor(
 					R.color.red));
 			holder.downloadProgress.setProgress(0);
 		}
+
+		holder.deleteImage.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				listener.delete(position);
+			}
+		});
+
 		return convertView;
 	}
 }

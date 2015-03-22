@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
@@ -36,7 +39,6 @@ import com.ipang.wansha.model.Download;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class ProductListActivity extends FragmentActivity implements
 		OnSortTypeChangedListener, IXListViewListener {
@@ -164,9 +166,22 @@ public class ProductListActivity extends FragmentActivity implements
 				transaction.remove(fragment).commit();
 				fragment = null;
 			}
+			break;
 		case R.id.download:
-			DownloadProductsAsyncTask asyncTask = new DownloadProductsAsyncTask();
-			asyncTask.execute();
+			Dialog alertDialog = new AlertDialog.Builder(ProductListActivity.this)
+					.setMessage("是否离线 " + actionBarTitle + " 的所有景点？")
+					.setNegativeButton("取消", null)
+					.setPositiveButton("确定",
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									DownloadProductsAsyncTask asyncTask = new DownloadProductsAsyncTask();
+									asyncTask.execute();
+								}
+							}).create();
+			alertDialog.show();
+			break;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -231,12 +246,14 @@ public class ProductListActivity extends FragmentActivity implements
 			try {
 				List<Download> downloads = new ArrayList<Download>();
 				List<Product> products = productDao.getProductList(cityId);
-				for (Product product: products){
+				for (Product product : products) {
 					Download download = new Download();
 					download.setProductId(product.getProductId());
 					download.setProductName(product.getProductName());
-					if (product.getProductImages() != null && product.getProductImages().size() > 0){
-						download.setProductImage(product.getProductImages().get(0));
+					if (product.getProductImages() != null
+							&& product.getProductImages().size() > 0) {
+						download.setProductImage(product.getProductImages()
+								.get(0));
 					}
 					downloads.add(download);
 				}
@@ -249,11 +266,12 @@ public class ProductListActivity extends FragmentActivity implements
 
 		@Override
 		protected void onPostExecute(List<Download> result) {
-			if (result != null){
-				offlineDao.startDownloadProducts(ProductListActivity.this, result);
-			}
-			else {
-				Toast.makeText(ProductListActivity.this, "下载失败", Toast.LENGTH_SHORT).show();
+			if (result != null) {
+				offlineDao.startDownloadProducts(ProductListActivity.this,
+						result);
+			} else {
+				Toast.makeText(ProductListActivity.this, "下载失败",
+						Toast.LENGTH_SHORT).show();
 			}
 		}
 	}

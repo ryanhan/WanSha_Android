@@ -5,7 +5,10 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -302,15 +305,34 @@ public class ProductDetailActivity extends Activity {
 			ProductDetailActivity.this.finish();
 			break;
 		case R.id.download:
-			List<Download> downloads = new ArrayList<Download>();
-			Download download = new Download();
-			download.setProductId(product.getProductId());
-			download.setProductName(product.getProductName());
-			if (product.getProductImages() != null && product.getProductImages().size() > 0){
-				download.setProductImage(product.getProductImages().get(0));
-			}
-			downloads.add(download);
-			offlineDao.startDownloadProducts(ProductDetailActivity.this, downloads);
+			Dialog alertDialog = new AlertDialog.Builder(
+					ProductDetailActivity.this)
+					.setMessage("是否离线 " + actionBarTitle + "？")
+					.setNegativeButton("取消", null)
+					.setPositiveButton("确定",
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									List<Download> downloads = new ArrayList<Download>();
+									Download download = new Download();
+									download.setProductId(product
+											.getProductId());
+									download.setProductName(product
+											.getProductName());
+									if (product.getProductImages() != null
+											&& product.getProductImages()
+													.size() > 0) {
+										download.setProductImage(product
+												.getProductImages().get(0));
+									}
+									downloads.add(download);
+									offlineDao.startDownloadProducts(
+											ProductDetailActivity.this,
+											downloads);
+								}
+							}).create();
+			alertDialog.show();
 			break;
 		}
 		return super.onOptionsItemSelected(item);

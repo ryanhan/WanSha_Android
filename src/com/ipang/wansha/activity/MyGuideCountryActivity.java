@@ -13,12 +13,9 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.AbsListView.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -76,7 +73,8 @@ public class MyGuideCountryActivity extends Activity implements
 
 		if (guideCountries.size() > 0) {
 			Country allCountries = new Country();
-			allCountries.setCountryName("所有国家 ALL COUNTRIES");
+			allCountries.setCountryName(getResources().getString(
+					R.string.all_country_products));
 			guideCountries.add(0, allCountries);
 		}
 
@@ -97,7 +95,11 @@ public class MyGuideCountryActivity extends Activity implements
 							MyGuideProductActivity.class);
 					intent.putExtra(Const.GUIDELISTTYPE, Const.ALL);
 					intent.putExtra(Const.ALL, 1);
-					intent.putExtra(Const.ACTIONBARTITLE, "所有国家");
+
+					String title = Utility.splitChnEng(getResources()
+							.getString(R.string.all_country_products))[0];
+
+					intent.putExtra(Const.ACTIONBARTITLE, title);
 					startActivity(intent);
 				} else {
 					Intent intent = new Intent();
@@ -119,24 +121,37 @@ public class MyGuideCountryActivity extends Activity implements
 					@Override
 					public boolean onItemLongClick(AdapterView<?> parent,
 							View view, int position, long id) {
-						
-						final String[] options = new String[] { getResources().getString(R.string.delete_item)};
-						optionAdapter = new OptionMenuAdapter(MyGuideCountryActivity.this, options);
-						
-						
+
+						final String[] options = new String[] { getResources()
+								.getString(R.string.delete_item) };
+						optionAdapter = new OptionMenuAdapter(
+								MyGuideCountryActivity.this, options);
+
 						if (id != 0) {
 							final int index = (int) id;
 							Dialog alertDialog = new AlertDialog.Builder(
-									MyGuideCountryActivity.this).setTitle(getResources().getString(R.string.select_option)).setAdapter(optionAdapter, new OnClickListener() {
-										
-										@Override
-										public void onClick(DialogInterface dialog, int which) {
-											offlineDao.deleteOfflineCountry(MyGuideCountryActivity.this, guideCountries.get(index).getCountryId());
-											loadCountryList();
-										}
-									}).create();
+									MyGuideCountryActivity.this)
+									.setTitle(
+											getResources().getString(
+													R.string.select_option))
+									.setAdapter(optionAdapter,
+											new OnClickListener() {
+
+												@Override
+												public void onClick(
+														DialogInterface dialog,
+														int which) {
+													offlineDao
+															.deleteOfflineCountry(
+																	MyGuideCountryActivity.this,
+																	guideCountries
+																			.get(index)
+																			.getCountryId());
+													loadCountryList();
+												}
+											}).create();
 							alertDialog.show();
-							
+
 							return true;
 						}
 
@@ -193,13 +208,15 @@ public class MyGuideCountryActivity extends Activity implements
 			}
 		}
 	}
-	
-	private void loadCountryList(){
+
+	private void loadCountryList() {
 		guideCountries.clear();
-		guideCountries.addAll(offlineDao.getAllCountries(MyGuideCountryActivity.this));
+		guideCountries.addAll(offlineDao
+				.getAllCountries(MyGuideCountryActivity.this));
 		if (guideCountries.size() > 0) {
 			Country allCountries = new Country();
-			allCountries.setCountryName("所有国家 ALL COUNTRIES");
+			allCountries.setCountryName(getResources().getString(
+					R.string.all_country_products));
 			guideCountries.add(0, allCountries);
 		}
 		adapter.notifyDataSetChanged();

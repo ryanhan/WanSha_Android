@@ -83,17 +83,17 @@ public class OfflineGuideDownloadService extends IntentService {
 	public void stopDownload(int productId) {
 		if (productId == downloadingId) {
 			isCancelled = true;
-			Log.v(Const.DOWNLOAD, "Project ID " + productId
+			Log.d(Const.DOWNLOAD, "Project ID " + productId
 					+ " is the current task. Ready to cancel.");
 		} else if (downloadQueue.contains(productId)) {
 			downloadQueue.remove(productId);
 			offlineDao.updateDownloadStatus(this, productId, Download.STOPPED);
 			allDownload--;
 			updateNotification();
-			Log.v(Const.DOWNLOAD, "Project  ID " + productId
+			Log.d(Const.DOWNLOAD, "Project  ID " + productId
 					+ " has not started. --> DATABASE STATUS: STOPPED");
 		} else {
-			Log.v(Const.DOWNLOAD, "Project ID " + productId
+			Log.d(Const.DOWNLOAD, "Project ID " + productId
 					+ " is not found in download queue.");
 		}
 	}
@@ -105,7 +105,7 @@ public class OfflineGuideDownloadService extends IntentService {
 		downloadQueue.offer(productId);
 		allDownload++;
 		offlineDao.updateDownloadStatus(this, productId, Download.NOTSTARTED);
-		Log.v(Const.DOWNLOAD,
+		Log.d(Const.DOWNLOAD,
 				"Project ID "
 						+ productId
 						+ " has been added to download list. --> DATABASE STATUS: NOTSTARTED");
@@ -132,7 +132,7 @@ public class OfflineGuideDownloadService extends IntentService {
 		try {
 			Product product = productDao.getProductDetail(downloadingId);
 			totalSize = offlineDao.getDownloadSize(product);
-			Log.v(Const.DOWNLOAD, "Project ID " + product.getProductId()
+			Log.d(Const.DOWNLOAD, "Project ID " + product.getProductId()
 					+ " has been received size: " + totalSize
 					+ ". --> DATABASE STATUS: NOTSTARTED");
 			mIntent.putExtra(Const.COMMAND, Const.UPDATEFILESIZE);
@@ -145,12 +145,12 @@ public class OfflineGuideDownloadService extends IntentService {
 				mIntent.putExtra(Const.PRODUCTID, product.getProductId());
 				offlineDao.updateDownloadStatus(this, product.getProductId(),
 						Download.STARTED);
-				Log.v(Const.DOWNLOAD, "Project ID " + product.getProductId()
+				Log.d(Const.DOWNLOAD, "Project ID " + product.getProductId()
 						+ " start downloading. --> DATABASE STATUS: STARTED");
 				sendBroadcast(mIntent);
 
 				offlineDao.insertProduct(this, product);
-				Log.v(Const.DOWNLOAD,
+				Log.d(Const.DOWNLOAD,
 						"Project ID "
 								+ product.getProductId()
 								+ " has been inserted into database. --> DATABASE STATUS: STARTED");
@@ -164,7 +164,7 @@ public class OfflineGuideDownloadService extends IntentService {
 							product.getProductId(), Download.STOPPED);
 					allDownload--;
 					updateNotification();
-					Log.v(Const.DOWNLOAD,
+					Log.d(Const.DOWNLOAD,
 							"Project ID "
 									+ product.getProductId()
 									+ " cancelled downloading. --> DATABASE STATUS: STOPPED");
@@ -175,7 +175,7 @@ public class OfflineGuideDownloadService extends IntentService {
 					reportError(product.getProductId());
 				}
 				offlineDao.rollback(this, product.getProductId());
-				Log.v(Const.DOWNLOAD, "Project ID " + product.getProductId()
+				Log.d(Const.DOWNLOAD, "Project ID " + product.getProductId()
 						+ " download failed. --> DATABASE STATUS: ROLLBACK");
 			}
 		} catch (ProductException e) {
@@ -249,7 +249,7 @@ public class OfflineGuideDownloadService extends IntentService {
 
 	private void reportError(int productId) {
 		offlineDao.updateDownloadStatus(this, productId, Download.ERROR);
-		Log.v(Const.DOWNLOAD, "Project ID " + productId
+		Log.d(Const.DOWNLOAD, "Project ID " + productId
 				+ " has error in downloading. --> DATABASE STATUS: ERROR");
 		mIntent.putExtra(Const.COMMAND, Const.DOWNLOADERROR);
 		mIntent.putExtra(Const.PRODUCTID, productId);
@@ -261,7 +261,7 @@ public class OfflineGuideDownloadService extends IntentService {
 		updateNotification();
 		offlineDao.removeDownload(this, productId);
 		offlineDao.updateGuideStatus(this, productId, Download.COMPLETED);
-		Log.v(Const.DOWNLOAD, "Project ID " + productId
+		Log.d(Const.DOWNLOAD, "Project ID " + productId
 				+ " complete downloading. --> DATABASE STATUS: REMOVED");
 		mIntent.putExtra(Const.COMMAND, Const.DOWNLOADCOMPLETE);
 		mIntent.putExtra(Const.PRODUCTID, productId);
@@ -298,13 +298,13 @@ public class OfflineGuideDownloadService extends IntentService {
 
 	@Override
 	public void onCreate() {
-		Log.v(Const.DOWNLOAD, "Download Service Create.");
+		Log.d(Const.DOWNLOAD, "Download Service Create.");
 		super.onCreate();
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.v(Const.DOWNLOAD, "Download Service Destroy.");
+		Log.d(Const.DOWNLOAD, "Download Service Destroy.");
 		super.onDestroy();
 	}
 

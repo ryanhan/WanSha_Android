@@ -17,7 +17,6 @@ import android.widget.TextView;
 import com.ipang.wansha.R;
 import com.ipang.wansha.dao.UserDao;
 import com.ipang.wansha.dao.impl.UserDaoImpl;
-import com.ipang.wansha.exception.UserException;
 import com.ipang.wansha.model.User;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;

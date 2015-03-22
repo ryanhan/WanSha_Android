@@ -10,13 +10,11 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ipang.wansha.R;
-import com.ipang.wansha.adapter.CountryListAdapter.ViewHolder;
 import com.ipang.wansha.model.Product;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;

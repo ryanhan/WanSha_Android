@@ -12,6 +12,7 @@ import com.ipang.wansha.R;
 public class OptionMenuAdapter extends ArrayAdapter<String> {
 
 	private LayoutInflater mInflater;
+	private Context context;
 
 	public final class ViewHolder {
 		public TextView optionText;
@@ -19,6 +20,7 @@ public class OptionMenuAdapter extends ArrayAdapter<String> {
 
 	public OptionMenuAdapter(Context context, String[] objects) {
 		super(context, 0, objects);
+		this.context = context;
 		mInflater = LayoutInflater.from(context);
 	}
 
@@ -39,6 +41,12 @@ public class OptionMenuAdapter extends ArrayAdapter<String> {
 		}
 
 		holder.optionText.setText(getItem(position));
+		if (getItem(position).equals(context.getResources().getString(R.string.delete_item))){
+			holder.optionText.setTextColor(context.getResources().getColor(R.color.dark_red));
+		}
+		else{
+			holder.optionText.setTextColor(context.getResources().getColor(R.color.black));
+		}
 
 		return convertView;
 	}

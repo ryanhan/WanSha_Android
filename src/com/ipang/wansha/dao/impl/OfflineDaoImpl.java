@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
+import com.ipang.wansha.R;
 import com.ipang.wansha.dao.OfflineDao;
 import com.ipang.wansha.model.City;
 import com.ipang.wansha.model.Country;
@@ -399,7 +400,7 @@ public class OfflineDaoImpl implements OfflineDao {
 	@Override
 	public void startDownloadProducts(Context context, List<Download> downloads) {
 		addProductToDownloadList(context, downloads);
-		Toast.makeText(context, "开始下载", Toast.LENGTH_SHORT).show();
+		Toast.makeText(context, context.getResources().getString(R.string.start_download) + "...", Toast.LENGTH_SHORT).show();
 		for (Download download : downloads) {
 			startDownloadService(context, download.getProductId());
 		}
@@ -463,17 +464,7 @@ public class OfflineDaoImpl implements OfflineDao {
 
 	@Override
 	public void deleteOfflineProduct(Context context, int productId) {
-		DatabaseHelper dbHelper = new DatabaseHelper(context,
-				DatabaseHelper.DATABASENAME);
-		SQLiteDatabase sqliteDatabase = dbHelper.getWritableDatabase();
-		sqliteDatabase.delete(DatabaseHelper.LOCALIMAGE,
-				DatabaseHelper.PRODUCTID + "=?",
-				new String[] { String.valueOf(productId) });
-		deleteDir(productId, context);
-		sqliteDatabase.delete(DatabaseHelper.OFFLINEGUIDE,
-				DatabaseHelper.PRODUCTID + "=?",
-				new String[] { String.valueOf(productId) });
-		dbHelper.close();
+		rollback(context, productId);
 	}
 
 }

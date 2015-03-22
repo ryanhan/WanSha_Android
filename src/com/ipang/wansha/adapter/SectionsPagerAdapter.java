@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.ipang.wansha.fragment.PlaceFragment;
 import com.ipang.wansha.fragment.RecommendFragment;
-import com.ipang.wansha.fragment.TogetherFragment;
 
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {

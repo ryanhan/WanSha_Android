@@ -2,26 +2,13 @@ package com.ipang.wansha.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.ipang.wansha.R;
-import com.ipang.wansha.dao.UserDao;
-import com.ipang.wansha.dao.impl.UserDaoImpl;
-import com.ipang.wansha.model.User;
-import com.ipang.wansha.utils.Const;
 
 public class BookingSuccessActivity extends Activity {
 

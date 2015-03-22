@@ -26,7 +26,6 @@ import com.ipang.wansha.customview.PagerSlidingTabStrip;
 import com.ipang.wansha.utils.CheckUpdateAsyncTask;
 import com.ipang.wansha.utils.Const;
 import com.ipang.wansha.utils.Utility;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class MainActivity extends FragmentActivity {
 

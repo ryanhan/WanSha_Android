@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/clear_download_list"
+        android:icon="@drawable/trash"
+        android:orderInCategory="101"
+        android:showAsAction="always"
+        android:title="@string/clear_download_list"/>
+
+</menu>

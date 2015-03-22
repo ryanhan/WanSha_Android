@@ -9,9 +9,9 @@ import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
@@ -117,37 +117,46 @@ public class MyGuideProductActivity extends Activity implements
 				startActivity(intent);
 			}
 		});
-		
+
 		guideProductList
-		.setOnItemLongClickListener(new OnItemLongClickListener() {
+				.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent,
-					View view, int position, long id) {
-				
-				final String[] options = new String[] { getResources().getString(R.string.delete_item)};
-				optionAdapter = new OptionMenuAdapter(MyGuideProductActivity.this, options);
-				
-				
-				if (id != 0) {
-					final int index = (int) id;
-					Dialog alertDialog = new AlertDialog.Builder(
-							MyGuideProductActivity.this).setTitle(getResources().getString(R.string.select_option)).setAdapter(optionAdapter, new OnClickListener() {
-								
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									offlineDao.deleteOfflineCity(MyGuideProductActivity.this, guideProducts.get(index).getProductId());
-									loadProductList();
-								}
-							}).create();
-					alertDialog.show();
-					
-					return true;
-				}
+					@Override
+					public boolean onItemLongClick(AdapterView<?> parent,
+							View view, int position, long id) {
 
-				return false;
-			}
-		});
+						final String[] options = new String[] { getResources()
+								.getString(R.string.delete_item) };
+						optionAdapter = new OptionMenuAdapter(
+								MyGuideProductActivity.this, options);
+
+						final int index = (int) id;
+						Dialog alertDialog = new AlertDialog.Builder(
+								MyGuideProductActivity.this)
+								.setTitle(
+										getResources().getString(
+												R.string.select_option))
+								.setAdapter(optionAdapter,
+										new OnClickListener() {
+
+											@Override
+											public void onClick(
+													DialogInterface dialog,
+													int which) {
+												offlineDao
+														.deleteOfflineCity(
+																MyGuideProductActivity.this,
+																guideProducts
+																		.get(index)
+																		.getProductId());
+												loadProductList();
+											}
+										}).create();
+						alertDialog.show();
+
+						return true;
+					}
+				});
 	}
 
 	@Override
@@ -180,8 +189,8 @@ public class MyGuideProductActivity extends Activity implements
 			}
 		}
 	}
-	
-	private void loadProductList(){
+
+	private void loadProductList() {
 		guideProducts.clear();
 		if (type.equals(Const.ALL)) {
 			guideProducts.addAll(offlineDao.getAllProducts(this));

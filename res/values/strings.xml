@@ -128,13 +128,15 @@
     <string name="is_downloading">正在下载</string>
     <string name="wait_download">等待下载</string>
     <string name="stop_download">停止下载</string>
+    <string name="start_download">开始下载</string>
     <string name="download_error">下载出错</string>
     <string name="complete_download">下载完成</string>
     <string name="is_stopping">正在暂停</string>
     <string name="delete_item">删除当前项目</string>
     <string name="select_option">请选择需要的操作</string>
-    
-    
+    <string name="all_country_products">所有国家景点 ALL COUNTRIES</string>
+    <string name="all_city_products">的所有景点 ALL CITIES</string>
+    <string name="clear_download_list">取消所有下载</string>
     <string name="xlistview_header_hint_normal">下拉刷新</string>
     <string name="xlistview_header_hint_ready">松开刷新数据</string>
     <string name="xlistview_header_hint_loading">正在加载&#8230;</string>

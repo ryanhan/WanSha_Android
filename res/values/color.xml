@@ -7,6 +7,7 @@
     <color name="green">#00B289</color>
     <color name="black_transparent">#7F000000</color>
     <color name="red">#FF0000</color>
+    <color name="dark_red">#C80000</color>
     <color name="white">#FFFFFF</color>
     <color name="white_transparent">#AFFFFFFF</color>
     <color name="wansha_blue_transparent">#AF4BBDCC</color>

@@ -52,9 +52,8 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_width="60dp"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="10dp" >
+        android:layout_width="70dp"
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/delete_download"
@@ -71,7 +70,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:textSize="10sp" />
+            android:textSize="10sp" 
+            android:textColor="@color/wansha_blue"
+            />
     </RelativeLayout>
 
 </LinearLayout>
