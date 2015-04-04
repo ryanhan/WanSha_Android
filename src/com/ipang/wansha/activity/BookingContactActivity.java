@@ -42,6 +42,7 @@ public class BookingContactActivity extends Activity {
 	private User user;
 	private int adultNumber;
 	private int childNumber;
+	private int infantNumber;
 	private int totalPrice;
 	private String travelDate;
 	private String currency;
@@ -71,6 +72,7 @@ public class BookingContactActivity extends Activity {
 		productId = bundle.getInt(Const.PRODUCTID);
 		adultNumber = bundle.getInt(Const.ADULTNUMBER);
 		childNumber = bundle.getInt(Const.CHILDNUMBER);
+		infantNumber = bundle.getInt(Const.INFANTNUMBER);
 		totalPrice = bundle.getInt(Const.TOTALPRICE);
 		travelDate = bundle.getString(Const.TRAVELDATE);
 		currency = bundle.getString(Const.CURRENCY);
@@ -107,33 +109,44 @@ public class BookingContactActivity extends Activity {
 		iInflater = LayoutInflater.from(this);
 		TextView adultNumberText = (TextView) findViewById(R.id.adult_number);
 		TextView childNumberText = (TextView) findViewById(R.id.child_number);
+		TextView infantNumberText = (TextView) findViewById(R.id.infant_number);
 		TextView dateText = (TextView) findViewById(R.id.date);
 		TextView totalPriceText = (TextView) findViewById(R.id.total_price);
 
 		LinearLayout contactDetailLayout = (LinearLayout) findViewById(R.id.layout_contact_detail);
 
-		adultNumberText.setText("" + adultNumber);
-		childNumberText.setText("" + childNumber);
+		adultNumberText.setText(String.valueOf(adultNumber));
+		childNumberText.setText(String.valueOf(childNumber));
+		infantNumberText.setText(String.valueOf(infantNumber));
+
 		dateText.setText(travelDate);
 		totalPriceText.setText(currency + totalPrice);
 
-		contactViews = new View[adultNumber + childNumber];
-		travellers = new Traveller[adultNumber + childNumber];
+		contactViews = new View[adultNumber + childNumber + infantNumber];
+		travellers = new Traveller[adultNumber + childNumber + infantNumber];
 		for (int i = 0; i < travellers.length; i++) {
 			travellers[i] = new Traveller();
 		}
 
 		if (adultNumber > 0) {
 			for (int i = 0; i < adultNumber; i++) {
-				contactViews[i] = createMemberDetailLayout(i, true);
+				contactViews[i] = createMemberDetailLayout(i, Const.ADULT);
 				contactDetailLayout.addView(contactViews[i]);
 			}
 		}
 		if (childNumber > 0) {
 			for (int i = 0; i < childNumber; i++) {
 				contactViews[i + adultNumber] = createMemberDetailLayout(i,
-						false);
+						Const.CHILD);
 				contactDetailLayout.addView(contactViews[i + adultNumber]);
+			}
+		}
+		if (infantNumber > 0) {
+			for (int i = 0; i < infantNumber; i++) {
+				contactViews[i + adultNumber + childNumber] = createMemberDetailLayout(
+						i, Const.INFANT);
+				contactDetailLayout.addView(contactViews[i + adultNumber
+						+ childNumber]);
 			}
 		}
 
@@ -209,16 +222,19 @@ public class BookingContactActivity extends Activity {
 		});
 	}
 
-	private View createMemberDetailLayout(int i, boolean isAdult) {
+	private View createMemberDetailLayout(int i, int person) {
 
 		View v = iInflater.inflate(R.layout.segment_contact_detail, null);
 		TextView memberTypeText = (TextView) v.findViewById(R.id.member_type);
 
-		if (isAdult) {
+		if (person == Const.ADULT) {
 			memberTypeText.setText(getResources().getString(R.string.adult)
 					+ " " + (i + 1));
-		} else {
+		} else if (person == Const.CHILD) {
 			memberTypeText.setText(getResources().getString(R.string.child)
+					+ " " + (i + 1));
+		} else if (person == Const.INFANT) {
+			memberTypeText.setText(getResources().getString(R.string.infant)
 					+ " " + (i + 1));
 		}
 

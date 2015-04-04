@@ -58,15 +58,19 @@ public class BookingActivity extends FragmentActivity implements
 	private int totalPrice;
 	private int adultPrice;
 	private int childPrice;
+	private int infantPrice;
 	private String travelDate;
 	private EditText adultNumber;
 	private EditText childNumber;
+	private EditText infantNumber;
 	private TextView priceText;
 	private TextView selectDateText;
 	private List<Integer> adultCount;
 	private List<Float> perAdult;
 	private List<Integer> childCount;
 	private List<Float> perChild;
+	private List<Integer> infantCount;
+	private List<Float> perInfant;
 
 	private ImageView loadingImage;
 	private AnimationDrawable animationDrawable;
@@ -93,6 +97,8 @@ public class BookingActivity extends FragmentActivity implements
 		perAdult = new ArrayList<Float>();
 		childCount = new ArrayList<Integer>();
 		perChild = new ArrayList<Float>();
+		infantCount = new ArrayList<Integer>();
+		perInfant = new ArrayList<Float>();
 		Calendar calendar = Calendar.getInstance();
 		datePickerDialog = DatePickerDialog.newInstance(this,
 				calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
@@ -126,7 +132,7 @@ public class BookingActivity extends FragmentActivity implements
 	}
 
 	private void setProductView() {
-
+		
 		final ImageView productImage = (ImageView) findViewById(R.id.booking_image);
 		TextView productTitle = (TextView) findViewById(R.id.booking_product_title);
 
@@ -201,7 +207,8 @@ public class BookingActivity extends FragmentActivity implements
 		List<Combo> combos = product.getCombos();
 
 		for (Combo combo : combos) {
-			if (combo.getType() == 0) { // 儿童
+			switch (combo.getType()){
+			case Const.CHILD: // 儿童
 				if (childCount.size() == 0) {
 					childCount.add(combo.getTo());
 					perChild.add(combo.getPrice());
@@ -220,8 +227,8 @@ public class BookingActivity extends FragmentActivity implements
 						perChild.add(combo.getPrice());
 					}
 				}
-
-			} else if (combo.getType() == 1) { // 成人
+				break;
+			case Const.ADULT: // 成人
 				if (adultCount.size() == 0) {
 					adultCount.add(combo.getTo());
 					perAdult.add(combo.getPrice());
@@ -240,6 +247,27 @@ public class BookingActivity extends FragmentActivity implements
 						perAdult.add(combo.getPrice());
 					}
 				}
+				break;
+			case Const.INFANT: // 婴儿
+				if (infantCount.size() == 0) {
+					infantCount.add(combo.getTo());
+					perInfant.add(combo.getPrice());
+				} else {
+					boolean flag = false;
+					for (int i = 0; i < infantCount.size(); i++) {
+						if (infantCount.get(i) > combo.getFrom()) {
+							infantCount.add(i, combo.getTo());
+							perInfant.add(i, combo.getPrice());
+							flag = true;
+							break;
+						}
+					}
+					if (!flag) {
+						infantCount.add(combo.getTo());
+						perInfant.add(combo.getPrice());
+					}
+				}
+				break;
 			}
 		}
 
@@ -285,7 +313,7 @@ public class BookingActivity extends FragmentActivity implements
 					if (number > 0) {
 						unit = getUnitPrice(number, adultCount, perAdult);
 						if (unit == -1) {
-							Toast.makeText(BookingActivity.this, "warning",
+							Toast.makeText(BookingActivity.this, BookingActivity.this.getResources().getString(R.string.exceed_max),
 									Toast.LENGTH_SHORT).show();
 							unit = 0;
 							adultNumber.setText(""
@@ -305,7 +333,7 @@ public class BookingActivity extends FragmentActivity implements
 								+ getUnitPrice(1, adultCount, perAdult));
 					}
 					adultPrice = (int) (number * unit);
-					totalPrice = adultPrice + childPrice;
+					totalPrice = adultPrice + childPrice + infantPrice;
 					priceText.setText("￥" + totalPrice);
 				}
 			});
@@ -391,7 +419,7 @@ public class BookingActivity extends FragmentActivity implements
 					if (number > 0) {
 						unit = getUnitPrice(number, childCount, perChild);
 						if (unit == -1) {
-							Toast.makeText(BookingActivity.this, "warning",
+							Toast.makeText(BookingActivity.this, BookingActivity.this.getResources().getString(R.string.exceed_max),
 									Toast.LENGTH_SHORT).show();
 							unit = 0;
 							childNumber.setText(""
@@ -411,7 +439,7 @@ public class BookingActivity extends FragmentActivity implements
 								+ getUnitPrice(1, adultCount, perAdult));
 					}
 					childPrice = (int) (number * unit);
-					totalPrice = adultPrice + childPrice;
+					totalPrice = adultPrice + childPrice + infantPrice;
 					priceText.setText("￥" + totalPrice);
 				}
 			});
@@ -455,6 +483,113 @@ public class BookingActivity extends FragmentActivity implements
 			View childDivider = (View) findViewById(R.id.divider_child);
 			childDivider.setVisibility(View.GONE);
 		}
+		
+		if (infantCount.size() > 0) {
+			final TextView infantPriceText = (TextView) findViewById(R.id.per_infant_price);
+			infantPriceText.setText(product.getCurrency().getSymbol()
+					+ getUnitPrice(1, infantCount, perInfant));
+			TextView infantOriginPriceText = (TextView) findViewById(R.id.per_infant_origin_price);
+			infantOriginPriceText.setText(getResources().getString(
+					R.string.origin_price)
+					+ " "
+					+ product.getCurrency().getSymbol()
+					+ getUnitPrice(0, infantCount, perInfant));
+			infantOriginPriceText.getPaint().setFlags(
+					Paint.STRIKE_THRU_TEXT_FLAG);
+			infantNumber = (EditText) findViewById(R.id.member_infant_text);
+			final TextView infantPlus = (TextView) findViewById(R.id.member_infant_plus);
+			final TextView infantMinus = (TextView) findViewById(R.id.member_infant_minus);
+
+			infantNumber.setOnFocusChangeListener(new NumberChangeListener());
+
+			infantNumber.addTextChangedListener(new TextWatcher() {
+
+				@Override
+				public void onTextChanged(CharSequence s, int start,
+						int before, int count) {
+				}
+
+				@Override
+				public void beforeTextChanged(CharSequence s, int start,
+						int count, int after) {
+				}
+
+				@Override
+				public void afterTextChanged(Editable s) {
+					int number;
+					try {
+						number = Integer.parseInt(s.toString());
+					} catch (Exception e) {
+						number = 0;
+					}
+					int unit = 0;
+					if (number > 0) {
+						unit = getUnitPrice(number, infantCount, perInfant);
+						if (unit == -1) {
+							Toast.makeText(BookingActivity.this, BookingActivity.this.getResources().getString(R.string.exceed_max),
+									Toast.LENGTH_SHORT).show();
+							unit = 0;
+							infantNumber.setText(""
+									+ infantCount.get(infantCount.size() - 1));
+							infantNumber.setSelection(infantNumber.getText()
+									.length());
+							infantPriceText.setText(product.getCurrency()
+									.getSymbol()
+									+ getUnitPrice(1, infantCount, perInfant));
+						} else {
+							infantPriceText.setText(product.getCurrency()
+									.getSymbol() + unit);
+						}
+					} else {
+						infantPriceText.setText(product.getCurrency()
+								.getSymbol()
+								+ getUnitPrice(1, infantCount, perInfant));
+					}
+					infantPrice = (int) (number * unit);
+					totalPrice = adultPrice + childPrice + infantPrice;
+					priceText.setText("￥" + totalPrice);
+				}
+			});
+
+			infantPlus.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					int number;
+					try {
+						number = Integer.parseInt(infantNumber.getText()
+								.toString());
+					} catch (Exception e) {
+						number = 0;
+					}
+					if (number < infantCount.get(infantCount.size() - 1)) {
+						infantNumber.setText(number + 1 + "");
+					}
+				}
+			});
+
+			infantMinus.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					try {
+						int number = Integer.parseInt(infantNumber.getText()
+								.toString());
+						if (number > 0) {
+							infantNumber.setText(number - 1 + "");
+						}
+					} catch (Exception e) {
+						infantNumber.setText("0");
+					}
+				}
+			});
+		} else {
+			RelativeLayout infantLayout = (RelativeLayout) findViewById(R.id.layout_infant);
+			infantLayout.setVisibility(View.GONE);
+			View infantDivider = (View) findViewById(R.id.divider_adult);
+			infantDivider.setVisibility(View.GONE);
+		}
+		
 
 		priceText = (TextView) findViewById(R.id.total_price);
 		priceText.setText("￥" + totalPrice);
@@ -467,6 +602,7 @@ public class BookingActivity extends FragmentActivity implements
 
 				int adultNumberSumbit;
 				int childNumberSumbit;
+				int infantNumberSumbit;
 				try {
 					adultNumberSumbit = Integer.parseInt(adultNumber.getText()
 							.toString());
@@ -480,6 +616,13 @@ public class BookingActivity extends FragmentActivity implements
 				} catch (Exception e) {
 					e.printStackTrace();
 					childNumberSumbit = 0;
+				}
+				try {
+					infantNumberSumbit = Integer.parseInt(infantNumber.getText()
+							.toString());
+				} catch (Exception e) {
+					e.printStackTrace();
+					infantNumberSumbit = 0;
 				}
 				if (travelDate == null) {
 					Toast.makeText(
@@ -500,6 +643,7 @@ public class BookingActivity extends FragmentActivity implements
 					intent.putExtra(Const.PRODUCTID, product.getProductId());
 					intent.putExtra(Const.ADULTNUMBER, adultNumberSumbit);
 					intent.putExtra(Const.CHILDNUMBER, childNumberSumbit);
+					intent.putExtra(Const.INFANTNUMBER, infantNumberSumbit);
 					intent.putExtra(Const.TRAVELDATE, travelDate);
 					intent.putExtra(Const.TOTALPRICE, totalPrice);
 					intent.putExtra(Const.CURRENCY, product.getCurrency()

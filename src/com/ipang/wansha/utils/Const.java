@@ -25,6 +25,7 @@ public class Const {
 	public static final String JSESSIONID = "JSESSIONID";
 	public static final String ADULTNUMBER = "adultnumber";
 	public static final String CHILDNUMBER = "childnumber";
+	public static final String INFANTNUMBER = "infantnumber";
 	public static final String TRAVELDATE = "traveldate";
 	public static final String TOTALPRICE = "totalprice";
 	public static final String TRAVELLERNAME = "contactname";
@@ -49,6 +50,10 @@ public class Const {
 
 	public static final int ONLINE = 1;
 	public static final int OFFLINE = 2;
+	
+	public static final int CHILD = 0;
+	public static final int ADULT = 1;
+	public static final int INFANT = 2;
 
 	public static final int LOGIN_REQUEST = 1;
 	public static final int CHANGE_PASSWORD = 2;

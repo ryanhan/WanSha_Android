@@ -16,6 +16,7 @@
     <string name="highlight">亮点</string>
     <string name="review">评论</string>
     <string name="book_now">预订</string>
+    <string name="next_step">下一步</string>
     <string name="five_star">五星</string>
     <string name="four_star">四星</string>
     <string name="three_star">三星</string>
@@ -102,7 +103,9 @@
     <string name="adult">成人</string>
     <string name="child">儿童</string>
     <string name="infant">婴儿</string>
-    <string name="total_price:">订单总额：</string>
+    <string name="free">免费</string>
+    <string name="exceed_max">超过订单人数上限</string>
+    <string name="total_price_is">订单总额：</string>
     <string name="total_price">订单总额</string>
     <string name="origin_price">门市价</string>
     <string name="contact">联系人</string>
@@ -110,7 +113,7 @@
     <string name="tel">电话</string>
     <string name="email">邮箱</string>
     <string name="travel_member">出行人</string>
-    <string name="go_to_pay">去支付</string>
+    <string name="confirm_to_pay">确认支付</string>
     <string name="pinyin">拼音</string>
     <string name="passport">护照号</string>
     <string name="mobile_number">手机号码</string>

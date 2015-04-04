@@ -241,6 +241,7 @@
                             android:layout_centerVertical="true"
                             android:layout_toLeftOf="@id/member_adult_plus"
                             android:background="@drawable/edit_bg"
+                            android:cursorVisible="false"
                             android:gravity="center"
                             android:inputType="number"
                             android:text="0" />
@@ -322,6 +323,7 @@
                             android:layout_centerVertical="true"
                             android:layout_toLeftOf="@id/member_child_plus"
                             android:background="@drawable/edit_bg"
+                            android:cursorVisible="false"
                             android:gravity="center"
                             android:inputType="number"
                             android:text="0" />
@@ -341,6 +343,88 @@
 
                     <View
                         android:id="@+id/divider_child"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <RelativeLayout
+                        android:id="@+id/layout_infant"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="@dimen/booking_member_title_vertical_margin"
+                        android:paddingTop="@dimen/booking_member_title_vertical_margin" >
+
+                        <TextView
+                            android:id="@+id/book_member_infant"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:text="@string/infant"
+                            android:textSize="16sp" />
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="30dp"
+                            android:layout_toRightOf="@id/book_member_infant" >
+
+                            <TextView
+                                android:id="@+id/per_infant_price"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentTop="true"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:id="@+id/per_infant_origin_price"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/per_infant_price"
+                                android:textColor="@color/dark_grey"
+                                android:textSize="14sp" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/member_infant_plus"
+                            android:layout_width="@dimen/booking_member_button_size"
+                            android:layout_height="@dimen/booking_member_button_size"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/button_bg"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:text="+"
+                            android:textSize="25sp" />
+
+                        <EditText
+                            android:id="@+id/member_infant_text"
+                            android:layout_width="50dp"
+                            android:layout_height="@dimen/booking_member_button_size"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@id/member_infant_plus"
+                            android:background="@drawable/edit_bg"
+                            android:cursorVisible="false"
+                            android:gravity="center"
+                            android:inputType="number"
+                            android:text="0" />
+
+                        <TextView
+                            android:id="@+id/member_infant_minus"
+                            android:layout_width="@dimen/booking_member_button_size"
+                            android:layout_height="@dimen/booking_member_button_size"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@id/member_infant_text"
+                            android:background="@drawable/button_bg"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:text="-"
+                            android:textSize="25sp" />
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/divider_infant"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="?android:attr/listDivider" />
@@ -365,7 +449,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:paddingLeft="15dp"
-                android:text="@string/total_price:"
+                android:text="@string/total_price_is"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
@@ -389,7 +473,7 @@
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:paddingTop="10dp"
-                android:text="@string/book_now"
+                android:text="@string/next_step"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
         </RelativeLayout>
